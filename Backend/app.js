@@ -3,11 +3,18 @@ const app = express();
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser')
 require("dotenv").config(); 
+const cors = require("cors");
 
 // Set up middleware
 app.use(express.json());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+
+//corss
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 
 //cookies
 app.use(cookieParser());

@@ -13,7 +13,6 @@ getMyAppointments
 }=require("../controllers/patientsController");
 
 
-
 // Book
 router.post(
 "/appointment",

@@ -102,10 +102,10 @@ exports.login = async(req,res)=>{
 
     try{
 
-        const {email,password}=req.body;
+        const {email,password,role}=req.body;
 
 
-        const user = await User.findOne({email});
+        const user = await User.findOne({email,role});
 
         if(!user){
             return res.status(404).json({
@@ -141,10 +141,18 @@ exports.login = async(req,res)=>{
             maxAge:86400000
         });
 
+res.json({
 
-        res.json({
-            message:"Login successful"
-        });
+    message:"Login successful",
+
+    user:{
+        id:user._id,
+        name:user.name,
+        email:user.email,
+        role:user.role
+    }
+
+});
 
 
     }catch(error){
