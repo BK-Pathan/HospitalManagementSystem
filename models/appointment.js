@@ -3,12 +3,12 @@ const { Schema } = mongoose;
 
 const appointmentSchema = new Schema({
   doctor: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Doctor',
     required: true
   },
   patient: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Patient',
     required: true
   },

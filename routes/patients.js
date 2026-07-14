@@ -1,20 +1,35 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const patientsController = require('../controllers/patientsController');
 
-// Route for fetching all patients
-router.get('/', patientsController.getAllPatients);
 
-// Route for fetching a single patient by ID
-router.get('/:id', patientsController.getPatientById);
+const auth=require("../middleware/authMiddleware");
+const role=require("../middleware/roleMiddleware");
 
-// Route for creating a new patient
-router.post('/', patientsController.createPatient);
 
-// Route for updating a patient
-router.put('/:id', patientsController.updatePatient);
+const {
+bookAppointment,
+getMyAppointments
 
-// Route for deleting a patient
-router.delete('/:id', patientsController.deletePatient);
+}=require("../controllers/patientsController");
+
+
+
+// Book
+router.post(
+"/appointment",
+auth,
+role("patient"),
+bookAppointment
+);
+
+// Own appointments
+router.get(
+"/appointments",
+auth,
+role("patient"),
+getMyAppointments
+);
+
+
 
 module.exports = router;

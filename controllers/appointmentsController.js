@@ -3,8 +3,6 @@ const Appointment = require('../models/appointment');
 // Controller method for fetching all appointments
 exports.getAllAppointments = (req, res) => {
   Appointment.find({})
-    .populate('doctor')
-    .populate('patient')
     .then(appointments => {
       res.json(appointments);
     })

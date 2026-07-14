@@ -1,34 +1,50 @@
 const express = require('express');
 const app = express();
-const connectDB = require('./config/db'); 
+const connectDB = require('./config/db');
+const cookieParser = require('cookie-parser')
+require("dotenv").config(); 
 
 // Set up middleware
 app.use(express.json());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
+//cookies
+app.use(cookieParser());
+
 // Import routes
 const indexRoute = require('./routes/index');
-const doctorsRouter = require('./routes/doctors');
+// const doctorsRouter = require('./routes/doctors');
 const servicesRouter = require('./routes/services');
 const appointmentsRouter = require('./routes/appointments');
 const aboutRouter = require('./routes/about');
 const contactRouter = require('./routes/contact');
 const facilitiesRouter = require('./routes/facilities');
 const newsRouter = require('./routes/news');
-const patientsRouter = require('./routes/patients');
+// const patientsRouter = require('./routes/patients');
+const authRouter = require('./routes/auth')
+const userRouter = require('./routes/user')
+const adminRoutes=require("./routes/admin");
+const doctorRoutes=require("./routes/doctorRoutes");
+const patientRoutes=require("./routes/patients");
 // Import other route files as needed
 
 // Set up routes
+app.use("/auth", authRouter);
+app.use("/users" , userRouter);
 app.use('/', indexRoute);
-app.use('/doctors', doctorsRouter);
+// app.use('/doctors', doctorsRouter);
 app.use('/services', servicesRouter);
 app.use('/appointments', appointmentsRouter);
 app.use('/about', aboutRouter);
 app.use('/contact', contactRouter);
 app.use('/facilities', facilitiesRouter);
 app.use('/news', newsRouter);
-app.use('/patients', patientsRouter);
+// app.use('/patients', patientsRouter);
+app.use("/admin",adminRoutes);
+app.use("/doctor",doctorRoutes);
+app.use("/patient",patientRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('Hello, world!');
