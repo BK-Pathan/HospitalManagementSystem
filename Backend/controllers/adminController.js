@@ -287,9 +287,12 @@ exports.getAllPatients = async(req,res)=>{
 
     try{
 
-        const patients = await Patient.find();
+        const patients = await Patient.find()
+        .populate("user","name email role");
+
 
         res.json(patients);
+
 
     }catch(error){
 

@@ -1,8 +1,8 @@
 <script setup>
 
 import {ref,onMounted} from "vue";
-import api from "../../api/axios";
 import {useRouter} from "vue-router";
+import api from "../../api/axios";
 
 
 const doctors = ref([]);
@@ -16,6 +16,7 @@ const getDoctors = async()=>{
 
 try{
 
+
 const res = await api.get("/admin/doctors");
 
 
@@ -27,7 +28,6 @@ doctors.value=res.data;
 console.log(error);
 
 }
-
 
 }
 
@@ -46,8 +46,8 @@ getDoctors();
 
 <template>
 
-
 <div>
+
 
 <h2>
 Available Doctors
@@ -60,24 +60,32 @@ Available Doctors
 <tr>
 
 <th>Name</th>
-<th>Speciality</th>
-<th>Action</th>
 
+<th>Speciality</th>
+
+<th>Action</th>
 
 </tr>
 
 
-<tr v-for="doctor in doctors"
-:key="doctor._id">
+
+<tr
+v-for="doctor in doctors"
+:key="doctor._id"
+>
 
 
 <td>
+
 {{doctor.name}}
+
 </td>
 
 
 <td>
+
 {{doctor.specialties}}
+
 </td>
 
 
@@ -85,10 +93,14 @@ Available Doctors
 
 
 <button
-@click="router.push(`/patient/book/${doctor._id}`)"
+
+@click="router.push(
+`/patient/book/${doctor._id}`
+)"
+
 >
 
-Book Appointment
+Book
 
 </button>
 

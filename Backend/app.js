@@ -33,7 +33,11 @@ const authRouter = require('./routes/auth')
 const userRouter = require('./routes/user')
 const adminRoutes=require("./routes/admin");
 const doctorRoutes=require("./routes/doctorRoutes");
-const patientRoutes=require("./routes/patients");
+const patientProfileRoutes =
+require("./routes/patientProfileRoutes");
+
+const patientRoutes =
+require("./routes/patientProfileRoutes");
 // Import other route files as needed
 
 // Set up routes
@@ -50,7 +54,16 @@ app.use('/news', newsRouter);
 // app.use('/patients', patientsRouter);
 app.use("/admin",adminRoutes);
 app.use("/doctor",doctorRoutes);
-app.use("/patient",patientRoutes);
+app.use(
+"/patient",
+patientProfileRoutes
+);
+
+
+app.use(
+"/patient",
+patientRoutes
+);
 
 
 app.get('/', (req, res) => {

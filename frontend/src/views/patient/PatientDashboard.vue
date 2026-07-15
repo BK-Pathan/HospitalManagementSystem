@@ -1,8 +1,5 @@
 <script setup>
-
-import {RouterView} from "vue-router";
-
-
+import { RouterView } from "vue-router";
 </script>
 
 
@@ -17,14 +14,22 @@ Patient Dashboard
 
 <nav>
 
-<router-link to="/patient">
-Doctors
-</router-link>
-<router-link to="/patient/book">
-Book Appointment
+<router-link to="/patient/profile">
+Profile
 </router-link>
 
-|
+
+&nbsp; | &nbsp;
+
+
+<router-link to="/patient/doctors">
+Doctors
+</router-link>
+
+
+&nbsp; | &nbsp;
+
+
 <router-link to="/patient/appointments">
 My Appointments
 </router-link>
@@ -37,7 +42,6 @@ My Appointments
 
 
 <RouterView />
-
 
 </div>
 

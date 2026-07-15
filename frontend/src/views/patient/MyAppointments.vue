@@ -1,6 +1,7 @@
 <script setup>
 
 import {ref,onMounted} from "vue";
+
 import api from "../../api/axios";
 
 
@@ -14,14 +15,15 @@ const getAppointments = async()=>{
 try{
 
 
-const res = await api.get("/patient/appointments");
+const res =
+await api.get("/patient/appointments");
 
 
-appointments.value = res.data.appointments;
+appointments.value =
+res.data.appointments;
 
 
-}
-catch(error){
+}catch(error){
 
 console.log(error);
 
@@ -29,6 +31,7 @@ console.log(error);
 
 
 }
+
 
 
 
@@ -51,7 +54,9 @@ getAppointments();
 
 
 <h2>
+
 My Appointments
+
 </h2>
 
 
@@ -65,16 +70,13 @@ My Appointments
 Doctor
 </th>
 
-
 <th>
 Speciality
 </th>
 
-
 <th>
 Date
 </th>
-
 
 <th>
 Status
@@ -85,15 +87,19 @@ Status
 
 
 
+
 <tr
+
 v-for="appointment in appointments"
+
 :key="appointment._id"
+
 >
 
 
 <td>
 
-{{appointment.doctor?.name}}
+{{appointment.doctor.name}}
 
 </td>
 
@@ -101,7 +107,7 @@ v-for="appointment in appointments"
 
 <td>
 
-{{appointment.doctor?.specialties}}
+{{appointment.doctor.specialties}}
 
 </td>
 
@@ -122,12 +128,11 @@ v-for="appointment in appointments"
 </td>
 
 
+
 </tr>
 
 
-
 </table>
-
 
 
 </div>

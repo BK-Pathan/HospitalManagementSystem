@@ -1,22 +1,47 @@
 <script setup>
 
+import {computed} from "vue";
+
+
+const role = computed(() => localStorage.getItem("role"));
+
+
+const title = computed(()=>{
+    const currentRole = role.value;
+
+    if(currentRole==="admin")
+        return "Admin Panel";
+
+    if(currentRole==="doctor")
+        return "Doctor Panel";
+
+    if(currentRole==="patient")
+        return "Patient Panel";
+
+    return "Hospital";
+
+});
+
+
 </script>
 
 
 <template>
 
+
 <nav class="navbar">
 
 
 <h2>
-Admin Panel
+{{title}}
 </h2>
+
 
 
 <div>
 
 <span>
-Welcome Admin
+Welcome {{role}}
 </span>
 
 
@@ -24,6 +49,7 @@ Welcome Admin
 
 
 </nav>
+
 
 </template>
 

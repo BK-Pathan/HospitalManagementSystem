@@ -17,6 +17,7 @@ const getPatients = async()=>{
         const res = await api.get("/admin/patients");
 
 
+
         patients.value = res.data;
 
 
@@ -72,6 +73,9 @@ Email
 Role
 </th>
 
+<th>
+  VisitReason  
+</th>
 
 <th>
 Created At
@@ -89,17 +93,22 @@ v-for="patient in patients"
 
 
 <td>
-{{patient.name}}
+{{patient.user.name}}
+</td>
+
+<td>
+{{patient.user.email}}
 </td>
 
 
+
+
 <td>
-{{patient.email}}
+{{patient.user.role}}
 </td>
 
-
 <td>
-{{patient.role}}
+{{patient.DescribeYourProblem}}
 </td>
 
 
