@@ -62,6 +62,11 @@ path:"/patient/doctors"
 },
 
 {
+name:"📅 Book Appointment",
+path:"/patient/doctors"
+},
+
+{
 name:"📅 My Appointments",
 path:"/patient/appointments"
 }

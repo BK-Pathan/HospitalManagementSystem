@@ -5,19 +5,21 @@ import {useRouter} from "vue-router";
 import api from "../../api/axios";
 
 
-const doctors = ref([]);
+const doctors=ref([]);
 
-const router = useRouter();
+const router=useRouter();
 
 
 
-const getDoctors = async()=>{
+const getDoctors=async()=>{
 
 
 try{
 
 
-const res = await api.get("/admin/doctors");
+const res=await api.get(
+"/doctor/available"
+);
 
 
 doctors.value=res.data;
@@ -28,6 +30,7 @@ doctors.value=res.data;
 console.log(error);
 
 }
+
 
 }
 
@@ -46,6 +49,7 @@ getDoctors();
 
 <template>
 
+
 <div>
 
 
@@ -54,16 +58,19 @@ Available Doctors
 </h2>
 
 
+
 <table border="1">
 
 
 <tr>
 
 <th>Name</th>
-
 <th>Speciality</th>
-
+<th>Qualification</th>
+<th>Experience</th>
+<th>Availability</th>
 <th>Action</th>
+
 
 </tr>
 
@@ -75,6 +82,7 @@ v-for="doctor in doctors"
 >
 
 
+
 <td>
 
 {{doctor.name}}
@@ -82,33 +90,71 @@ v-for="doctor in doctors"
 </td>
 
 
+
 <td>
 
-{{doctor.specialties}}
+{{doctor.specialties.join(",")}}
 
 </td>
+
+
+
+<td>
+
+{{doctor.qualifications}}
+
+</td>
+
+
+
+<td>
+
+{{doctor.experience}}
+
+</td>
+
+
+
+<td>
+
+
+<div
+v-for="item in doctor.availability"
+:key="item._id"
+>
+
+
+{{item.day}}
+
+<br>
+
+{{item.startTime}} -
+{{item.endTime}}
+
+
+</div>
+
+
+</td>
+
 
 
 <td>
 
 
 <button
-
-@click="router.push(
-`/patient/book/${doctor._id}`
-)"
-
+@click="router.push(`/patient/book-appointment/${doctor._id}`)"
 >
-
-Book
-
+Book Appointment
 </button>
 
 
 </td>
 
 
+
 </tr>
+
 
 
 </table>

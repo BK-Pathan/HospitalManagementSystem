@@ -23,7 +23,11 @@ import BookAppointment from "../views/patient/BookAppointment.vue";
 import MyAppointments from "../views/patient/MyAppointments.vue";
 import Profile from "../views/patient/Profile.vue";
 
-
+//Doctor pages
+import DoctorLayout from "../layouts/DoctorLayout.vue";
+import DoctorDashboard from "../views/Doctors/DoctorDashboard.vue";
+import DoctorProfile from "../views/Doctors/DoctorProfile.vue";
+import DoctorAppointments from "../views/Doctors/Appointments.vue";
 
 const routes = [
 
@@ -107,7 +111,7 @@ const routes = [
 
 
         {
-            path:"book/:doctorId",
+             path:"book-appointment/:doctorId",
             component:BookAppointment
         },
 
@@ -121,11 +125,48 @@ const routes = [
     ]
 
 },
+// ================= DOCTOR =================
+
+
+{
+path:"/doctor",
+
+component:DoctorLayout,
+
+
+children:[
+
+
+{
+path:"",
+component:DoctorDashboard
+},
+
+
+
+{
+path:"profile",
+component:DoctorProfile
+},
+
+
+
+{
+path:"appointments",
+component:DoctorAppointments
+}
+
+
+
+]
+
+
+}
+
 
 
 
 ];
-
 
 
 const router = createRouter({

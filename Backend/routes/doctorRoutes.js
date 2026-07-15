@@ -1,14 +1,63 @@
+// const express = require("express");
+// const router = express.Router();
+
+
+// const auth = require("../middleware/authMiddleware");
+// const role = require("../middleware/roleMiddleware");
+
+
+// const {
+// getMyAppointments
+// }=require("../controllers/doctorsController");
+
+
+
+// router.get(
+// "/appointments",
+// auth,
+// role("doctor"),
+// getMyAppointments
+// );
+
+
+
+// module.exports = router;
+
 const express = require("express");
 const router = express.Router();
 
 
-const auth = require("../middleware/authMiddleware");
-const role = require("../middleware/roleMiddleware");
+const auth=require("../middleware/authMiddleware");
+const role=require("../middleware/roleMiddleware");
 
 
 const {
-getMyAppointments
+
+createProfile,
+getProfile,
+getMyAppointments,
+getAvailableDoctors,
+getDoctorById
+
 }=require("../controllers/doctorsController");
+
+
+
+router.post(
+"/profile",
+auth,
+role("doctor"),
+createProfile
+);
+
+
+
+router.get(
+"/profile",
+auth,
+role("doctor"),
+getProfile
+);
 
 
 
@@ -20,5 +69,18 @@ getMyAppointments
 );
 
 
+router.get(
+"/available",
+auth,
+role("patient"),
+getAvailableDoctors
+);
 
-module.exports = router;
+router.get(
+"/:id",
+auth,
+role("patient"),
+getDoctorById
+);
+
+module.exports=router;

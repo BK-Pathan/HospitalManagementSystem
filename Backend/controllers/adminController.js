@@ -283,26 +283,7 @@ exports.getAllDoctors = async(req,res)=>{
 // View All Patients
 // ======================
 
-exports.getAllPatients = async(req,res)=>{
-
-    try{
-
-        const patients = await Patient.find()
-        .populate("user","name email role");
-
-
-        res.json(patients);
-
-
-    }catch(error){
-
-        res.status(500).json({
-            message:error.message
-        });
-
-    }
-
-};
+exports.getAllPatients = async(req,res)=>{ try{ const patients = await Patient.find() .populate({ path:"user", match:{ role:"patient" }, select:"name email role" }); const filteredPatients = patients.filter( patient => patient.user !== null ); res.json(filteredPatients); }catch(error){ res.status(500).json({ message:error.message }); } };
 
 
 
