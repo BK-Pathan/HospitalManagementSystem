@@ -7,8 +7,22 @@ import api from "../../api/axios";
 
 const appointments = ref([]);
 
+const formatDateTime = (date)=>{
 
+return new Date(date).toLocaleString(
+"en-US",
+{
+    year:"numeric",
+    month:"short",
+    day:"numeric",
+    hour:"2-digit",
+    minute:"2-digit",
+    hour12:true
+}
 
+);
+
+};
 const getAppointments = async()=>{
 
 
@@ -115,7 +129,7 @@ v-for="appointment in appointments"
 
 <td>
 
-{{appointment.appointmentDateTime}}
+{{formatDateTime(appointment.appointmentDateTime)}}
 
 </td>
 

@@ -20,28 +20,121 @@ const editMode = ref(false);
 const doctorId = ref(null);
 
 
+// Availability
 
-// Get all doctors
+const day = ref("");
+const startTime = ref("");
+const endTime = ref("");
 
-const getDoctors = async()=>{
+const availability = ref([]);
 
-    try{
 
-        const res = await api.get("/admin/doctors");
 
-        doctors.value = res.data;
 
-    }catch(error){
+// Convert 24 hour to 12 hour
 
-        console.log(error);
+const convertTo12Hour = (time)=>{
 
-    }
+
+let [hour,minute] = time.split(":");
+
+
+hour = parseInt(hour);
+
+
+let ampm = hour >= 12 ? "PM" : "AM";
+
+
+hour = hour % 12 || 12;
+
+
+return `${hour.toString().padStart(2,"0")}:${minute} ${ampm}`;
+
 
 }
 
 
 
-// Add / Update Doctor
+
+
+// Get all doctors
+
+const getDoctors = async()=>{
+
+try{
+
+const res = await api.get("/admin/doctors");
+
+doctors.value = res.data;
+
+
+}catch(error){
+
+console.log("ERROR:",error.response?.data || error.message);
+
+}
+
+}
+
+
+
+
+
+// Add Availability
+
+const addAvailability = ()=>{
+
+
+if(
+!day.value ||
+!startTime.value ||
+!endTime.value
+){
+
+alert("Please fill availability");
+
+return;
+
+}
+
+
+
+availability.value.push({
+
+day:day.value,
+
+startTime:convertTo12Hour(startTime.value),
+
+endTime:convertTo12Hour(endTime.value)
+
+});
+
+
+
+day.value="";
+startTime.value="";
+endTime.value="";
+
+
+}
+
+
+
+
+
+// Remove Availability
+
+const removeAvailability=(index)=>{
+
+availability.value.splice(index,1);
+
+}
+
+
+
+
+
+// Save Doctor
 
 const saveDoctor = async()=>{
 
@@ -49,42 +142,71 @@ const saveDoctor = async()=>{
 try{
 
 
+const data={
+
+
+name:name.value,
+
+
+specialties:
+Array.isArray(specialties.value)
+?
+specialties.value
+:
+[specialties.value],
+
+
+
+qualifications:qualifications.value,
+
+
+experience:experience.value,
+
+
+contactInformation:contactInformation.value,
+
+
+availability:availability.value
+
+
+};
+
+
+
+
+
 if(editMode.value){
 
 
-    await api.put(`/admin/doctor/${doctorId.value}`,{
+await api.put(
 
-        name:name.value,
-        specialties:specialties.value,
-        qualifications:qualifications.value,
-        experience:experience.value,
-        contactInformation:contactInformation.value
+`/admin/doctor/${doctorId.value}`,
 
-    });
+data
+
+);
 
 
-    alert("Doctor Updated");
+alert("Doctor Updated");
 
 
-}
-else{
+}else{
 
 
-    await api.post("/admin/doctor",{
+await api.post(
 
-        name:name.value,
-        specialties:specialties.value,
-        qualifications:qualifications.value,
-        experience:experience.value,
-        contactInformation:contactInformation.value
+"/admin/doctor",
 
-    });
+data
+
+);
 
 
-    alert("Doctor Added");
+alert("Doctor Added");
 
 
 }
+
 
 
 
@@ -96,74 +218,106 @@ getDoctors();
 
 }catch(error){
 
-    console.log(error);
+console.log(error);
 
 }
 
 
 }
+
 
 
 
 
 // Edit Doctor
 
-const editDoctor = (doctor)=>{
+const editDoctor=(doctor)=>{
 
 
-    editMode.value=true;
-
-    doctorId.value=doctor._id;
+editMode.value=true;
 
 
-    name.value=doctor.name;
-    specialties.value=doctor.specialties;
-    qualifications.value=doctor.qualifications;
-    experience.value=doctor.experience;
-    contactInformation.value=doctor.contactInformation;
+doctorId.value=doctor._id;
+
+
+
+name.value=doctor.name;
+
+
+specialties.value=doctor.specialties.join(",");
+
+
+qualifications.value=doctor.qualifications;
+
+
+experience.value=doctor.experience;
+
+
+contactInformation.value=doctor.contactInformation;
+
+
+
+availability.value = doctor.availability || [];
 
 
 }
+
+
 
 
 
 // Delete Doctor
 
-const deleteDoctor = async(id)=>{
+const deleteDoctor=async(id)=>{
 
 
-    try{
+try{
 
 
-        await api.delete(`/admin/doctor/${id}`);
+await api.delete(
+
+`/admin/doctor/${id}`
+
+);
 
 
-        alert("Doctor Deleted");
+alert("Doctor Deleted");
 
 
-        getDoctors();
+getDoctors();
 
 
-    }catch(error){
 
-        console.log(error);
+}catch(error){
 
-    }
+console.log(error);
+
+}
+
 
 }
 
 
 
-// Clear Form
+
+
+// Clear
 
 const clearForm=()=>{
 
 
 name.value="";
+
 specialties.value="";
+
 qualifications.value="";
+
 experience.value="";
+
 contactInformation.value="";
+
+
+availability.value=[];
 
 
 editMode.value=false;
@@ -175,9 +329,11 @@ doctorId.value=null;
 
 
 
+
+
 onMounted(()=>{
 
-    getDoctors();
+getDoctors();
 
 });
 
@@ -232,7 +388,84 @@ placeholder="Experience"
 v-model="contactInformation"
 placeholder="Contact"
 />
+<h4>
+Doctor Availability
+</h4>
 
+
+<select v-model="day">
+
+<option value="">
+Select Day
+</option>
+
+<option>
+Mon
+</option>
+
+<option>
+Tue
+</option>
+
+<option>
+Wed
+</option>
+
+<option>
+Thu
+</option>
+
+<option>
+Fri
+</option>
+
+<option>
+Sat
+</option>
+
+<option>
+Sun
+</option>
+
+</select>
+
+
+<input
+type="time"
+v-model="startTime"
+/>
+
+<input
+type="time"
+v-model="endTime"
+/>
+
+
+<button @click="addAvailability">
+Add Time
+</button>
+
+
+
+<ul>
+
+<li
+v-for="(item,index) in availability"
+:key="index"
+>
+
+{{item.day}}
+
+{{item.startTime}}
+
+-
+
+{{item.endTime}}
+
+
+</li>
+
+</ul>
 
 
 <button @click="saveDoctor">
@@ -274,6 +507,7 @@ Doctor List
 <th>Qualification</th>
 <th>Experience</th>
 <th>Action</th>
+<th>Availability</th>
 
 </tr>
 
@@ -304,6 +538,28 @@ v-for="doctor in doctors"
 {{doctor.experience}}
 </td>
 
+<td>
+
+<ul>
+
+<li
+v-for="(item,index) in doctor.availability"
+:key="index"
+>
+
+{{item.day}}
+
+{{item.startTime}}
+
+-
+
+{{item.endTime}}
+
+</li>
+
+</ul>
+
+</td>
 
 <td>
 

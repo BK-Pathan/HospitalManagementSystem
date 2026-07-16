@@ -1,26 +1,48 @@
 const Appointment = require('../models/appointment');
-
+const Doctor = require("../models/doctor");
+// const Appointment = require("../models/appointment");
 
 exports.getMyAppointments = async(req,res)=>{
-
 
 try{
 
 
+// logged in doctor ka profile find karo
+
 const doctor = await Doctor.findOne({
-user:req.user.id
+    user:req.user.id
 });
 
 
+if(!doctor){
+
+return res.status(404).json({
+message:"Doctor profile not found"
+});
+
+}
+
+
+
+// DB se appointments fetch
+
 const appointments = await Appointment.find({
-
-doctor:doctor._id
-
+    doctor: doctor._id
 })
-.populate(
-"patient",
-"name email"
-);
+.populate({
+    path:"patient",
+    populate:{
+        path:"user",
+        select:"name email"
+    }
+})
+.sort({
+    createdAt:-1
+});
+
+
+
+console.log("Doctor Appointments:", appointments);
 
 
 
@@ -30,15 +52,15 @@ res.json(appointments);
 
 }catch(error){
 
+console.log(error);
+
 res.status(500).json({
 message:error.message
 });
 
 }
 
-
 };
-
 exports.updateAppointmentStatus = async(req,res)=>{
 
 

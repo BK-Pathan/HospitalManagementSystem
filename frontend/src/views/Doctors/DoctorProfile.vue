@@ -157,10 +157,10 @@ Availability
 <input v-model="day" placeholder="Day">
 
 
-<input v-model="startTime" placeholder="Start Time">
+<input type="time" v-model="startTime" placeholder="Start Time">
 
 
-<input v-model="endTime" placeholder="End Time">
+<input type="time" v-model="endTime" placeholder="End Time">
 
 
 <button @click="addAvailability">

@@ -25,9 +25,8 @@ try{
 
 
 const res = await api.get(
-`/doctor/${route.params.doctorId}`
+`/patient/doctors/${route.params.doctorId}`
 );
-
 
 doctor.value=res.data;
 
@@ -48,37 +47,39 @@ console.log(error);
 const bookAppointment = async()=>{
 
 
+console.log("BOOK BUTTON CLICKED");
+
+console.log("Doctor ID:", route.params.doctorId);
+
+console.log("Date:", appointmentDateTime.value);
+
+
+
 try{
 
 
-await api.post("/patient/appointment",{
+const res = await api.post("/patient/appointment",{
 
 
 doctor:route.params.doctorId,
 
 
-appointmentDateTime:
-appointmentDateTime.value
+appointmentDateTime:appointmentDateTime.value
 
 
 });
 
 
-
-alert(
-"Appointment booked successfully"
-);
+console.log(res.data);
 
 
-
-router.push("/patient/appointments");
-
+alert("Appointment booked successfully");
 
 
 }catch(error){
 
 
-console.log(error);
+console.log(error.response?.data || error.message);
 
 
 alert(
@@ -91,7 +92,6 @@ error.response?.data?.message ||
 
 
 }
-
 
 
 

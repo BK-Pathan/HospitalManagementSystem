@@ -68,7 +68,13 @@ const patientSchema = new mongoose.Schema({
     insuranceDetails:{
         type:String,
         required:true
+    },
+    profilecompleted:{
+        type:Boolean,
+        required:true,
+        default:false
     }
+
 
 },{timestamps:true});
 

@@ -2,7 +2,7 @@
 
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
-
+const profilecompleted = ref(false);
 
 const age = ref("");
 const gender = ref("");
@@ -27,8 +27,8 @@ gender:gender.value,
 contactInformation:contactInformation.value,
 medicalHistory:medicalHistory.value,
 insuranceDetails:insuranceDetails.value,
-DescribeYourProblem:DescribeYourProblem.value
-
+DescribeYourProblem:DescribeYourProblem.value,
+profilecompleted: profilecompleted.value
 });
 
 
@@ -66,6 +66,7 @@ contactInformation.value = res.data.contactInformation || "";
 medicalHistory.value = res.data.medicalHistory || "";
 insuranceDetails.value = res.data.insuranceDetails || "";
 DescribeYourProblem.value = res.data.DescribeYourProblem || "";
+profilecompleted.value = res.data.profilecompleted || false;
 
 }
 
@@ -147,7 +148,7 @@ v-model="DescribeYourProblem"
 
 <br><br>
 
-
+<input type="checkbox" v-model="profilecompleted">
 
 <textarea
 placeholder="Medical History"

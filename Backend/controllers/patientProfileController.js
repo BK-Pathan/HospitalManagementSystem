@@ -70,7 +70,9 @@ medicalHistory:req.body.medicalHistory,
 
 DescribeYourProblem:req.body.DescribeYourProblem,
 
-insuranceDetails:req.body.insuranceDetails
+insuranceDetails:req.body.insuranceDetails,
+
+profilecompleted:req.body.profilecompleted
 
 },
 

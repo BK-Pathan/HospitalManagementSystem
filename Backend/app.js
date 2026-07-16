@@ -30,7 +30,7 @@ app.use(cookieParser());
 // Routes Import
 
 const indexRoute = require("./routes/index");
-
+const patientRoutes = require("./routes/patients");
 const servicesRouter = require("./routes/services");
 const appointmentsRouter = require("./routes/appointments");
 const aboutRouter = require("./routes/about");
@@ -101,7 +101,18 @@ patientProfileRoutes
 );
 
 
+// Patient Profile
+app.use(
+"/patient",
+patientProfileRoutes
+);
 
+
+// Patient Appointment
+app.use(
+"/patient",
+patientRoutes
+);
 
 
 // Test Route

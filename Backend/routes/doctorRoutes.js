@@ -36,6 +36,7 @@ const {
 createProfile,
 getProfile,
 getMyAppointments,
+dashboardStats,
 getAvailableDoctors,
 getDoctorById
 
@@ -66,6 +67,14 @@ router.get(
 auth,
 role("doctor"),
 getMyAppointments
+);
+
+
+router.get(
+"/dashboard",
+auth,
+role("doctor"),
+dashboardStats
 );
 
 

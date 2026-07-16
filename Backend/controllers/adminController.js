@@ -1,6 +1,6 @@
-// const Doctor = require('../models/doctor');
-// const Patient = require('../models/patient');
-// const Appointment = require('../models/appointment');
+const Doctor = require('../models/doctor');
+const Patient = require('../models/patient');
+const Appointment = require('../models/appointment');
 
 
 // // Create Doctor
@@ -117,11 +117,6 @@
 
 // };
 
-const Doctor = require('../models/doctor');
-const Patient = require('../models/patient');
-const Appointment = require('../models/appointment');
-const User = require('../models/user');
-
 
 // ======================
 // Dashboard Statistics
@@ -165,24 +160,89 @@ exports.dashboardStats = async(req,res)=>{
 // Create Doctor
 // ======================
 
+const bcrypt = require("bcrypt");
+const User = require("../models/user");
+
+
 exports.createDoctor = async(req,res)=>{
 
-    try{
+try{
 
-        const doctor = await Doctor.create(req.body);
 
-        res.status(201).json({
-            message:"Doctor created",
-            doctor
-        });
+const {
+name,
+specialties,
+qualifications,
+experience,
+contactInformation,
+availability
+}=req.body;
 
-    }catch(error){
 
-        res.status(500).json({
-            message:error.message
-        });
 
-    }
+// create user
+
+const user = await User.create({
+
+name,
+
+email:`${Date.now()}@doctor.com`,
+
+password:await bcrypt.hash("123456",10),
+
+role:"doctor"
+
+});
+
+
+
+
+// create doctor profile
+
+const doctor = await Doctor.create({
+
+user:user._id,
+
+name,
+
+specialties,
+
+qualifications,
+
+experience,
+
+contactInformation,
+
+availability
+
+});
+
+
+
+
+res.status(201).json({
+
+message:"Doctor created successfully",
+
+doctor
+
+});
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
 
 };
 
@@ -195,30 +255,29 @@ exports.createDoctor = async(req,res)=>{
 
 exports.updateDoctor = async(req,res)=>{
 
-    try{
+try{
 
-        const doctor = await Doctor.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {new:true}
-        );
-
-
-        res.json({
-            message:"Doctor updated",
-            doctor
-        });
+const doctor = await Doctor.findByIdAndUpdate(
+req.params.id,
+req.body,
+{
+new:true
+}
+);
 
 
-    }catch(error){
+res.json(doctor);
 
-        res.status(500).json({
-            message:error.message
-        });
 
-    }
+}catch(error){
 
-};
+res.status(500).json({
+message:error.message
+});
+
+}
+
+}
 
 
 

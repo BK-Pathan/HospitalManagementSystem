@@ -152,7 +152,8 @@ exports.getMyAppointments = async(req,res)=>{
 try{
 
 const appointments = await Appointment.find({
-doctor:req.user.id
+doctor:req.user.id,
+
 })
 .populate("patient","name email");
 
@@ -160,6 +161,7 @@ doctor:req.user.id
 res.json({
 appointments
 });
+console.log("kam ka ni ha")
 
 
 }catch(error){
@@ -173,112 +175,136 @@ message:error.message
 };
 // Doctor Dashboard Stats
 
-exports.dashboardStats = async(req,res)=>{
-
-try{
 
 
-const doctor = await Doctor.findOne({
-user:req.user.id
-});
+exports.dashboardStats = async (req, res) => {
+  try {
 
+    console.log("========== DOCTOR DASHBOARD ==========");
+    console.log("Logged User:", req.user);
 
-const totalPatients = await Appointment.distinct(
-"patient",
-{
-doctor:doctor._id
-}
-);
+    // Find doctor profile
+    const doctor = await Doctor.findOne({
+      user: req.user.id
+    });
 
+    console.log("Doctor Profile:", doctor);
 
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor profile not found"
+      });
+    }
 
-const pending = await Appointment.countDocuments({
+    // Check appointments
+    const allAppointments = await Appointment.find({
+      doctor: doctor._id
+    });
 
-doctor:doctor._id,
-status:"pending"
+    console.log("Appointments Found:", allAppointments.length);
+    console.log(allAppointments);
 
-});
+    // Dashboard Stats
+    const totalAppointments = allAppointments.length;
 
+    const totalPatients = await Appointment.distinct("patient", {
+      doctor: doctor._id
+    });
 
-const confirmed = await Appointment.countDocuments({
+    const pending = await Appointment.countDocuments({
+      doctor: doctor._id,
+      status: "pending"
+    });
 
-doctor:doctor._id,
-status:"confirmed"
+    const confirmed = await Appointment.countDocuments({
+      doctor: doctor._id,
+      status: "confirmed"
+    });
 
-});
+    const completed = await Appointment.countDocuments({
+      doctor: doctor._id,
+      status: "completed"
+    });
 
+    const cancelled = await Appointment.countDocuments({
+      doctor: doctor._id,
+      status: "cancelled"
+    });
 
-const completed = await Appointment.countDocuments({
+    // Recent Appointments
+    const recentAppointments = await Appointment.find({
+      doctor: doctor._id
+    })
+      .populate({
+        path: "patient",
+        populate: {
+          path: "user",
+          select: "name email"
+        }
+      })
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-doctor:doctor._id,
-status:"completed"
+    console.log("Recent Appointments:", recentAppointments);
 
-});
+    res.json({
+      patients: totalPatients.length,
+      appointments: totalAppointments,
+      pending,
+      confirmed,
+      completed,
+      cancelled,
+      recentAppointments
+    });
 
+  } catch (error) {
 
+    console.error("Dashboard Error:", error);
 
-res.json({
+    res.status(500).json({
+      message: error.message
+    });
 
-patients:totalPatients.length,
-
-pending,
-
-confirmed,
-
-completed
-
-});
-
-
-}
-catch(error){
-
-res.status(500).json({
-message:error.message
-});
-
-}
-
-
+  }
 };
 
-exports.getMyAppointments = async(req,res)=>{
+// exports.getMyAppointments = async(req,res)=>{
 
 
-try{
+// try{
 
 
-const doctor = await Doctor.findOne({
-user:req.user.id
-});
+// const doctor = await Doctor.findOne({
+// user:req.user.id
+// });
 
 
-const appointments = await Appointment.find({
+// const appointments = await Appointment.find({
 
-doctor:doctor._id
+// doctor:doctor._id
 
-})
-.populate(
-"patient",
-"name email"
-);
-
-
-
-res.json(appointments);
+// })
+// .populate(
+// "patient",
+// "name email"
+// );
 
 
 
-}catch(error){
-
-res.status(500).json({
-message:error.message
-});
-
-}
+// res.json(appointments);
 
 
-};
+
+// }catch(error){
+
+// res.status(500).json({
+// message:error.message
+// });
+
+// }
+
+
+// };
 
 exports.updateAppointmentStatus = async(req,res)=>{
 

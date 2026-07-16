@@ -7,9 +7,12 @@ import api from "../../api/axios";
 const stats=ref({
 
 patients:0,
+appointments:0,
 pending:0,
 confirmed:0,
-completed:0
+completed:0,
+cancelled:0,
+recentAppointments:[]
 
 });
 
@@ -102,7 +105,53 @@ Completed
 
 </div>
 
+<h2>
+Recent Appointments
+</h2>
 
+
+<table border="1">
+
+<tr>
+<th>
+Patient
+</th>
+
+<th>
+Email
+</th>
+
+<th>
+Status
+</th>
+
+</tr>
+
+
+<tr
+v-for="item in stats.recentAppointments"
+:key="item._id"
+>
+
+<td>
+{{item.patient.user.name}}
+</td>
+
+
+<td>
+{{item.patient.user.email}}
+</td>
+
+
+<td>
+{{item.status}}
+</td>
+
+
+</tr>
+
+
+</table>
 </div>
 
 
