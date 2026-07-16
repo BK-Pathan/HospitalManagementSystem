@@ -32,15 +32,17 @@ const role=require("../middleware/roleMiddleware");
 
 
 const {
-
 createProfile,
 getProfile,
-getMyAppointments,
 dashboardStats,
 getAvailableDoctors,
 getDoctorById
-
 }=require("../controllers/doctorsController");
+
+const {
+getMyAppointments,
+updateAppointmentStatus
+}=require("../controllers/DoctorsAppointmentController");
 
 
 
@@ -69,6 +71,12 @@ role("doctor"),
 getMyAppointments
 );
 
+router.put(
+"/appointment/:id",
+auth,
+role("doctor"),
+updateAppointmentStatus
+);
 
 router.get(
 "/dashboard",

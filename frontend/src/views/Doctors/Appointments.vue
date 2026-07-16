@@ -70,19 +70,11 @@ onMounted(() => {
           v-for="item in appointments"
           :key="item._id"
         >
-          <!-- Agar patient.user populate ho -->
-          <td>{{ item.patient?.user?.name || item.patient?.name }}</td>
+          <td>{{ item.patient?.user?.name || item.patient?.name || 'Unknown' }}</td>
 
-          <td>{{ item.patient?.user?.email || item.patient?.email }}</td>
+          <td>{{ item.patient?.user?.email || item.patient?.email || 'N/A' }}</td>
 
-         <td>
-{{item.patient?.user?.name || "Unknown"}}
-</td>
-
-
-<td>
-{{item.patient?.user?.email || "Unknown"}}
-</td>
+          <td>{{ item.appointmentDateTime ? new Date(item.appointmentDateTime).toLocaleString() : 'N/A' }}</td>
 
           <td>{{ item.status }}</td>
 
