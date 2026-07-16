@@ -14,7 +14,7 @@ import PatientLayout from "../layouts/PatientLayout.vue";
 import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import Patients from "../views/admin/Patinets.vue";
 import Appointments from "../views/admin/Appointments.vue";
-
+import UserManagement from "../views/admin/UserManagement.vue";
 
 // Patient Pages
 import PatientDashboard from "../views/patient/PatientDashboard.vue";
@@ -57,7 +57,10 @@ const routes = [
             path:"",
             component:AdminDashboard
         },
-
+{
+    path:"users",
+    component:UserManagement
+},
 
         {
             path:"doctors",
@@ -174,6 +177,85 @@ const router = createRouter({
     history:createWebHistory(),
 
     routes
+
+});
+
+
+// ================= AUTH GUARD =================
+
+router.beforeEach((to, from, next) => {
+
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+
+    // Admin routes protection
+    if(to.path.startsWith("/admin")){
+
+
+        if(!user){
+
+            return next("/");
+
+        }
+
+
+        if(user.role !== "admin"){
+
+            return next("/");
+
+        }
+
+
+    }
+
+
+
+    // Doctor routes protection
+    if(to.path.startsWith("/doctor")){
+
+
+        if(!user){
+
+            return next("/");
+
+        }
+
+
+        if(user.role !== "doctor"){
+
+            return next("/");
+
+        }
+
+
+    }
+
+
+
+    // Patient routes protection
+    if(to.path.startsWith("/patient")){
+
+
+        if(!user){
+
+            return next("/");
+
+        }
+
+
+        if(user.role !== "patient"){
+
+            return next("/");
+
+        }
+
+
+    }
+
+
+
+    next();
 
 });
 

@@ -131,19 +131,17 @@ exports.dashboardStats = async(req,res)=>{
 
     try{
 
+        const users = await User.countDocuments();
+
         const doctors = await Doctor.countDocuments();
 
-  
-        const patients = await User.countDocuments({
-            role:"patient"
-        });
-
+        const patients = await Patient.countDocuments();
 
         const appointments = await Appointment.countDocuments();
 
 
-
         res.status(200).json({
+            users,
             doctors,
             patients,
             appointments
@@ -283,8 +281,37 @@ exports.getAllDoctors = async(req,res)=>{
 // View All Patients
 // ======================
 
-exports.getAllPatients = async(req,res)=>{ try{ const patients = await Patient.find() .populate({ path:"user", match:{ role:"patient" }, select:"name email role" }); const filteredPatients = patients.filter( patient => patient.user !== null ); res.json(filteredPatients); }catch(error){ res.status(500).json({ message:error.message }); } };
+exports.getAllPatients = async(req,res)=>{
 
+try{
+
+const patients = await Patient.find()
+.populate({
+    path:"user",
+    match:{
+        role:"patient"
+    },
+    select:"name email role"
+});
+
+
+const filteredPatients = patients.filter(
+    patient => patient.user !== null
+);
+
+
+res.json(filteredPatients);
+
+
+}catch(error){
+
+res.status(500).json({
+message:error.message
+});
+
+}
+
+};
 
 
 
@@ -294,24 +321,136 @@ exports.getAllPatients = async(req,res)=>{ try{ const patients = await Patient.f
 
 exports.getAllAppointments = async(req,res)=>{
 
-
-    try{
-
-        const appointments = await Appointment.find()
-        .populate("doctor","name specialties")
-        .populate("patient","name");
+try{
 
 
-        res.json(appointments);
+const appointments = await Appointment.find()
 
+.populate(
+"doctor",
+"name specialties"
+)
 
-    }catch(error){
-
-        res.status(500).json({
-            message:error.message
-        });
-
+.populate({
+    path:"patient",
+    populate:{
+        path:"user",
+        select:"name email"
     }
+});
 
+
+res.json(appointments);
+
+
+}catch(error){
+
+res.status(500).json({
+message:error.message
+});
+
+}
+
+};
+
+//change role
+exports.changeRole = async(req,res)=>{
+
+try{
+
+const {role} = req.body;
+
+
+const user = await User.findById(req.params.id);
+
+
+if(!user){
+
+return res.status(404).json({
+message:"User not found"
+});
+
+}
+
+
+
+// Patient -> Doctor
+
+if(user.role === "patient" && role === "doctor"){
+
+
+await Patient.findOneAndDelete({
+    user:user._id
+});
+
+
+}
+
+
+
+// Doctor -> Patient
+
+if(user.role === "doctor" && role === "patient"){
+
+
+await Doctor.findOneAndDelete({
+    user:user._id
+});
+
+
+}
+
+
+
+// Update role
+
+user.role = role;
+
+await user.save();
+
+
+
+res.json({
+
+message:"Role updated successfully",
+user
+
+});
+
+
+}
+catch(error){
+
+res.status(500).json({
+message:error.message
+});
+
+}
+
+};
+
+// ======================
+// View All Users
+// ======================
+
+exports.getAllUsers = async(req,res)=>{
+
+try{
+
+    const users = await User.find()
+    .select("-password");
+
+
+    res.json(users);
+
+
+}
+catch(error){
+
+    res.status(500).json({
+        message:error.message
+    });
+
+}
 
 };

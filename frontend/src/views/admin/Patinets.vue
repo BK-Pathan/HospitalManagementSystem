@@ -13,10 +13,7 @@ const getPatients = async()=>{
 
     try{
 
-
         const res = await api.get("/admin/patients");
-
-
 
         patients.value = res.data;
 
@@ -44,7 +41,6 @@ onMounted(()=>{
 
 <template>
 
-
 <div>
 
 
@@ -56,6 +52,8 @@ Patients Management
 
 <table border="1">
 
+
+<thead>
 
 <tr>
 
@@ -73,9 +71,26 @@ Email
 Role
 </th>
 
+
 <th>
-  VisitReason  
+Visit Reason
 </th>
+
+
+<th>
+Age
+</th>
+
+
+<th>
+Gender
+</th>
+
+
+<th>
+Contact
+</th>
+
 
 <th>
 Created At
@@ -84,6 +99,11 @@ Created At
 
 </tr>
 
+</thead>
+
+
+
+<tbody>
 
 
 <tr
@@ -93,32 +113,59 @@ v-for="patient in patients"
 
 
 <td>
-{{patient.user.name}}
-</td>
-
-<td>
-{{patient.user.email}}
-</td>
-
-
-
-
-<td>
-{{patient.user.role}}
-</td>
-
-<td>
-{{patient.DescribeYourProblem}}
+{{ patient.user?.name || "N/A" }}
 </td>
 
 
 <td>
-{{patient.createdAt}}
+{{ patient.user?.email || "N/A" }}
 </td>
 
+
+<td>
+{{ patient.user?.role || "N/A" }}
+</td>
+
+
+<td>
+{{ patient.DescribeYourProblem || "N/A" }}
+</td>
+
+
+<td>
+{{ patient.age || "N/A" }}
+</td>
+
+
+<td>
+{{ patient.gender || "N/A" }}
+</td>
+
+
+<td>
+{{ patient.contactInformation || "N/A" }}
+</td>
+
+
+<td>
+{{ new Date(patient.createdAt).toLocaleDateString() }}
+</td>
 
 
 </tr>
+
+
+
+<tr v-if="patients.length === 0">
+
+<td colspan="8">
+No Patients Found
+</td>
+
+</tr>
+
+
+</tbody>
 
 
 </table>

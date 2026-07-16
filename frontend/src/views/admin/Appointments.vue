@@ -4,26 +4,19 @@ import {ref,onMounted} from "vue";
 import api from "../../api/axios";
 
 
-const stats = ref({
-
-doctors:0,
-patients:0,
-appointments:0
-
-});
+const appointments = ref([]);
 
 
 
-const getStats = async()=>{
-
+const getAppointments = async()=>{
 
 try{
 
 
-const res = await api.get("/admin/dashboard");
+const res = await api.get("/admin/appointments");
 
 
-stats.value = res.data;
+appointments.value = res.data;
 
 
 }
@@ -40,7 +33,7 @@ console.log(error);
 
 onMounted(()=>{
 
-getStats();
+getAppointments();
 
 });
 
@@ -52,58 +45,134 @@ getStats();
 <template>
 
 
-<h1>
-Admin Dashboard
-</h1>
+<div>
+
+
+<h2>
+Appointments Management
+</h2>
 
 
 
-<div class="cards">
+<table border="1">
 
 
-<div class="card">
+<thead>
 
-<h3>
-Total Doctors
-</h3>
+<tr>
 
-<h1>
-{{stats.doctors}}
-</h1>
+<th>
+Doctor
+</th>
+
+
+<th>
+Speciality
+</th>
+
+
+<th>
+Patient
+</th>
+
+
+<th>
+Appointment Date
+</th>
+
+
+<th>
+Status
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+<tr
+v-for="appointment in appointments"
+:key="appointment._id"
+>
+
+
+<td>
+
+{{appointment.doctor?.name || "N/A"}}
+
+</td>
+
+
+
+<td>
+
+{{appointment.doctor?.specialties || "N/A"}}
+
+</td>
+
+
+
+<td>
+
+{{appointment.patient?.user?.name || "Not Booked"}}
+
+</td>
+
+
+
+<td>
+
+{{appointment.appointmentDateTime}}
+
+</td>
+
+
+
+<td>
+
+<span
+:class="appointment.status"
+>
+
+{{appointment.status}}
+
+</span>
+
+</td>
+
+
+
+</tr>
+
+
+
+<tr v-if="appointments.length===0">
+
+<td colspan="5">
+
+No Appointments Found
+
+</td>
+
+</tr>
+
+
+
+</tbody>
+
+
+
+</table>
+
+
 
 </div>
-
-
-
-<div class="card">
-
-<h3>
-Total Patients
-</h3>
-
-<h1>
-{{stats.patients}}
-</h1>
-
-</div>
-
-
-
-<div class="card">
-
-<h3>
-Total Appointments
-</h3>
-
-<h1>
-{{stats.appointments}}
-</h1>
-
-</div>
-
-
-</div>
-
 
 
 </template>
@@ -113,25 +182,41 @@ Total Appointments
 <style scoped>
 
 
-.cards{
+table{
 
-display:flex;
-gap:20px;
+width:100%;
+border-collapse:collapse;
+
+}
+
+
+th,td{
+
+padding:12px;
+text-align:center;
 
 }
 
 
+.pending{
 
-.card{
-
-background:white;
-padding:25px;
-width:220px;
-border-radius:10px;
-box-shadow:0 5px 15px #ddd;
+color:orange;
 
 }
 
+
+.confirmed{
+
+color:green;
+
+}
+
+
+.completed{
+
+color:blue;
+
+}
 
 
 </style>

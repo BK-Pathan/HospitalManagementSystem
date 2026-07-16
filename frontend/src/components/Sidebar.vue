@@ -1,11 +1,38 @@
 <script setup>
 
 import {computed} from "vue";
-
+import {useRouter} from "vue-router";
+import api from "../api/axios";
 
 const role = computed(() => localStorage.getItem("role"));
 
+const router = useRouter();
 
+// Logout function
+const logout = async()=>{
+
+    try{
+
+        await api.post("/auth/logout");
+
+
+        // remove frontend data
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+
+
+        // redirect login
+        router.push("/");
+
+
+    }
+    catch(error){
+
+        console.log("Logout Error:", error);
+
+    }
+
+};
 
 const menu = computed(()=>{
     const currentRole = role.value;
@@ -33,6 +60,10 @@ path:"/admin/patients"
 {
 name:"📅 Appointments",
 path:"/admin/appointments"
+},
+{
+name:"👥 Users",
+path:"/admin/users"
 }
 
 
@@ -149,10 +180,11 @@ v-for="item in menu"
 
 
 
-<button class="logout">
-
+<button 
+class="logout"
+@click="logout"
+>
 🚪 Logout
-
 </button>
 
 

@@ -5,7 +5,7 @@ import api from "../../api/axios";
 
 
 const stats = ref({
-
+ users:0,
 doctors:0,
 patients:0,
 appointments:0
@@ -56,9 +56,20 @@ getStats();
 Admin Dashboard
 </h1>
 
-
-
 <div class="cards">
+
+
+<div class="card">
+
+<h3>
+Total Users
+</h3>
+
+<h1>
+{{stats.users}}
+</h1>
+
+</div>
 
 
 <div class="card">
@@ -74,7 +85,6 @@ Total Doctors
 </div>
 
 
-
 <div class="card">
 
 <h3>
@@ -86,7 +96,6 @@ Total Patients
 </h1>
 
 </div>
-
 
 
 <div class="card">

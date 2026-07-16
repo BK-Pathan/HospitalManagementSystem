@@ -263,3 +263,61 @@ message:error.message
 
 
 };
+
+// Patient Dashboard Stats
+
+exports.dashboardStats = async(req,res)=>{
+
+try{
+
+
+const doctors = await Doctor.countDocuments();
+
+
+
+const patient = await Patient.findOne({
+    user:req.user.id
+});
+
+
+if(!patient){
+
+return res.status(400).json({
+    message:"Profile not found"
+});
+
+}
+
+
+
+const appointments = await Appointment.countDocuments({
+
+    patient:patient._id
+
+});
+
+
+
+res.json({
+
+    doctors,
+    appointments
+
+});
+
+
+
+}catch(error){
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+
+};

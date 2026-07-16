@@ -11,11 +11,14 @@ const role=require("../middleware/roleMiddleware");
 const {
 
 createProfile,
-getProfile
+getProfile,
 
 }=require("../controllers/patientProfileController");
 
 
+const{
+    dashboardStats
+}= require("../controllers/patientsController")
 
 
 router.post(
@@ -44,6 +47,11 @@ getProfile
 
 );
 
-
+router.get(
+"/dashboard",
+auth,
+role("patient"),
+dashboardStats
+);
 
 module.exports=router;

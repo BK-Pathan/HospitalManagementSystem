@@ -13,7 +13,9 @@ const {
     deleteDoctor,
     getAllDoctors,
     getAllPatients,
-    getAllAppointments
+    getAllAppointments,
+    changeRole,
+    getAllUsers
 
 } = require("../controllers/adminController");
 
@@ -79,7 +81,20 @@ router.get(
     role("admin"),
     getAllAppointments
 );
+router.put(
+"/user/:id/role",
+auth,
+role("admin"),
+changeRole
+);
 
+// View All Users
 
+router.get(
+"/users",
+auth,
+role("admin"),
+getAllUsers
+);
 
 module.exports = router;
