@@ -1,198 +1,226 @@
 <script setup>
-
-import {ref,onMounted} from "vue";
+import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 
+const name = ref("");
+const specialties = ref("");
+const qualifications = ref("");
+const experience = ref("");
+const contactInformation = ref("");
 
-const name=ref("");
-const specialties=ref("");
-const qualifications=ref("");
-const experience=ref("");
-const contactInformation=ref("");
+const availability = ref([]);
 
+const day = ref("");
+const startTime = ref("");
+const endTime = ref("");
 
-const availability=ref([]);
+// Convert 24hr -> 12hr
+const convertTo12Hour = (time) => {
+  if (!time) return "";
 
+  let [hour, minute] = time.split(":");
 
+  hour = parseInt(hour);
 
-const day=ref("");
-const startTime=ref("");
-const endTime=ref("");
+  const ampm = hour >= 12 ? "PM" : "AM";
 
+  hour = hour % 12 || 12;
 
+  return `${hour}:${minute} ${ampm}`;
+};
 
-const addAvailability=()=>{
+// Add availability slot
+const addAvailability = () => {
 
+  if (!day.value || !startTime.value || !endTime.value) {
+    alert("Fill all fields");
+    return;
+  }
 
-availability.value.push({
+  availability.value.push({
+    day: day.value,
+    startTime: convertTo12Hour(startTime.value),
+    endTime: convertTo12Hour(endTime.value),
+  });
 
-day:day.value,
-startTime:startTime.value,
-endTime:endTime.value
+  day.value = "";
+  startTime.value = "";
+  endTime.value = "";
+};
 
-});
+// Remove slot
+const removeAvailability = (index) => {
+  availability.value.splice(index, 1);
+};
 
+// Save profile
+const saveProfile = async () => {
+
+  try {
+
+    await api.post("/doctor/profile", {
+
+      name: name.value,
+
+      specialties: specialties.value
+        .split(",")
+        .map((item) => item.trim()),
+
+      qualifications: qualifications.value,
+
+      experience: experience.value,
+
+      contactInformation: contactInformation.value,
+
+      availability: availability.value,
+
+    });
+
+    alert("Profile Saved");
+
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
+// Load profile
+const getProfile = async () => {
 
+  try {
 
-const saveProfile=async()=>{
+    const res = await api.get("/doctor/profile");
 
+    if (!res.data) return;
 
-try{
+    name.value = res.data.name || "";
 
+    specialties.value = (res.data.specialties || []).join(",");
 
-await api.post("/doctor/profile",{
+    qualifications.value = res.data.qualifications || "";
 
-name:name.value,
+    experience.value = res.data.experience || "";
 
-specialties:[
-specialties.value
-],
+    contactInformation.value = res.data.contactInformation || "";
 
-qualifications:qualifications.value,
+    availability.value = res.data.availability || [];
 
-experience:experience.value,
-
-contactInformation:contactInformation.value,
-
-availability:availability.value
-
-
-});
-
-
-alert("Profile Saved");
-
-
-}catch(error){
-
-console.log(error);
-
-}
-
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
-
-
-
-const getProfile=async()=>{
-
-
-const res=await api.get("/doctor/profile");
-
-
-if(res.data){
-
-
-name.value=res.data.name;
-
-specialties.value=res.data.specialties.join(",");
-
-qualifications.value=res.data.qualifications;
-
-experience.value=res.data.experience;
-
-contactInformation.value=res.data.contactInformation;
-
-availability.value=res.data.availability;
-
-
-}
-
-
-}
-
-
-
-onMounted(()=>{
-
-getProfile();
-
+onMounted(() => {
+  getProfile();
 });
-
-
 </script>
-
-
 
 <template>
 
 <div>
 
+<h2>Doctor Profile</h2>
 
-<h2>
-Doctor Dashboard
-</h2>
+<input
+v-model="name"
+placeholder="Name"
+/>
 
+<input
+v-model="specialties"
+placeholder="Cardiologist, Dentist"
+/>
 
-<h3>
-Profile
-</h3>
+<input
+v-model="qualifications"
+placeholder="Qualification"
+/>
 
+<input
+v-model="experience"
+placeholder="Experience"
+/>
 
-<input v-model="name" placeholder="Name">
+<input
+v-model="contactInformation"
+placeholder="Contact"
+/>
 
+<h3>Availability</h3>
 
-<input v-model="specialties" placeholder="Speciality">
+<select v-model="day">
 
+<option value="">
+Select Day
+</option>
 
-<input v-model="qualifications" placeholder="Qualification">
+<option>Mon</option>
+<option>Tue</option>
+<option>Wed</option>
+<option>Thu</option>
+<option>Fri</option>
+<option>Sat</option>
+<option>Sun</option>
 
+</select>
 
-<input v-model="experience" placeholder="Experience">
+<input
+type="time"
+v-model="startTime"
+/>
 
-
-<input v-model="contactInformation" placeholder="Contact">
-
-
-
-<h3>
-Availability
-</h3>
-
-
-<input v-model="day" placeholder="Day">
-
-
-<input type="time" v-model="startTime" placeholder="Start Time">
-
-
-<input type="time" v-model="endTime" placeholder="End Time">
-
+<input
+type="time"
+v-model="endTime"
+/>
 
 <button @click="addAvailability">
-Add Time
+Add Slot
 </button>
 
+<br><br>
 
+<table border="1">
 
-<ul>
+<tr>
+<th>Day</th>
+<th>Start</th>
+<th>End</th>
+<th>Action</th>
+</tr>
 
-<li
-v-for="item in availability"
+<tr
+v-for="(slot,index) in availability"
+:key="index"
 >
 
-{{item.day}}
-{{item.startTime}}
--
-{{item.endTime}}
+<td>{{ slot.day }}</td>
 
-</li>
+<td>{{ slot.startTime }}</td>
 
-</ul>
+<td>{{ slot.endTime }}</td>
 
+<td>
 
+<button
+@click="removeAvailability(index)"
+>
+Remove
+</button>
+
+</td>
+
+</tr>
+
+</table>
+
+<br>
 
 <button @click="saveProfile">
 Save Profile
 </button>
 
-
-
 </div>
-
 
 </template>
