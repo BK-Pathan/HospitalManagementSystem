@@ -49,9 +49,9 @@
 
         </div>
 
-        <a href="#contact" class="btn">
-          Learn More
-        </a>
+       <router-link to="/login" class="btn">
+         learn more
+        </router-link>
 
       </div>
 

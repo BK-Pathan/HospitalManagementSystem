@@ -46,7 +46,7 @@ const adminRoutes = require("./routes/admin");
 const doctorRoutes = require("./routes/doctorRoutes");
 
 const patientProfileRoutes = require("./routes/patientProfileRoutes");
-
+const publicRoutes = require("./routes/publicDoc");
 
 
 
@@ -123,7 +123,8 @@ res.send("Hospital API Running");
 
 });
 
-
+//For public Access
+app.use("/api", publicRoutes);
 
 
 

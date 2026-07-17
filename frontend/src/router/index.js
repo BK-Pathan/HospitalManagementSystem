@@ -31,7 +31,7 @@ import DoctorAppointments from "../views/Doctors/Appointments.vue";
 
 //Public pages
 import Home from "../views/public/Home.vue"
-
+import Doctor from "../views/public/Doctors.vue";
 
 
 const routes = [
@@ -40,6 +40,10 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+},
+{
+     path:"/doctors",
+ component:Doctor
 },
 {
     path:"/login",
@@ -185,9 +189,26 @@ const router = createRouter({
 
     history:createWebHistory(),
 
-    routes
+ routes,
 
-});
+scrollBehavior(to){
+
+if(to.hash){
+
+return {
+el:to.hash,
+behavior:"smooth"
+}
+
+}
+
+return {
+top:0
+}
+
+}
+
+})
 
 
 // ================= AUTH GUARD =================

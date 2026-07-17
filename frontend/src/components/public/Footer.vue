@@ -44,15 +44,29 @@
 
         <ul>
 
-          <li><a href="#">Home</a></li>
+         <router-link to="/">
+Home
+</router-link>
 
-          <li><a href="#about">About</a></li>
 
-          <li><a href="#services">Services</a></li>
+<router-link to="/doctors">
+Doctors
+</router-link>
 
-          <li><a href="#doctors">Doctors</a></li>
 
-          <li><a href="#contact">Contact</a></li>
+<router-link to="/#services">
+Services
+</router-link>
+
+
+<router-link to="/#about">
+About
+</router-link>
+
+
+<router-link to="/#contact">
+Contact
+</router-link>
 
         </ul>
 

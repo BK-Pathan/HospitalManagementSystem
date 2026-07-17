@@ -21,11 +21,29 @@
 
       <nav :class="['nav-menu', { active: menuOpen }]">
 
-        <a href="#">Home</a>
-        <a href="#about">About</a>
-        <a href="#services">Services</a>
-        <a href="#doctors">Doctors</a>
-        <a href="#contact">Contact</a>
+       <router-link to="/">
+Home
+</router-link>
+
+
+<router-link to="/#doctors">
+Doctors
+</router-link>
+
+
+<router-link to="/#services">
+Services
+</router-link>
+
+
+<router-link to="/#about">
+About
+</router-link>
+
+
+<router-link to="/#contact">
+Contact
+</router-link>
 
       </nav>
 
@@ -40,12 +58,12 @@
           Login
         </router-link>
 
-        <a
-          href="#contact"
+        <router-link
+         to="/login"
           class="book-btn"
         >
           Book Appointment
-        </a>
+    </router-link>
 
       </div>
 

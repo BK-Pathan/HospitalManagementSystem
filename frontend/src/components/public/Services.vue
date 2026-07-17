@@ -30,9 +30,9 @@
 
         <p>{{ service.description }}</p>
 
-        <a href="#">
-          Learn More →
-        </a>
+        <router-link to="/login" class="btn">
+         learn more
+        </router-link>
       </div>
 
     </div>

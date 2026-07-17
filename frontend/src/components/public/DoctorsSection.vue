@@ -9,8 +9,7 @@ const loading = ref(true);
 const getDoctors = async()=>{
 
 try{
-
-const res = await api.get("/doctors");
+const res = await api.get("/api/doctors");
 
 console.log("Doctors:",res.data);
 
@@ -128,11 +127,9 @@ class="doctor-card"
 
 
 
-<button>
-
-Book Appointment
-
-</button>
+ <router-link to="/login" class="btn">
+      Book Appointment
+        </router-link>
 
 
 </div>

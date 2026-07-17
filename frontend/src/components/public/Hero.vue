@@ -24,13 +24,16 @@
 
         <div class="buttons">
 
-          <a href="#contact" class="primary-btn">
-            Book Appointment
-          </a>
+        <router-link
+         to="/login"
+          class="book-btn"
+        >
+          Book Appointment
+    </router-link>
 
-          <a href="#doctors" class="secondary-btn">
+          <router-link to="/login" class="secondary-btn">
             Meet Doctors
-          </a>
+          </router-link>
 
         </div>
 

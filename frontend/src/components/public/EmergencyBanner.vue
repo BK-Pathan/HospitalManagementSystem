@@ -25,9 +25,9 @@
             📞 Call Now
           </a>
 
-          <a href="#contact" class="appointment-btn">
-            Book Appointment
-          </a>
+         <router-link to="/login" class="appointment-btn">
+          Book Appointment
+        </router-link>
 
         </div>
 

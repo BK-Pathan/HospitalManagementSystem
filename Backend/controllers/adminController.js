@@ -317,19 +317,24 @@ exports.deleteDoctor = async(req,res)=>{
 
 exports.getAllDoctors = async(req,res)=>{
 
-    try{
+try{
 
-        const doctors = await Doctor.find();
+const doctors = await Doctor.find()
+.sort({
+experience:-1
+});
 
-        res.json(doctors);
 
-    }catch(error){
+res.json(doctors);
 
-        res.status(500).json({
-            message:error.message
-        });
 
-    }
+}catch(error){
+
+res.status(500).json({
+message:error.message
+});
+
+}
 
 };
 
