@@ -58,131 +58,205 @@ getAppointments();
 
 <template>
 
+<div class="page">
 
-<div>
 
+    <div class="header">
 
-<h2>
-Appointments Management
-</h2>
+        <div>
 
+            <h2>
+                📅 Appointments Management
+            </h2>
 
+            <p>
+                Monitor and manage all hospital appointments
+            </p>
 
-<table border="1">
+        </div>
 
 
-<thead>
 
-<tr>
+        <div class="badge">
+            Hospital Admin
+        </div>
 
-<th>
-Doctor
-</th>
 
+    </div>
 
-<th>
-Speciality
-</th>
 
 
-<th>
-Patient
-</th>
 
 
-<th>
-Appointment Date
-</th>
+    <div class="card">
 
 
-<th>
-Status
-</th>
+        <div class="table-wrapper">
 
 
-</tr>
+        <table>
 
 
-</thead>
+        <thead>
 
+        <tr>
 
+        <th>
+            Doctor
+        </th>
 
-<tbody>
 
+        <th>
+            Speciality
+        </th>
 
-<tr
-v-for="appointment in appointments"
-:key="appointment._id"
->
 
+        <th>
+            Patient
+        </th>
 
-<td>
 
-{{appointment.doctor?.name || "N/A"}}
+        <th>
+            Appointment Date
+        </th>
 
-</td>
 
+        <th>
+            Status
+        </th>
 
 
-<td>
+        </tr>
 
-{{appointment.doctor?.specialties || "N/A"}}
 
-</td>
+        </thead>
 
 
 
-<td>
 
-{{appointment.patient?.user?.name || "Not Booked"}}
 
-</td>
+        <tbody>
 
 
+        <tr
+        v-for="appointment in appointments"
+        :key="appointment._id"
+        >
 
-<td>
 
-{{formatDateTime(appointment.appointmentDateTime)}}
 
-</td>
+        <td>
 
+        <div class="doctor">
 
+            <div class="avatar">
+                👨‍⚕️
+            </div>
 
-<td>
 
-<span
-:class="appointment.status"
->
+            <span>
+                {{appointment.doctor?.name || "N/A"}}
+            </span>
 
-{{appointment.status}}
+        </div>
 
-</span>
+        </td>
 
-</td>
 
 
 
-</tr>
 
+        <td>
 
+        <span class="speciality">
 
-<tr v-if="appointments.length===0">
+            {{appointment.doctor?.specialties || "N/A"}}
 
-<td colspan="5">
+        </span>
 
-No Appointments Found
+        </td>
 
-</td>
 
-</tr>
 
 
 
-</tbody>
 
+        <td>
 
+        {{appointment.patient?.user?.name || "Not Booked"}}
 
-</table>
+        </td>
+
+
+
+
+
+
+        <td>
+
+        {{formatDateTime(appointment.appointmentDateTime)}}
+
+        </td>
+
+
+
+
+
+
+        <td>
+
+
+        <span
+        class="status"
+        :class="appointment.status"
+        >
+
+        {{appointment.status}}
+
+        </span>
+
+
+        </td>
+
+
+
+
+        </tr>
+
+
+
+
+
+
+        <tr v-if="appointments.length===0">
+
+
+        <td colspan="5" class="empty">
+
+
+            No Appointments Found
+
+
+        </td>
+
+
+        </tr>
+
+
+
+
+
+        </tbody>
+
+
+        </table>
+
+
+        </div>
+
+
+
+    </div>
 
 
 
@@ -191,46 +265,366 @@ No Appointments Found
 
 </template>
 
-
-
 <style scoped>
+
+
+.page{
+
+    min-height:100%;
+
+}
+
+
+
+
+.header{
+
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+
+}
+
+
+
+.header h2{
+
+
+    font-size:30px;
+
+    color:var(--text);
+
+}
+
+
+
+.header p{
+
+
+    margin-top:8px;
+
+    color:var(--muted);
+
+
+}
+
+
+
+
+.badge{
+
+
+    padding:12px 20px;
+
+    border-radius:30px;
+
+    color:white;
+
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+
+    font-weight:600;
+
+
+}
+
+
+
+
+.card{
+
+
+    background:var(--white);
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+
+}
+
+
+
+
+.table-wrapper{
+
+
+    overflow-x:auto;
+
+
+}
+
 
 
 table{
 
-width:100%;
-border-collapse:collapse;
+
+    width:100%;
+
+    border-collapse:collapse;
+
 
 }
 
 
-th,td{
 
-padding:12px;
-text-align:center;
+thead th{
+
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+
+    color:white;
+
+    padding:16px;
+
+    text-align:left;
+
+    font-size:15px;
+
+
+}
+
+
+
+
+tbody td{
+
+
+    padding:16px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--text);
+
 
 }
 
 
-.pending{
 
-color:orange;
+
+tbody tr{
+
+
+    transition:.3s;
+
 
 }
 
 
-.confirmed{
 
-color:green;
+
+tbody tr:hover{
+
+
+    background:#f8fafc;
+
+}
+
+
+
+
+.doctor{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-weight:600;
+
 
 }
 
 
-.completed{
 
-color:blue;
+.avatar{
+
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+    background:rgba(20,184,166,.15);
+
 
 }
+
+
+
+
+.speciality{
+
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+
+    background:rgba(15,118,110,.12);
+
+    color:var(--primary);
+
+    font-size:13px;
+
+    font-weight:600;
+
+
+}
+
+
+
+
+
+.status{
+
+
+    padding:8px 15px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    text-transform:capitalize;
+
+
+}
+
+
+
+
+.status.pending{
+
+
+    background:#fef3c7;
+
+    color:#92400e;
+
+
+}
+
+
+
+
+.status.confirmed{
+
+
+    background:#dcfce7;
+
+    color:#166534;
+
+
+}
+
+
+
+
+.status.completed{
+
+
+    background:#dbeafe;
+
+    color:#1d4ed8;
+
+
+}
+
+
+
+
+.status.cancelled{
+
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+
+}
+
+
+
+
+
+.empty{
+
+
+    text-align:center;
+
+    padding:40px;
+
+    color:var(--muted);
+
+    font-size:16px;
+
+
+}
+
+
+
+
+
+@media(max-width:700px){
+
+
+.header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+}
+
+
+.card{
+
+    padding:15px;
+
+}
+
+
+}
+
 
 
 </style>
+
+

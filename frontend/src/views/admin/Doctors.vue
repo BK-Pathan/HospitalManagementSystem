@@ -344,248 +344,707 @@ getDoctors();
 
 <template>
 
+<div class="page">
 
-<div>
 
+    <div class="header">
 
-<h2>
-Doctors Management
-</h2>
+        <div>
+            <h2>
+                👨‍⚕️ Doctors Management
+            </h2>
 
+            <p>
+                Manage doctors profiles, qualifications and availability
+            </p>
+        </div>
 
 
-<h3>
-{{editMode ? "Update Doctor" : "Add Doctor"}}
-</h3>
+        <div class="badge">
+            Hospital Admin
+        </div>
 
+    </div>
 
 
-<input 
-v-model="name"
-placeholder="Doctor Name"
-/>
 
 
-<input 
-v-model="specialties"
-placeholder="Speciality"
-/>
+    <div class="doctor-form card">
 
 
-<input 
-v-model="qualifications"
-placeholder="Qualification"
-/>
+        <h3>
+            {{editMode ? "Update Doctor" : "Add Doctor"}}
+        </h3>
 
 
-<input 
-v-model="experience"
-placeholder="Experience"
-/>
 
+        <div class="form-grid">
 
-<input 
-v-model="contactInformation"
-placeholder="Contact"
-/>
-<h4>
-Doctor Availability
-</h4>
 
+            <input 
+            v-model="name"
+            placeholder="Doctor Name"
+            />
 
-<select v-model="day">
 
-<option value="">
-Select Day
-</option>
+            <input 
+            v-model="specialties"
+            placeholder="Speciality"
+            />
 
-<option>
-Mon
-</option>
 
-<option>
-Tue
-</option>
+            <input 
+            v-model="qualifications"
+            placeholder="Qualification"
+            />
 
-<option>
-Wed
-</option>
 
-<option>
-Thu
-</option>
+            <input 
+            v-model="experience"
+            placeholder="Experience"
+            />
 
-<option>
-Fri
-</option>
 
-<option>
-Sat
-</option>
+            <input 
+            v-model="contactInformation"
+            placeholder="Contact"
+            />
 
-<option>
-Sun
-</option>
 
-</select>
+        </div>
 
 
-<input
-type="time"
-v-model="startTime"
-/>
 
-<input
-type="time"
-v-model="endTime"
-/>
 
+        <h4>
+            Doctor Availability
+        </h4>
 
-<button @click="addAvailability">
-Add Time
-</button>
 
 
+        <div class="availability-box">
 
-<ul>
 
-<li
-v-for="(item,index) in availability"
-:key="index"
->
+            <select v-model="day">
 
-{{item.day}}
+                <option value="">
+                    Select Day
+                </option>
 
-{{item.startTime}}
+                <option>
+                    Mon
+                </option>
 
--
+                <option>
+                    Tue
+                </option>
 
-{{item.endTime}}
+                <option>
+                    Wed
+                </option>
 
+                <option>
+                    Thu
+                </option>
 
-</li>
+                <option>
+                    Fri
+                </option>
 
-</ul>
+                <option>
+                    Sat
+                </option>
 
+                <option>
+                    Sun
+                </option>
 
-<button @click="saveDoctor">
+            </select>
 
-{{editMode ? "Update Doctor" : "Add Doctor"}}
 
-</button>
 
 
+            <input
+            type="time"
+            v-model="startTime"
+            />
 
-<button 
-v-if="editMode"
-@click="clearForm"
->
 
-Cancel
+            <input
+            type="time"
+            v-model="endTime"
+            />
 
-</button>
 
 
+            <button 
+            class="primary-btn"
+            @click="addAvailability"
+            >
 
+                Add Time
 
-<hr>
+            </button>
 
 
+        </div>
 
-<h3>
-Doctor List
-</h3>
 
 
-<table border="1">
 
 
-<tr>
+        <div class="availability-list">
 
-<th>Name</th>
-<th>Speciality</th>
-<th>Qualification</th>
-<th>Experience</th>
-<th>Action</th>
-<th>Availability</th>
 
-</tr>
+            <span
+            v-for="(item,index) in availability"
+            :key="index"
+            >
 
+                {{item.day}}
+                {{item.startTime}}
+                -
+                {{item.endTime}}
 
+            </span>
 
-<tr 
-v-for="doctor in doctors" 
-:key="doctor._id"
->
 
+        </div>
 
-<td>
-{{doctor.name}}
-</td>
 
 
-<td>
-{{doctor.specialties}}
-</td>
 
 
-<td>
-{{doctor.qualifications}}
-</td>
+        <button 
+        class="save-btn"
+        @click="saveDoctor"
+        >
 
+            {{editMode ? "Update Doctor" : "Add Doctor"}}
 
-<td>
-{{doctor.experience}}
-</td>
+        </button>
 
-<td>
 
-<ul>
 
-<li
-v-for="(item,index) in doctor.availability"
-:key="index"
->
 
-{{item.day}}
+        <button 
+        v-if="editMode"
+        class="cancel-btn"
+        @click="clearForm"
+        >
 
-{{item.startTime}}
+            Cancel
 
--
+        </button>
 
-{{item.endTime}}
 
-</li>
 
-</ul>
+    </div>
 
-</td>
 
-<td>
 
 
-<button @click="editDoctor(doctor)">
-Edit
-</button>
 
 
 
-<button @click="deleteDoctor(doctor._id)">
-Delete
-</button>
+    <div class="card table-card">
 
 
-</td>
+        <h3>
+            Doctor List
+        </h3>
 
 
-</tr>
 
+        <div class="table-wrapper">
 
 
-</table>
+        <table>
+
+
+        <tr>
+
+        <th>Name</th>
+        <th>Speciality</th>
+        <th>Qualification</th>
+        <th>Experience</th>
+        <th>Availability</th>
+        <th>Action</th>
+
+        </tr>
+
+
+
+        <tr 
+        v-for="doctor in doctors" 
+        :key="doctor._id"
+        >
+
+
+        <td>
+        {{doctor.name}}
+        </td>
+
+
+        <td>
+        {{doctor.specialties}}
+        </td>
+
+
+        <td>
+        {{doctor.qualifications}}
+        </td>
+
+
+        <td>
+        {{doctor.experience}}
+        </td>
+
+
+
+
+        <td>
+
+
+        <div class="times">
+
+
+        <span
+        v-for="(item,index) in doctor.availability"
+        :key="index"
+        >
+
+        {{item.day}}
+
+        {{item.startTime}}
+
+        -
+
+        {{item.endTime}}
+
+        </span>
+
+
+        </div>
+
+
+        </td>
+
+
+
+
+        <td>
+
+
+        <button 
+        class="edit"
+        @click="editDoctor(doctor)"
+        >
+
+            Edit
+
+        </button>
+
+
+
+        <button 
+        class="delete"
+        @click="deleteDoctor(doctor._id)"
+        >
+
+            Delete
+
+        </button>
+
+
+        </td>
+
+
+        </tr>
+
+
+
+        </table>
+
+        </div>
+
+
+
+    </div>
 
 
 </div>
 
-
 </template>
+
+<style scoped>
+
+
+.page{
+
+    min-height:100%;
+
+}
+
+
+
+.header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.header h2{
+
+    color:var(--text);
+
+    font-size:30px;
+
+}
+
+
+
+.header p{
+
+    color:var(--muted);
+
+    margin-top:8px;
+
+}
+
+
+
+.badge{
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:30px;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+.card{
+
+    background:var(--white);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+    margin-bottom:30px;
+
+}
+
+
+
+.card h3{
+
+    color:var(--text);
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+
+
+input,
+select{
+
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    outline:none;
+
+    font-size:15px;
+
+    background:#fff;
+
+}
+
+
+
+input:focus,
+select:focus{
+
+    border-color:var(--secondary);
+
+    box-shadow:0 0 0 4px rgba(20,184,166,.15);
+
+}
+
+
+
+
+
+.availability-box{
+
+    display:flex;
+
+    gap:15px;
+
+    margin-top:15px;
+
+}
+
+
+
+
+
+button{
+
+    border:none;
+
+    cursor:pointer;
+
+    border-radius:10px;
+
+    padding:12px 18px;
+
+    font-weight:600;
+
+}
+
+
+
+.primary-btn,
+.save-btn{
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    color:white;
+
+}
+
+
+
+.save-btn{
+
+    margin-top:25px;
+
+    width:220px;
+
+}
+
+
+
+.cancel-btn{
+
+    background:#e2e8f0;
+
+    margin-left:10px;
+
+}
+
+
+
+
+
+.availability-list{
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    margin-top:20px;
+
+}
+
+
+
+.availability-list span,
+.times span{
+
+    background:rgba(20,184,166,.15);
+
+    color:var(--primary);
+
+    padding:8px 12px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+}
+
+
+
+
+
+.table-wrapper{
+
+    overflow-x:auto;
+
+}
+
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+th{
+
+    background:var(--primary);
+
+    color:white;
+
+    padding:15px;
+
+    text-align:left;
+
+}
+
+
+
+td{
+
+    padding:15px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--text);
+
+}
+
+
+
+tr:hover{
+
+    background:#f8fafc;
+
+}
+
+
+
+
+
+.edit{
+
+    background:#dbeafe;
+
+    color:#1d4ed8;
+
+    margin-right:8px;
+
+}
+
+
+
+.delete{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+
+
+
+
+.times{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:5px;
+
+}
+
+
+
+
+
+@media(max-width:800px){
+
+
+.form-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+
+.header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+}
+
+
+.availability-box{
+
+    flex-direction:column;
+
+}
+
+
+}
+
+
+
+</style>

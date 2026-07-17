@@ -49,118 +49,352 @@ getDoctors();
 
 <template>
 
-
-<div>
-
-
-<h2>
-Available Doctors
-</h2>
+<div class="page">
 
 
+    <div class="header">
 
-<table border="1">
-
-
-<tr>
-
-<th>Name</th>
-<th>Speciality</th>
-<th>Qualification</th>
-<th>Experience</th>
-<th>Availability</th>
-<th>Action</th>
+        <h2>
+            👨‍⚕️ Available Doctors
+        </h2>
 
 
-</tr>
+        <p>
+            Find and book appointment with our specialists
+        </p>
+
+
+    </div>
 
 
 
-<tr
-v-for="doctor in doctors"
-:key="doctor._id"
->
+
+    <div class="table-card">
+
+
+    <table>
+
+
+    <tr>
+
+    <th>Name</th>
+
+    <th>Speciality</th>
+
+    <th>Qualification</th>
+
+    <th>Experience</th>
+
+    <th>Availability</th>
+
+    <th>Action</th>
+
+
+    </tr>
 
 
 
-<td>
-
-{{doctor.name}}
-
-</td>
 
 
-
-<td>
-
-{{doctor.specialties.join(",")}}
-
-</td>
+    <tr
+    v-for="doctor in doctors"
+    :key="doctor._id"
+    >
 
 
 
-<td>
+    <td class="doctor-name">
 
-{{doctor.qualifications}}
+    {{doctor.name}}
 
-</td>
-
-
-
-<td>
-
-{{doctor.experience}}
-
-</td>
+    </td>
 
 
 
-<td>
 
 
-<div
-v-for="item in doctor.availability"
-:key="item._id"
->
+    <td>
 
+    {{doctor.specialties.join(",")}}
 
-{{item.day}}
-
-<br>
-
-{{item.startTime}} -
-{{item.endTime}}
-
-
-</div>
-
-
-</td>
+    </td>
 
 
 
-<td>
 
 
-<button
-@click="router.push(`/patient/book-appointment/${doctor._id}`)"
->
-Book Appointment
-</button>
+    <td>
 
+    {{doctor.qualifications}}
 
-</td>
+    </td>
 
 
 
-</tr>
+
+
+    <td>
+
+    {{doctor.experience}}
+
+    </td>
 
 
 
-</table>
+
+
+
+    <td>
+
+
+    <div class="availability">
+
+
+    <div
+    v-for="item in doctor.availability"
+    :key="item._id"
+    class="time-slot"
+    >
+
+
+    {{item.day}}
+
+    <br>
+
+    {{item.startTime}} -
+    {{item.endTime}}
+
+
+    </div>
+
+
+    </div>
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+    <button
+    class="book-btn"
+    @click="router.push(`/patient/book-appointment/${doctor._id}`)"
+    >
+
+    Book Appointment
+
+    </button>
+
+
+    </td>
+
+
+
+
+
+    </tr>
+
+
+
+
+
+    </table>
+
+
+    </div>
+
 
 
 </div>
 
 
 </template>
+
+<style scoped>
+
+.page{
+
+    min-height:100%;
+
+}
+
+
+
+.header{
+
+    margin-bottom:30px;
+
+}
+
+
+.header h2{
+
+    color:var(--text);
+
+    font-size:30px;
+
+}
+
+
+
+.header p{
+
+    color:var(--muted);
+
+    margin-top:8px;
+
+}
+
+
+
+
+.table-card{
+
+    background:var(--white);
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+    overflow-x:auto;
+
+}
+
+
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+
+th{
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+    color:white;
+
+    padding:15px;
+
+    text-align:left;
+
+}
+
+
+
+
+td{
+
+    padding:15px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--text);
+
+}
+
+
+
+
+tr:hover{
+
+    background:#f8fafc;
+
+}
+
+
+
+
+.doctor-name{
+
+    font-weight:700;
+
+    color:var(--primary);
+
+}
+
+
+
+
+.availability{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+
+
+.time-slot{
+
+    background:rgba(20,184,166,.12);
+
+    color:var(--primary);
+
+    padding:8px 12px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+}
+
+
+
+
+.book-btn{
+
+    padding:12px 18px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+}
+
+
+
+.book-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+</style>

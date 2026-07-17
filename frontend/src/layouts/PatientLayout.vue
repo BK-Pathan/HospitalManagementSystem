@@ -12,25 +12,25 @@ import Navbar from "../components/Navbar.vue";
 <div class="layout">
 
 
-<Sidebar/>
+    <Sidebar/>
 
 
-<div class="main">
+    <div class="main">
 
 
-<Navbar/>
+        <Navbar/>
 
 
-<div class="content">
+        <div class="content">
 
 
-<router-view/>
+            <router-view/>
 
 
-</div>
+        </div>
 
 
-</div>
+    </div>
 
 
 </div>
@@ -40,30 +40,58 @@ import Navbar from "../components/Navbar.vue";
 
 
 
+
 <style scoped>
 
 
 .layout{
 
-display:flex;
-height:100vh;
+    min-height:100vh;
 
 }
 
 
+
+/* Sidebar ke liye space */
 
 .main{
 
-flex:1;
-background:#f1f5f9;
+    margin-left:270px;
+
+    width:calc(100% - 270px);
+
+    min-height:100vh;
+
+    background:var(--bg);
 
 }
+
 
 
 
 .content{
 
-padding:30px;
+    padding:30px;
+
+    min-height:calc(100vh - 80px);
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:900px){
+
+
+.main{
+
+    margin-left:220px;
+
+    width:calc(100% - 220px);
+
+}
+
 
 }
 

@@ -64,10 +64,10 @@ getAppointments();
 <template>
 
 
-<div>
+<div class="appointments-page">
 
 
-<h2>
+<h2 class="page-title">
 
 My Appointments
 
@@ -75,7 +75,11 @@ My Appointments
 
 
 
-<table border="1">
+
+<div class="table-card">
+
+
+<table class="appointments-table">
 
 
 <tr>
@@ -102,6 +106,7 @@ Status
 
 
 
+
 <tr
 
 v-for="appointment in appointments"
@@ -111,7 +116,7 @@ v-for="appointment in appointments"
 >
 
 
-<td>
+<td class="doctor-name">
 
 {{appointment.doctor.name}}
 
@@ -119,7 +124,9 @@ v-for="appointment in appointments"
 
 
 
-<td>
+
+
+<td class="speciality">
 
 {{appointment.doctor.specialties}}
 
@@ -127,7 +134,9 @@ v-for="appointment in appointments"
 
 
 
-<td>
+
+
+<td class="appointment-date">
 
 {{formatDateTime(appointment.appointmentDateTime)}}
 
@@ -135,11 +144,19 @@ v-for="appointment in appointments"
 
 
 
+
+
 <td>
+
+<span class="status">
 
 {{appointment.status}}
 
+</span>
+
 </td>
+
+
 
 
 
@@ -152,4 +169,166 @@ v-for="appointment in appointments"
 </div>
 
 
+
+</div>
+
+
 </template>
+<style scoped>
+
+
+.appointments-page{
+
+    min-height:100%;
+
+}
+
+
+
+.page-title{
+
+    color:var(--text);
+
+    font-size:32px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+
+
+.table-card{
+
+    background:var(--white);
+
+    padding:30px;
+
+    border-radius:22px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+    overflow-x:auto;
+
+}
+
+
+
+
+
+.appointments-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+
+
+.appointments-table th{
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+    color:white;
+
+    padding:16px;
+
+    text-align:left;
+
+}
+
+
+
+
+
+.appointments-table td{
+
+    padding:16px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--text);
+
+}
+
+
+
+
+
+.appointments-table tr:hover{
+
+    background:#f8fafc;
+
+}
+
+
+
+
+
+.doctor-name{
+
+    font-weight:700;
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+.speciality{
+
+    color:var(--muted);
+
+}
+
+
+
+
+
+.appointment-date{
+
+    font-weight:600;
+
+}
+
+
+
+
+
+.status{
+
+    display:inline-block;
+
+    padding:8px 15px;
+
+    border-radius:20px;
+
+    background:rgba(20,184,166,.15);
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    font-size:13px;
+
+    text-transform:capitalize;
+
+}
+
+
+
+</style>

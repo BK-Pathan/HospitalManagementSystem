@@ -92,10 +92,10 @@ name:"👨‍⚕️ Doctors",
 path:"/patient/doctors"
 },
 
-{
-name:"📅 Book Appointment",
-path:"/patient/doctors"
-},
+// {
+// name:"📅 Book Appointment",
+// path:"/patient/doctors"
+// },
 
 {
 name:"📅 My Appointments",
@@ -150,47 +150,70 @@ return [];
 
 <template>
 
-
 <div class="sidebar">
 
 
-<h2 class="logo">
-🏥 Hospital
-</h2>
+    <div class="brand">
+
+        <div class="logo-icon">
+            🏥
+        </div>
+
+
+        <div>
+            <h2>
+                Hospital
+            </h2>
+
+            <p>
+                Management System
+            </p>
+        </div>
+
+    </div>
 
 
 
 
-<router-link
-
-v-for="item in menu"
-
-:key="item.path"
-
-:to="item.path"
-
->
+    <div class="menu">
 
 
-{{item.name}}
+        <router-link
+
+        v-for="item in menu"
+
+        :key="item.path"
+
+        :to="item.path"
+
+        class="menu-item"
+
+        >
+
+            <span>
+                {{item.name}}
+            </span>
 
 
-</router-link>
+        </router-link>
+
+
+    </div>
 
 
 
 
-<button 
-class="logout"
-@click="logout"
->
-🚪 Logout
-</button>
+    <button
+    class="logout"
+    @click="logout"
+    >
 
+        🚪 Logout
+
+    </button>
 
 
 </div>
-
 
 </template>
 
@@ -202,57 +225,259 @@ class="logout"
 
 .sidebar{
 
+    width:270px;
+    height:100vh;
 
-width:250px;
-height:100vh;
-background:#1e293b;
-color:white;
-display:flex;
-flex-direction:column;
-padding:20px;
-gap:15px;
+    position:fixed;
+    left:0;
+    top:0;
+
+    background:
+    linear-gradient(
+        180deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+    color:var(--white);
+
+    display:flex;
+
+    flex-direction:column;
+
+    padding:25px 20px;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+/* Brand */
+
+
+.brand{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding-bottom:30px;
+
+    border-bottom:1px solid rgba(255,255,255,.2);
+
+}
+
+
+
+.logo-icon{
+
+
+    width:55px;
+
+    height:55px;
+
+    border-radius:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+
+
+    background:
+
+    rgba(255,255,255,.18);
 
 
 }
 
 
 
-.logo{
+.brand h2{
 
-margin-bottom:30px;
+
+    font-size:23px;
+
+    margin:0;
+
+    font-weight:700;
+
 
 }
 
 
 
-.sidebar a{
+.brand p{
 
-color:white;
-text-decoration:none;
-padding:12px;
-border-radius:8px;
+
+    font-size:12px;
+
+    opacity:.8;
+
+    margin-top:4px;
+
+
+}
+
+
+
+
+
+/* Menu */
+
+
+.menu{
+
+
+    margin-top:30px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
 
 }
 
 
 
-.sidebar a:hover{
+.menu-item{
 
-background:#334155;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:14px 15px;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    transition:.3s;
+
+    background:transparent;
+
 
 }
 
+
+
+.menu-item:hover{
+
+
+    background:
+
+    rgba(255,255,255,.15);
+
+
+    transform:translateX(5px);
+
+
+}
+
+
+
+.router-link-active{
+
+
+    background:white;
+
+    color:var(--primary);
+
+    font-weight:700;
+
+
+}
+
+
+
+
+
+/* Logout */
 
 
 .logout{
 
-margin-top:auto;
-padding:12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
+
+    margin-top:auto;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+
+    background:white;
+
+    color:var(--primary);
+
+
+    font-size:15px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+
+    transition:.3s;
+
 
 }
+
+
+
+.logout:hover{
+
+
+    background:var(--secondary);
+
+    color:white;
+
+    transform:translateY(-2px);
+
+
+}
+
+
+
+
+
+@media(max-width:900px){
+
+
+.sidebar{
+
+    width:220px;
+
+}
+
+
+.brand h2{
+
+    font-size:18px;
+
+}
+
+
+.menu-item{
+
+    font-size:14px;
+
+}
+
+
+}
+
 
 
 </style>
