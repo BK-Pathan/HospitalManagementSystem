@@ -29,11 +29,20 @@ import DoctorDashboard from "../views/Doctors/DoctorDashboard.vue";
 import DoctorProfile from "../views/Doctors/DoctorProfile.vue";
 import DoctorAppointments from "../views/Doctors/Appointments.vue";
 
+//Public pages
+import Home from "../views/public/Home.vue"
+
+
+
 const routes = [
 
-
 {
-    path:"/",
+    path: "/",
+    name: "Home",
+    component: Home,
+},
+{
+    path:"/login",
     component:Login
 },
 

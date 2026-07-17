@@ -93,8 +93,9 @@ const title = computed(()=>{
             </span>
 
             <span class="role">
+                    <span class="role-badge">{{ userRole }}</span>
                <h4>{{ name }}</h4>
-    <span class="role-badge">{{ userRole }}</span>
+
             </span>
 
         </div>

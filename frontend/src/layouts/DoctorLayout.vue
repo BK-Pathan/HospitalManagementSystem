@@ -46,18 +46,30 @@ import Navbar from "../components/Navbar.vue";
 .layout{
 
 display:flex;
-height:100vh;
+
+min-height:100vh;
+
+background:var(--bg);
 
 }
+
+
 
 
 
 .main{
 
 flex:1;
-background:#f1f5f9;
+
+background:#f8fafc;
+
+margin-left:270px;
+
+min-height:100vh;
 
 }
+
+
 
 
 
@@ -65,8 +77,34 @@ background:#f1f5f9;
 
 padding:30px;
 
+min-height:calc(100vh - 70px);
+
+background:#f8fafc;
+
 }
 
+
+
+
+
+@media(max-width:900px){
+
+
+.main{
+
+margin-left:220px;
+
+}
+
+
+.content{
+
+padding:20px;
+
+}
+
+
+}
 
 
 </style>

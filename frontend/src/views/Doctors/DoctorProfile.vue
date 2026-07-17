@@ -118,38 +118,86 @@ onMounted(() => {
 
 <template>
 
-<div>
+<div class="profile-page">
 
-<h2>Doctor Profile</h2>
+
+<h2 class="page-title">
+Doctor Profile
+</h2>
+
+
+
+
+<div class="profile-card">
+
+
+<div class="form-grid">
+
+
 
 <input
+class="form-input"
 v-model="name"
 placeholder="Name"
 />
 
+
+
+
 <input
+class="form-input"
 v-model="specialties"
 placeholder="Cardiologist, Dentist"
 />
 
+
+
+
 <input
+class="form-input"
 v-model="qualifications"
 placeholder="Qualification"
 />
 
+
+
+
 <input
+class="form-input"
 v-model="experience"
 placeholder="Experience"
 />
 
+
+
+
 <input
+class="form-input"
 v-model="contactInformation"
 placeholder="Contact"
 />
 
-<h3>Availability</h3>
 
-<select v-model="day">
+
+
+</div>
+
+
+
+
+
+<h3 class="section-title">
+Availability
+</h3>
+
+
+
+
+
+<div class="availability-form">
+
+
+<select class="form-input" v-model="day">
 
 <option value="">
 Select Day
@@ -165,35 +213,72 @@ Select Day
 
 </select>
 
+
+
+
+
 <input
+class="form-input"
 type="time"
 v-model="startTime"
 />
 
+
+
+
 <input
+class="form-input"
 type="time"
 v-model="endTime"
 />
 
-<button @click="addAvailability">
+
+
+
+
+<button 
+class="primary-btn"
+@click="addAvailability"
+>
+
 Add Slot
+
 </button>
 
-<br><br>
 
-<table border="1">
+</div>
+
+
+
+
+
+
+<div class="table-card">
+
+
+<table class="availability-table">
+
 
 <tr>
+
 <th>Day</th>
+
 <th>Start</th>
+
 <th>End</th>
+
 <th>Action</th>
+
 </tr>
+
+
+
 
 <tr
 v-for="(slot,index) in availability"
 :key="index"
 >
+
 
 <td>{{ slot.day }}</td>
 
@@ -201,26 +286,326 @@ v-for="(slot,index) in availability"
 
 <td>{{ slot.endTime }}</td>
 
+
+
+
 <td>
 
+
 <button
+class="remove-btn"
 @click="removeAvailability(index)"
 >
+
 Remove
+
 </button>
+
+
 
 </td>
 
+
 </tr>
+
+
 
 </table>
 
-<br>
-
-<button @click="saveProfile">
-Save Profile
-</button>
 
 </div>
 
+
+
+
+
+<button 
+class="save-btn"
+@click="saveProfile"
+>
+
+Save Profile
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
 </template>
+
+<style scoped>
+
+
+.profile-page{
+
+    min-height:100%;
+
+}
+
+
+
+
+.page-title{
+
+    color:var(--text);
+
+    font-size:32px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+
+
+.profile-card{
+
+    background:var(--white);
+
+    padding:35px;
+
+    border-radius:22px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+}
+
+
+
+
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+
+
+
+
+.form-input{
+
+    width:100%;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    background:#f8fafc;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+
+
+
+
+.form-input:focus{
+
+    border-color:var(--secondary);
+
+    box-shadow:0 0 0 4px rgba(20,184,166,.15);
+
+}
+
+
+
+
+
+.section-title{
+
+    margin:30px 0 20px;
+
+    color:var(--text);
+
+}
+
+
+
+
+
+.availability-form{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:15px;
+
+    align-items:center;
+
+}
+
+
+
+
+
+.primary-btn,
+.save-btn{
+
+    border:none;
+
+    padding:14px 20px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+}
+
+
+
+
+
+.table-card{
+
+    margin-top:30px;
+
+    overflow-x:auto;
+
+}
+
+
+
+
+
+.availability-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+
+
+.availability-table th{
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+    color:white;
+
+    padding:15px;
+
+    text-align:left;
+
+}
+
+
+
+
+
+.availability-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--text);
+
+}
+
+
+
+
+
+.remove-btn{
+
+    padding:10px 15px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    background:#fee2e2;
+
+    color:#b91c1c;
+
+    font-weight:700;
+
+}
+
+
+
+
+
+.save-btn{
+
+    margin-top:30px;
+
+    width:200px;
+
+}
+
+
+
+
+
+button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+
+
+
+@media(max-width:800px){
+
+
+.form-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+
+
+.availability-form{
+
+    grid-template-columns:1fr;
+
+}
+
+
+}
+
+
+</style>

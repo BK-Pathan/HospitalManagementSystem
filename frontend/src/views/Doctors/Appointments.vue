@@ -41,89 +41,405 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="appointments">
+  <div class="appointments-page">
 
-    <h2>My Patient Appointments</h2>
 
-    <p v-if="loading">Loading...</p>
+    <h2 class="page-title">
+      My Patient Appointments
+    </h2>
 
-    <table v-else border="1" width="100%" cellspacing="0">
+
+    <p v-if="loading" class="loading-text">
+      Loading...
+    </p>
+
+
+
+
+    <div v-else class="table-card">
+
+
+    <table class="appointments-table">
+
+
       <thead>
+
         <tr>
-          <th>Patient</th>
-          <th>Email</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th width="180">Action</th>
+
+          <th>
+            Patient
+          </th>
+
+          <th>
+            Email
+          </th>
+
+          <th>
+            Date
+          </th>
+
+          <th>
+            Status
+          </th>
+
+          <th width="180">
+            Action
+          </th>
+
         </tr>
+
       </thead>
+
+
+
+
 
       <tbody>
 
+
         <tr v-if="appointments.length === 0">
-          <td colspan="5" style="text-align:center">
+
+          <td colspan="5" class="empty-data">
+
             No appointments found
+
           </td>
+
         </tr>
+
+
+
+
 
         <tr
           v-for="item in appointments"
           :key="item._id"
         >
-          <td>{{ item.patient?.user?.name || item.patient?.name || 'Unknown' }}</td>
 
-          <td>{{ item.patient?.user?.email || item.patient?.email || 'N/A' }}</td>
 
-          <td>{{ item.appointmentDateTime ? new Date(item.appointmentDateTime).toLocaleString() : 'N/A' }}</td>
 
-          <td>{{ item.status }}</td>
+          <td class="patient-name">
+            {{ item.patient?.user?.name || item.patient?.name || 'Unknown' }}
+          </td>
+
+
+
+
+          <td>
+            {{ item.patient?.user?.email || item.patient?.email || 'N/A' }}
+          </td>
+
+
+
 
           <td>
 
-            <button
-              @click="updateStatus(item._id,'confirmed')"
-              :disabled="item.status==='confirmed'"
-            >
-              Confirm
-            </button>
-
-            <button
-              @click="updateStatus(item._id,'completed')"
-              :disabled="item.status==='completed'"
-            >
-              Complete
-            </button>
+            {{ item.appointmentDateTime ? new Date(item.appointmentDateTime).toLocaleString() : 'N/A' }}
 
           </td>
 
+
+
+
+          <td>
+
+            <span class="status">
+
+              {{ item.status }}
+
+            </span>
+
+          </td>
+
+
+
+
+          <td class="action-buttons">
+
+
+            <button
+              class="confirm-btn"
+              @click="updateStatus(item._id,'confirmed')"
+              :disabled="item.status==='confirmed'"
+            >
+
+              Confirm
+
+            </button>
+
+
+
+
+            <button
+              class="complete-btn"
+              @click="updateStatus(item._id,'completed')"
+              :disabled="item.status==='completed'"
+            >
+
+              Complete
+
+            </button>
+
+
+          </td>
+
+
+
         </tr>
+
+
 
       </tbody>
 
+
     </table>
+
+
+    </div>
+
 
   </div>
 </template>
 
 <style scoped>
-.appointments{
-    padding:20px;
+
+
+.appointments-page{
+
+    min-height:100%;
+
 }
 
-table{
+
+
+
+.page-title{
+
+    color:var(--text);
+
+    font-size:32px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+
+.loading-text{
+
+    color:var(--muted);
+
+    font-size:18px;
+
+}
+
+
+
+
+
+.table-card{
+
+    background:var(--white);
+
+    padding:30px;
+
+    border-radius:22px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+    overflow-x:auto;
+
+}
+
+
+
+
+
+.appointments-table{
+
     width:100%;
+
     border-collapse:collapse;
+
 }
 
-th,
-td{
-    padding:10px;
-    text-align:center;
+
+
+
+
+.appointments-table th{
+
+    padding:16px;
+
+    text-align:left;
+
+    color:white;
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
 }
+
+
+
+
+
+.appointments-table td{
+
+    padding:16px;
+
+    color:var(--text);
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+
+
+
+.appointments-table tr:hover{
+
+    background:#f8fafc;
+
+}
+
+
+
+
+
+.patient-name{
+
+    font-weight:700;
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+.status{
+
+    padding:8px 15px;
+
+    border-radius:20px;
+
+    background:rgba(20,184,166,.15);
+
+    color:var(--primary);
+
+    font-size:13px;
+
+    font-weight:700;
+
+    text-transform:capitalize;
+
+}
+
+
+
+
+
+.action-buttons{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+
+
+
 
 button{
-    margin:3px;
-    padding:6px 12px;
+
+    border:none;
+
+    padding:10px 15px;
+
+    border-radius:10px;
+
     cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+    transition:.3s;
+
 }
+
+
+
+
+
+.confirm-btn{
+
+    background:var(--primary);
+
+}
+
+
+
+
+
+.complete-btn{
+
+    background:var(--secondary);
+
+}
+
+
+
+
+
+button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+
+
+
+button:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+
+
+
+
+.empty-data{
+
+    text-align:center;
+
+    color:var(--muted);
+
+    padding:30px;
+
+}
+
+
+
 </style>
+
+
