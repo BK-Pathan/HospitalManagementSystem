@@ -147,7 +147,6 @@ message:error.message
 // ======================
 // Create Doctor
 // ======================
-
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
@@ -159,6 +158,8 @@ try{
 
 const {
 name,
+email,
+password,
 specialties,
 qualifications,
 experience,
@@ -168,15 +169,32 @@ availability
 
 
 
-// create user
+// Check email already exists
+
+const existingUser = await User.findOne({
+    email
+});
+
+
+if(existingUser){
+
+return res.status(400).json({
+message:"Email already exists"
+});
+
+}
+
+
+
+// Create login user
 
 const user = await User.create({
 
 name,
 
-email:`${Date.now()}@doctor.com`,
+email,
 
-password:await bcrypt.hash("123456",10),
+password:await bcrypt.hash(password,10),
 
 role:"doctor"
 
@@ -185,7 +203,7 @@ role:"doctor"
 
 
 
-// create doctor profile
+// Create doctor profile
 
 const doctor = await Doctor.create({
 
@@ -217,7 +235,8 @@ doctor
 });
 
 
-}catch(error){
+}
+catch(error){
 
 
 console.log(error);
@@ -233,10 +252,6 @@ message:error.message
 }
 
 };
-
-
-
-
 // ======================
 // Update Doctor
 // ======================
@@ -348,7 +363,8 @@ $options:"i"
 // Doctors
 
 const doctors = await Doctor.find(filter)
-
+// const doctors = await Doctor.find(filter)
+.populate("user","email")
 .sort({
 experience:-1
 })

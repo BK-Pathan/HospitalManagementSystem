@@ -15,7 +15,8 @@ const specialties = ref("");
 const qualifications = ref("");
 const experience = ref("");
 const contactInformation = ref("");
-
+const email = ref("");
+const password = ref("");
 const search = ref("");
 
 
@@ -187,7 +188,9 @@ const data={
 
 
 name:name.value,
+email:email.value,
 
+password:password.value,
 
 specialties:
 Array.isArray(specialties.value)
@@ -288,8 +291,7 @@ name.value=doctor.name;
 
 
 specialties.value =
-doctor.specialties.join(",");
-
+doctor.specialties?.join(", ");
 
 qualifications.value =
 doctor.qualifications;
@@ -310,18 +312,13 @@ doctor.availability || [];
 
 };
 
-
-
-
 // ======================
 // Delete Doctor
 // ======================
 
 const deleteDoctor = async(id)=>{
 
-
 try{
-
 
 await api.delete(
 
@@ -329,13 +326,9 @@ await api.delete(
 
 );
 
-
 alert("Doctor Deleted");
 
-
 getDoctors();
-
-
 
 }catch(error){
 
@@ -345,11 +338,7 @@ error.response?.data || error.message
 
 }
 
-
 };
-
-
-
 
 // ======================
 // Clear Form
@@ -501,7 +490,17 @@ placeholder="Search Doctor..."
             v-model="contactInformation"
             placeholder="Contact"
             />
+<input
+v-model="email"
+placeholder="Doctor Email"
+/>
 
+
+<input
+v-model="password"
+placeholder="Doctor Password"
+type="password"
+/>
 
         </div>
 
@@ -657,6 +656,7 @@ placeholder="Search Doctor..."
         <tr>
 
         <th>Name</th>
+        <th>Email</th>
         <th>Speciality</th>
         <th>Qualification</th>
         <th>Experience</th>
@@ -677,10 +677,12 @@ placeholder="Search Doctor..."
         {{doctor.name}}
         </td>
 
-
-        <td>
-        {{doctor.specialties}}
-        </td>
+<td>
+{{doctor.user?.email}}
+</td>
+<td>
+{{doctor.specialties?.join(", ")}}
+</td>
 
 
         <td>
