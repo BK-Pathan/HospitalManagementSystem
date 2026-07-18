@@ -448,7 +448,17 @@ Speciality:
 {{doctor.specialties?.join(", ")}}
 </p>
 
+<p class="rating">
 
+⭐
+{{doctor.averageRating || 0}}
+/ 5
+
+<span>
+({{doctor.totalReviews || 0}} Reviews)
+</span>
+
+</p>
 <p
 :class="doctor.available ? 'available':'not-available'"
 >
@@ -647,6 +657,22 @@ border-bottom:1px solid var(--border);
 .chart-card tbody tr:hover{
 
 background:#f8fafc;
+
+}
+.rating{
+
+color:#f59e0b;
+font-weight:700;
+margin:8px 0;
+
+}
+
+
+.rating span{
+
+color:var(--muted);
+font-size:13px;
+font-weight:500;
 
 }
 </style>

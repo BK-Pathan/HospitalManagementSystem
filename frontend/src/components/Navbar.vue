@@ -1,56 +1,109 @@
 <script setup>
 
-import { computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import api from "../api/axios";
 
 
-const role = computed(() => localStorage.getItem("role"));
+const role = computed(()=>localStorage.getItem("role"));
 
-const user = computed(() => {
-    return JSON.parse(localStorage.getItem("user")) || {};
+
+const user = ref({});
+
+
+// latest user profile get karo
+const getProfile = async()=>{
+
+try{
+
+const res = await api.get("/auth/profile");
+
+
+user.value = res.data;
+
+
+// localStorage update bhi kar do
+
+localStorage.setItem(
+    "user",
+    JSON.stringify(res.data)
+);
+
+
+}catch(error){
+
+console.log(error);
+
+}
+
+};
+
+
+
+onMounted(()=>{
+
+getProfile();
+
 });
 
 
-const name = computed(() => {
-    return user.value.name || "";
+
+const name = computed(()=>{
+
+return user.value.name || "";
+
 });
 
 
-const userRole = computed(() => {
-    const currentRole = role.value;
 
-    if(currentRole === "admin")
-        return "Admin";
+const userRole = computed(()=>{
 
-    if(currentRole === "doctor")
-        return "Doctor";
+const currentRole = role.value;
 
-    if(currentRole === "patient")
-        return "Patient";
 
-    return "";
+if(currentRole==="admin")
+return "Admin";
+
+
+if(currentRole==="doctor")
+return "Doctor";
+
+
+if(currentRole==="patient")
+return "Patient";
+
+
+return "";
+
+
 });
+
 
 
 const title = computed(()=>{
 
-    const currentRole = role.value;
 
-    if(currentRole==="admin")
-        return "Admin Panel";
+const currentRole = role.value;
 
-    if(currentRole==="doctor")
-        return "Doctor Panel";
 
-    if(currentRole==="patient")
-        return "Patient Panel";
+if(currentRole==="admin")
+return "Admin Panel";
 
-    return "Hospital";
+
+if(currentRole==="doctor")
+return "Doctor Panel";
+
+
+if(currentRole==="patient")
+return "Patient Panel";
+
+
+return "Hospital";
+
 
 });
 
 
 </script>
-
 
 <template>
 

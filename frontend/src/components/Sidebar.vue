@@ -68,6 +68,10 @@ path:"/admin/users"
 {
     name:"🧑‍🤝‍🧑Patient Profile",
     path:"/admin/patientprofile",
+},
+{
+name:"👤 Profile",
+path:"/admin/profile"
 }
 
 

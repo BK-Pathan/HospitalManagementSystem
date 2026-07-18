@@ -174,3 +174,74 @@ exports.logout = (req,res)=>{
     });
 
 };
+
+
+// Get Logged In User Profile
+
+exports.getProfile = async(req,res)=>{
+
+try{
+
+const user = await User.findById(req.user.id)
+.select("-password");
+
+
+res.status(200).json(user);
+
+
+}catch(error){
+
+res.status(500).json({
+message:error.message
+});
+
+}
+
+};
+
+
+
+
+// Update Profile
+
+exports.updateProfile = async(req,res)=>{
+
+try{
+
+
+const user = await User.findByIdAndUpdate(
+
+req.user.id,
+
+{
+name:req.body.name,
+email:req.body.email
+},
+
+{
+new:true
+}
+
+)
+.select("-password");
+
+
+
+res.status(200).json({
+
+message:"Profile Updated",
+
+user
+
+});
+
+
+}catch(error){
+
+res.status(500).json({
+message:error.message
+});
+
+}
+
+};  

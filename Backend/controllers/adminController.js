@@ -907,13 +907,17 @@ message:error.message
 // Doctor Availability Status
 // ======================
 
+// ======================
+// Doctor Availability Status
+// ======================
+
 exports.doctorAvailabilityStatus = async(req,res)=>{
 
 try{
 
 const today = new Date()
 .toLocaleString("en-US",{
-weekday:"short"
+    weekday:"short"
 });
 
 
@@ -922,7 +926,9 @@ const doctors = await Doctor.find()
 
 
 
-const result = doctors.map(doctor=>{
+const result = await Promise.all(
+
+doctors.map(async(doctor)=>{
 
 
 const availableToday = doctor.availability?.some(
@@ -931,38 +937,89 @@ const availableToday = doctor.availability?.some(
 
 
 
+// Doctor Rating
+
+const ratings = await Feedback.aggregate([
+
+{
+$match:{
+doctor:doctor._id
+}
+},
+
+{
+$group:{
+_id:null,
+
+averageRating:{
+$avg:"$rating"
+},
+
+totalReviews:{
+$sum:1
+}
+
+}
+
+}
+
+]);
+
+
+
 return {
 
-name: doctor.name,
+name:doctor.name,
 
-specialties: doctor.specialties,
 
-status: availableToday 
+specialties:doctor.specialties || [],
+
+
+status:availableToday
 ? "Available Today"
 : "Not Available",
 
-available: availableToday
+
+available:availableToday,
+
+
+averageRating:
+ratings.length
+? Number(ratings[0].averageRating.toFixed(1))
+:0,
+
+
+totalReviews:
+ratings.length
+? ratings[0].totalReviews
+:0
+
 
 };
 
 
-});
+
+})
+
+);
 
 
 
 res.json(result);
 
 
-}catch(error){
 
+}
+catch(error){
+
+console.log(error);
 
 res.status(500).json({
-
 message:error.message
-
 });
 
 
 }
 
 };
+
