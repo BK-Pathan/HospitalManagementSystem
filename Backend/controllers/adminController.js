@@ -18,6 +18,7 @@ const appointments = await Appointment.countDocuments();
 
 
 
+
 // Appointment Status Count
 
 const appointmentStatus = await Appointment.aggregate([
@@ -32,6 +33,7 @@ $sum:1
 }
 
 ]);
+
 
 
 
@@ -53,88 +55,159 @@ $sum:1
 }
 },
 
+
 {
 $sort:{
 "_id.month":1
 }
 }
 
+
 ]);
 
-// ======================
+
+
+
+
 // Daily New Patients
-// ======================
 
 const dailyPatients = await Patient.aggregate([
 
 {
-    $group:{
+$group:{
 
-        _id:{
+_id:{
 
-            day:{
-                $dayOfMonth:"$createdAt"
-            },
+day:{
+$dayOfMonth:"$createdAt"
+},
 
-            month:{
-                $month:"$createdAt"
-            },
+month:{
+$month:"$createdAt"
+},
 
-            year:{
-                $year:"$createdAt"
-            }
+year:{
+$year:"$createdAt"
+}
 
-        },
+},
 
+total:{
+$sum:1
+}
 
-        total:{
-            $sum:1
-        }
-
-    }
+}
 
 },
 
 
 {
-    $sort:{
+$sort:{
 
-        "_id.year":1,
-        "_id.month":1,
-        "_id.day":1
+"_id.year":1,
+"_id.month":1,
+"_id.day":1
 
-    }
+}
+
 }
 
 
 ]);
 
 
+
+
+
+
+
+// ======================
+// Today's Appointments
+// ======================
+
+
+const today = new Date();
+
+
+const start = new Date(today);
+
+start.setHours(0,0,0,0);
+
+
+
+const end = new Date(today);
+
+end.setHours(23,59,59,999);
+
+
+
+
+
+const todaysAppointments = await Appointment.find({
+
+    appointmentDateTime:{
+        $gte:start,
+        $lte:end
+    }
+
+})
+.populate({
+    path:"patient",
+    populate:{
+        path:"user",
+        select:"name email"
+    }
+})
+.populate({
+    path:"doctor",
+    select:"name specialties"
+})
+.limit(5);
+
+
+
+
+
 res.status(200).json({
 
 users,
+
 doctors,
+
 patients,
+
 appointments,
+
 
 appointmentStatus,
 
+
 monthlyAppointments,
-dailyPatients
+
+
+dailyPatients,
+
+
+todaysAppointments
+
 
 });
+
 
 
 }
 catch(error){
 
+
 console.log(error);
+
 
 res.status(500).json({
 
 message:error.message
 
 });
+
 
 }
 
@@ -714,6 +787,181 @@ console.log("Doctor Performance Error:",error);
 res.status(500).json({
 message:error.message
 });
+
+}
+
+};
+
+// ======================
+// Create Patient By Admin
+// ======================
+
+exports.createPatient = async(req,res)=>{
+
+try{
+
+
+const {
+name,
+email,
+password,
+age,
+gender,
+contactInformation,
+medicalHistory,
+DescribeYourProblem,
+insuranceDetails
+}=req.body;
+
+
+
+// check existing user
+
+const existingUser = await User.findOne({
+email
+});
+
+
+if(existingUser){
+
+return res.status(400).json({
+
+message:"Email already exists"
+
+});
+
+}
+
+
+
+// create user
+
+const user = await User.create({
+
+name,
+
+email,
+
+password:await bcrypt.hash(password,10),
+
+role:"patient"
+
+});
+
+
+
+
+// create patient profile
+
+const patient = await Patient.create({
+
+user:user._id,
+
+age,
+
+gender,
+
+contactInformation,
+
+medicalHistory,
+
+DescribeYourProblem,
+
+insuranceDetails,
+
+profilecompleted:true
+
+});
+
+
+
+
+res.status(201).json({
+
+message:"Patient created successfully",
+
+patient
+
+});
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+};
+
+// ======================
+// Doctor Availability Status
+// ======================
+
+exports.doctorAvailabilityStatus = async(req,res)=>{
+
+try{
+
+const today = new Date()
+.toLocaleString("en-US",{
+weekday:"short"
+});
+
+
+const doctors = await Doctor.find()
+.select("name specialties availability");
+
+
+
+const result = doctors.map(doctor=>{
+
+
+const availableToday = doctor.availability?.some(
+(item)=> item.day === today
+);
+
+
+
+return {
+
+name: doctor.name,
+
+specialties: doctor.specialties,
+
+status: availableToday 
+? "Available Today"
+: "Not Available",
+
+available: availableToday
+
+};
+
+
+});
+
+
+
+res.json(result);
+
+
+}catch(error){
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
 
 }
 

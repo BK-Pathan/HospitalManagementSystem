@@ -25,7 +25,9 @@ ChartJS.register(
     LinearScale,
     BarController
 );
+const doctorStatus = ref([]);
 
+const todaysAppointments = ref([]);
 const stats = ref({
     users:0,
     doctors:0,
@@ -95,6 +97,7 @@ const getStats = async()=>{
         console.log("Dashboard Data:", res.data);
 
         stats.value = res.data;
+        todaysAppointments.value = res.data.todaysAppointments || [];
 
         // =====================
         // Appointment Status
@@ -201,6 +204,37 @@ const getStats = async()=>{
     catch(error){
         console.log("Doctor performance error:", error);
     }
+    // =====================
+// Doctor Availability
+// =====================
+
+try{
+
+
+const doctorStatusRes = await api.get(
+"/admin/doctor-status"
+);
+
+
+doctorStatus.value = doctorStatusRes.data;
+
+
+console.log(
+"Doctor Status:",
+doctorStatus.value
+);
+
+
+
+}catch(error){
+
+console.log(
+"Doctor status error:",
+error
+);
+
+}
+
 
 };
 
@@ -258,6 +292,76 @@ onMounted(()=>{
             </div>
         </div>
 
+        <div class="chart-card">
+
+    <h2>📅 Today's Appointments</h2>
+
+    <table v-if="todaysAppointments.length">
+
+        <thead>
+
+            <tr>
+
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Time</th>
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr
+            v-for="appointment in todaysAppointments"
+            :key="appointment._id"
+            >
+
+                <td>
+
+                    {{appointment.patient?.user?.name}}
+
+                </td>
+
+                <td>
+
+                    {{ appointment.doctor?.name }}
+
+                </td>
+
+                <td>
+
+{{ 
+new Date(appointment.appointmentDateTime)
+.toLocaleTimeString([],{
+hour:"2-digit",
+minute:"2-digit"
+})
+}}
+
+                </td>
+
+                <td>
+
+                    {{ appointment.status }}
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <p v-else>
+
+        No appointments today.
+
+    </p>
+
+</div>
+
         <!-- Status Chart -->
         <div class="chart-card">
             <h2>Appointment Status</h2>
@@ -309,6 +413,66 @@ onMounted(()=>{
                 />
             </div>
         </div>
+
+        <!-- Doctor Availability -->
+
+<div class="chart-card">
+
+<h2>
+Doctor Availability Today
+</h2>
+
+
+<!-- <div class="doctor-status"> -->
+
+
+<div class="doctor-status">
+
+
+<div
+v-for="doctor in doctorStatus"
+:key="doctor.name"
+class="doctor-item"
+>
+
+
+<div>
+
+<h3>
+👨‍⚕️ {{doctor.name}}
+</h3>
+
+
+<p class="speciality">
+Speciality:
+{{doctor.specialties?.join(", ")}}
+</p>
+
+
+<p
+:class="doctor.available ? 'available':'not-available'"
+>
+
+{{doctor.available 
+? '🟢 Available Today' 
+: '🔴 Not Available'}}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<!-- </div> -->
+
+
+</div>
 
     </div>
 
@@ -396,5 +560,93 @@ onMounted(()=>{
     height:350px;
     width:100%;
 }
+.doctor-status{
 
+display:flex;
+flex-direction:column;
+gap:15px;
+
+}
+
+
+.doctor-item{
+
+background:#f8fafc;
+padding:18px;
+border-radius:15px;
+
+display:flex;
+justify-content:space-between;
+
+border:1px solid var(--border);
+
+}
+
+
+
+.doctor-item h3{
+
+margin:0;
+color:var(--text);
+
+}
+
+
+
+.available{
+
+color:#16a34a;
+font-weight:700;
+
+}
+
+
+
+.not-available{
+
+color:#dc2626;
+font-weight:700;
+
+}
+.speciality{
+
+color:var(--muted);
+margin:8px 0;
+
+font-size:14px;
+
+}
+.chart-card table{
+
+width:100%;
+
+border-collapse:collapse;
+
+margin-top:15px;
+
+}
+
+.chart-card th{
+
+background:var(--primary);
+
+color:white;
+
+padding:12px;
+
+}
+
+.chart-card td{
+
+padding:12px;
+
+border-bottom:1px solid var(--border);
+
+}
+
+.chart-card tbody tr:hover{
+
+background:#f8fafc;
+
+}
 </style>

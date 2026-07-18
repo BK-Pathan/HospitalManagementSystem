@@ -17,7 +17,9 @@ const {
     changeRole,
     getAllUsers,
     cancelAppointment,
-    doctorPerformance
+    doctorPerformance,
+    createPatient,
+    doctorAvailabilityStatus
 
 } = require("../controllers/adminController");
 
@@ -111,6 +113,20 @@ router.get(
 auth,
 role("admin"),
 doctorPerformance
+);
+
+router.post(
+"/patient",
+auth,
+role("admin"),
+createPatient
+);
+
+router.get(
+"/doctor-status",
+auth,
+role("admin"),
+doctorAvailabilityStatus
 );
 
 module.exports = router;

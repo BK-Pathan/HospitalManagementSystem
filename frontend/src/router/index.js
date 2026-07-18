@@ -15,7 +15,7 @@ import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import Patients from "../views/admin/Patinets.vue";
 import Appointments from "../views/admin/Appointments.vue";
 import UserManagement from "../views/admin/UserManagement.vue";
-
+import PatientProfile from "../views/admin/PatientsManagement.vue"
 // Patient Pages
 import PatientDashboard from "../views/patient/PatientDashboard.vue";
 import Doctors from "../views/patient/Doctors.vue";
@@ -85,6 +85,10 @@ const routes = [
             path:"patients",
             component:Patients
         },
+{
+    path:"patientprofile",
+    component:PatientProfile
+},
 
 
         {
