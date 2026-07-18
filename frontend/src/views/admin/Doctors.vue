@@ -1,11 +1,14 @@
 <script setup>
 
-import {ref,onMounted} from "vue";
+import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 
 
-const doctors = ref([]);
+// ======================
+// States
+// ======================
 
+const doctors = ref([]);
 
 const name = ref("");
 const specialties = ref("");
@@ -13,8 +16,16 @@ const qualifications = ref("");
 const experience = ref("");
 const contactInformation = ref("");
 
+const search = ref("");
 
-// Edit mode
+
+// Pagination
+
+const page = ref(1);
+const totalPages = ref(1);
+
+
+// Edit
 
 const editMode = ref(false);
 const doctorId = ref(null);
@@ -31,56 +42,84 @@ const availability = ref([]);
 
 
 
-// Convert 24 hour to 12 hour
+// ======================
+// Convert Time
+// ======================
 
 const convertTo12Hour = (time)=>{
 
+    let [hour, minute] = time.split(":");
 
-let [hour,minute] = time.split(":");
+    hour = parseInt(hour);
 
+    let ampm = hour >= 12 ? "PM" : "AM";
 
-hour = parseInt(hour);
-
-
-let ampm = hour >= 12 ? "PM" : "AM";
-
-
-hour = hour % 12 || 12;
+    hour = hour % 12 || 12;
 
 
-return `${hour.toString().padStart(2,"0")}:${minute} ${ampm}`;
+    return `${hour.toString().padStart(2,"0")}:${minute} ${ampm}`;
 
-
-}
+};
 
 
 
 
-
-// Get all doctors
+// ======================
+// Get Doctors
+// ======================
 
 const getDoctors = async()=>{
 
 try{
 
-const res = await api.get("/admin/doctors");
 
-doctors.value = res.data;
+const res = await api.get("/admin/doctors",{
+
+params:{
+page:page.value,
+search:search.value
+}
+
+});
+
+
+doctors.value = res.data.doctors;
+
+totalPages.value = res.data.totalPages;
+
 
 
 }catch(error){
 
-console.log("ERROR:",error.response?.data || error.message);
+console.log(
+error.response?.data || error.message
+);
 
 }
 
-}
+};
 
 
 
 
+// ======================
+// Search
+// ======================
 
+const searchDoctors = ()=>{
+
+page.value = 1;
+
+getDoctors();
+
+};
+
+
+
+
+// ======================
 // Add Availability
+// ======================
 
 const addAvailability = ()=>{
 
@@ -116,25 +155,27 @@ startTime.value="";
 endTime.value="";
 
 
-}
+};
 
 
 
 
-
+// ======================
 // Remove Availability
+// ======================
 
 const removeAvailability=(index)=>{
 
 availability.value.splice(index,1);
 
-}
+};
 
 
 
 
-
+// ======================
 // Save Doctor
+// ======================
 
 const saveDoctor = async()=>{
 
@@ -153,14 +194,14 @@ Array.isArray(specialties.value)
 ?
 specialties.value
 :
-[specialties.value],
+specialties.value.split(","),
 
 
 
 qualifications:qualifications.value,
 
 
-experience:experience.value,
+experience:Number(experience.value),
 
 
 contactInformation:contactInformation.value,
@@ -190,6 +231,7 @@ data
 alert("Doctor Updated");
 
 
+
 }else{
 
 
@@ -209,7 +251,6 @@ alert("Doctor Added");
 
 
 
-
 clearForm();
 
 getDoctors();
@@ -218,18 +259,21 @@ getDoctors();
 
 }catch(error){
 
-console.log(error);
+console.log(
+error.response?.data || error.message
+);
 
 }
 
 
-}
+};
 
 
 
 
-
+// ======================
 // Edit Doctor
+// ======================
 
 const editDoctor=(doctor)=>{
 
@@ -240,35 +284,40 @@ editMode.value=true;
 doctorId.value=doctor._id;
 
 
-
 name.value=doctor.name;
 
 
-specialties.value=doctor.specialties.join(",");
+specialties.value =
+doctor.specialties.join(",");
 
 
-qualifications.value=doctor.qualifications;
+qualifications.value =
+doctor.qualifications;
 
 
-experience.value=doctor.experience;
+experience.value =
+doctor.experience;
 
 
-contactInformation.value=doctor.contactInformation;
+contactInformation.value =
+doctor.contactInformation;
 
 
-
-availability.value = doctor.availability || [];
-
-
-}
-
-
+availability.value =
+doctor.availability || [];
 
 
 
+};
+
+
+
+
+// ======================
 // Delete Doctor
+// ======================
 
-const deleteDoctor=async(id)=>{
+const deleteDoctor = async(id)=>{
 
 
 try{
@@ -290,18 +339,21 @@ getDoctors();
 
 }catch(error){
 
-console.log(error);
+console.log(
+error.response?.data || error.message
+);
 
 }
 
 
-}
+};
 
 
 
 
-
-// Clear
+// ======================
+// Clear Form
+// ======================
 
 const clearForm=()=>{
 
@@ -325,11 +377,47 @@ editMode.value=false;
 doctorId.value=null;
 
 
+};
+
+
+
+
+// ======================
+// Pagination
+// ======================
+
+const nextPage=()=>{
+
+if(page.value < totalPages.value){
+
+page.value++;
+
+getDoctors();
+
 }
 
+};
 
 
 
+const previousPage=()=>{
+
+if(page.value > 1){
+
+page.value--;
+
+getDoctors();
+
+}
+
+};
+
+
+
+
+// ======================
+// Mounted
+// ======================
 
 onMounted(()=>{
 
@@ -366,7 +454,11 @@ getDoctors();
 
     </div>
 
-
+<input
+v-model="search"
+placeholder="Search Doctor..."
+@input="searchDoctors"
+/>
 
 
     <div class="doctor-form card">
@@ -665,7 +757,25 @@ getDoctors();
 
 
         </table>
+<button 
+@click="previousPage"
+:disabled="page===1"
+>
+Previous
+</button>
 
+
+<span>
+{{page}} / {{totalPages}}
+</span>
+
+
+<button
+@click="nextPage"
+:disabled="page===totalPages"
+>
+Next
+</button>
         </div>
 
 

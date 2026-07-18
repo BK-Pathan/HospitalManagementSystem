@@ -1,155 +1,143 @@
 const Doctor = require('../models/doctor');
 const Patient = require('../models/patient');
 const Appointment = require('../models/appointment');
-
-
-// // Create Doctor
-// exports.createDoctor = async(req,res)=>{
-
-//     try{
-
-//         const doctor = await Doctor.create(req.body);
-
-//         res.status(201).json({
-//             message:"Doctor created",
-//             doctor
-//         });
-
-//     }catch(error){
-
-//         res.status(500).json({
-//             message:error.message
-//         });
-
-//     }
-
-// };
-
-
-// // Update Doctor
-// exports.updateDoctor = async(req,res)=>{
-
-//     try{
-
-//         const doctor = await Doctor.findByIdAndUpdate(
-//             req.params.id,
-//             req.body,
-//             {new:true}
-//         );
-
-
-//         res.json({
-//             message:"Doctor updated",
-//             doctor
-//         });
-
-
-//     }catch(error){
-
-//         res.status(500).json({
-//             message:error.message
-//         });
-
-//     }
-
-// };
-
-
-
-// // Delete Doctor
-// exports.deleteDoctor = async(req,res)=>{
-
-//     try{
-
-//         await Doctor.findByIdAndDelete(req.params.id);
-
-
-//         res.json({
-//             message:"Doctor deleted"
-//         });
-
-
-//     }catch(error){
-
-//         res.status(500).json({
-//             message:error.message
-//         });
-
-//     }
-
-// };
-
-
-
-// // View All Doctors
-// exports.getAllDoctors = async(req,res)=>{
-
-//     const doctors = await Doctor.find();
-
-//     res.json(doctors);
-
-// };
-
-
-
-// // View All Patients
-// exports.getAllPatients = async(req,res)=>{
-
-//     const patients = await Patient.find();
-
-//     res.json(patients);
-
-// };
-
-
-
-// // View All Appointments
-// exports.getAllAppointments = async(req,res)=>{
-
-
-//     const appointments = await Appointment.find()
-//     .populate("doctor","name specialties")
-//     .populate("patient","name");
-
-
-//     res.json(appointments);
-
-
-// };
-
-
-// ======================
-// Dashboard Statistics
-// ======================
+const Feedback = require('../models/feedback');
 
 exports.dashboardStats = async(req,res)=>{
 
-    try{
-
-        const users = await User.countDocuments();
-
-        const doctors = await Doctor.countDocuments();
-
-        const patients = await Patient.countDocuments();
-
-        const appointments = await Appointment.countDocuments();
+try{
 
 
-        res.status(200).json({
-            users,
-            doctors,
-            patients,
-            appointments
-        });
+const users = await User.countDocuments();
+
+const doctors = await Doctor.countDocuments();
+
+const patients = await Patient.countDocuments();
+
+const appointments = await Appointment.countDocuments();
 
 
-    }catch(error){
 
-        res.status(500).json({
-            message:error.message
-        });
+// Appointment Status Count
+
+const appointmentStatus = await Appointment.aggregate([
+
+{
+$group:{
+_id:"$status",
+total:{
+$sum:1
+}
+}
+}
+
+]);
+
+
+
+
+// Monthly Appointments
+
+const monthlyAppointments = await Appointment.aggregate([
+
+{
+$group:{
+_id:{
+month:{
+$month:"$appointmentDateTime"
+}
+},
+total:{
+$sum:1
+}
+}
+},
+
+{
+$sort:{
+"_id.month":1
+}
+}
+
+]);
+
+// ======================
+// Daily New Patients
+// ======================
+
+const dailyPatients = await Patient.aggregate([
+
+{
+    $group:{
+
+        _id:{
+
+            day:{
+                $dayOfMonth:"$createdAt"
+            },
+
+            month:{
+                $month:"$createdAt"
+            },
+
+            year:{
+                $year:"$createdAt"
+            }
+
+        },
+
+
+        total:{
+            $sum:1
+        }
 
     }
+
+},
+
+
+{
+    $sort:{
+
+        "_id.year":1,
+        "_id.month":1,
+        "_id.day":1
+
+    }
+}
+
+
+]);
+
+
+res.status(200).json({
+
+users,
+doctors,
+patients,
+appointments,
+
+appointmentStatus,
+
+monthlyAppointments,
+dailyPatients
+
+});
+
+
+}
+catch(error){
+
+console.log(error);
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
+
 
 };
 
@@ -315,24 +303,91 @@ exports.deleteDoctor = async(req,res)=>{
 // View All Doctors
 // ======================
 
-exports.getAllDoctors = async(req,res)=>{
+exports.getAllDoctors = async (req, res) => {
 
-try{
+try {
 
-const doctors = await Doctor.find()
+
+const search = req.query.search || "";
+
+
+// Pagination
+
+const page = Number(req.query.page) || 1;
+
+const limit = 5;
+
+const skip = (page - 1) * limit;
+
+
+
+const filter = {
+
+$or: [
+
+{
+name:{
+$regex:search,
+$options:"i"
+}
+},
+
+{
+specialties:{
+$regex:search,
+$options:"i"
+}
+}
+
+]
+
+};
+
+
+
+// Doctors
+
+const doctors = await Doctor.find(filter)
+
 .sort({
 experience:-1
+})
+
+.skip(skip)
+
+.limit(limit);
+
+
+
+// Total doctors count
+
+const total = await Doctor.countDocuments(filter);
+
+
+
+res.json({
+
+doctors,
+
+total,
+
+currentPage:page,
+
+totalPages:Math.ceil(total / limit)
+
 });
 
-
-res.json(doctors);
 
 
 }catch(error){
 
+
 res.status(500).json({
+
 message:error.message
+
 });
+
 
 }
 
@@ -340,41 +395,37 @@ message:error.message
 
 
 
-
 // ======================
 // View All Patients
 // ======================
 
-exports.getAllPatients = async(req,res)=>{
+exports.getAllPatients = async (req, res) => {
+  try {
+    const search = req.query.search || "";
 
-try{
+    const patients = await Patient.find()
+      .populate({
+        path: "user",
+        match: {
+          role: "patient",
+          name: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        select: "name email role",
+      });
 
-const patients = await Patient.find()
-.populate({
-    path:"user",
-    match:{
-        role:"patient"
-    },
-    select:"name email role"
-});
+    const filteredPatients = patients.filter(
+      (patient) => patient.user !== null
+    );
 
-
-const filteredPatients = patients.filter(
-    patient => patient.user !== null
-);
-
-
-res.json(filteredPatients);
-
-
-}catch(error){
-
-res.status(500).json({
-message:error.message
-});
-
-}
-
+    res.json(filteredPatients);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 
@@ -383,38 +434,44 @@ message:error.message
 // View All Appointments
 // ======================
 
-exports.getAllAppointments = async(req,res)=>{
+exports.getAllAppointments = async (req, res) => {
+  try {
 
-try{
+    const status = req.query.status;
 
+    let filter = {};
 
-const appointments = await Appointment.find()
-
-.populate(
-"doctor",
-"name specialties"
-)
-
-.populate({
-    path:"patient",
-    populate:{
-        path:"user",
-        select:"name email"
+    if (status) {
+      filter.status = status;
     }
-});
 
 
-res.json(appointments);
+    const appointments = await Appointment.find(filter)
+
+      .populate(
+        "doctor",
+        "name specialties"
+      )
+
+      .populate({
+        path: "patient",
+        populate: {
+          path: "user",
+          select: "name email"
+        }
+      });
 
 
-}catch(error){
+    res.json(appointments);
 
-res.status(500).json({
-message:error.message
-});
 
-}
+  } catch (error) {
 
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
 };
 
 //change role
@@ -493,6 +550,8 @@ message:error.message
 
 };
 
+
+
 // ======================
 // View All Users
 // ======================
@@ -514,6 +573,131 @@ catch(error){
     res.status(500).json({
         message:error.message
     });
+
+}
+
+};
+
+exports.cancelAppointment = async(req,res)=>{
+
+try{
+
+
+const {reason}=req.body;
+
+
+const appointment = await Appointment.findByIdAndUpdate(
+
+req.params.id,
+
+{
+status:"cancelled",
+cancelReason:reason
+},
+
+{
+new:true
+}
+
+);
+
+
+
+res.json({
+
+message:"Appointment cancelled successfully",
+
+appointment
+
+});
+
+
+
+}catch(error){
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+};
+
+
+exports.doctorPerformance = async(req,res)=>{
+
+try{
+
+
+const performance = await Feedback.aggregate([
+
+{
+$group:{
+_id:"$doctor",
+
+averageRating:{
+$avg:"$rating"
+},
+
+totalReviews:{
+$sum:1
+}
+
+}
+
+},
+
+
+{
+$lookup:{
+from:"doctors",
+localField:"_id",
+foreignField:"_id",
+as:"doctor"
+}
+
+},
+
+
+{
+$unwind:"$doctor"
+},
+
+
+{
+$project:{
+_id:0,
+doctorName:"$doctor.name",
+averageRating:{
+$round:[
+"$averageRating",
+1
+]
+},
+totalReviews:1
+}
+
+}
+
+
+]);
+
+
+res.status(200).json(performance);
+
+
+}
+catch(error){
+
+console.log("Doctor Performance Error:",error);
+
+res.status(500).json({
+message:error.message
+});
 
 }
 

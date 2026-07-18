@@ -2,7 +2,10 @@
 
 import {ref,onMounted} from "vue";
 import api from "../../api/axios";
-
+import Papa from "papaparse";
+import {saveAs} from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const patients = ref([]);
 
@@ -37,6 +40,103 @@ onMounted(()=>{
 
 });
 
+// serach by name
+const search = ref("");
+
+const searchPatients = async()=>{
+
+const res = await api.get("/admin/patients",{
+
+params:{
+search:search.value
+}
+
+});
+
+patients.value = res.data;
+
+}
+
+// Export Patients CSV
+
+const exportCSV = ()=>{
+
+    const data = patients.value.map(patient=>({
+
+        Name: patient.user.name,
+        Email: patient.user.email,
+        Role: patient.user.role,
+        VisitReason: patient.DescribeYourProblem,
+        ProfileCompleted: patient.profilecompleted ? "Completed" : "Incomplete",
+        CreatedAt: new Date(patient.createdAt).toLocaleDateString()
+
+    }));
+
+
+    const csv = Papa.unparse(data);
+
+
+    const blob = new Blob(
+        [csv],
+        {
+            type:"text/csv;charset=utf-8;"
+        }
+    );
+
+
+    saveAs(blob,"patients.csv");
+
+};
+
+// Export Patients PDF
+
+const exportPDF = ()=>{
+
+    const doc = new jsPDF();
+
+
+    doc.text(
+        "Patients Report",
+        14,
+        15
+    );
+
+
+    const tableData = patients.value.map(patient=>[
+
+        patient.user.name,
+        patient.user.email,
+        patient.user.role,
+        patient.DescribeYourProblem,
+        patient.profilecompleted ? "Completed" : "Incomplete"
+
+    ]);
+
+
+
+    autoTable(doc,{
+
+        head:[
+            [
+                "Name",
+                "Email",
+                "Role",
+                "Visit Reason",
+                "Profile"
+            ]
+        ],
+
+        body:tableData,
+
+        startY:25
+
+    });
+
+
+
+    doc.save("patients.pdf");
+
+};
 
 </script>
 
@@ -56,8 +156,25 @@ onMounted(()=>{
             Total Patients
             <strong>{{ patients.length }}</strong>
         </div>
+        <div class="export-buttons">
+
+<button @click="exportCSV">
+Export CSV
+</button>
+
+
+<button @click="exportPDF">
+Export PDF
+</button>
+
+</div>
     </div>
 
+    <input
+v-model="search"
+placeholder="Search Patient"
+@input="searchPatients"
+/>
 
     <div class="table-card">
 

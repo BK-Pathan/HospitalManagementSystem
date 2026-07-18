@@ -51,7 +51,70 @@ getAppointments();
 
 });
 
+const status = ref("");
 
+const sortAppointments = async()=>{
+
+const res = await api.get("/admin/appointments",{
+
+params:{
+status:status.value
+}
+
+});
+
+appointments.value = res.data;
+
+}
+
+const cancelAppointment = async(id)=>{
+
+
+const reason = prompt(
+"Enter cancellation reason"
+);
+
+
+
+if(!reason){
+
+return;
+
+}
+
+
+
+try{
+
+
+await api.put(
+
+`/admin/appointment/${id}/cancel`,
+
+{
+reason
+}
+
+);
+
+
+alert("Appointment cancelled");
+
+
+getAppointments();
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+};
 </script>
 
 
@@ -76,14 +139,43 @@ getAppointments();
         </div>
 
 
-
         <div class="badge">
             Hospital Admin
         </div>
 
-
     </div>
 
+
+
+    <!-- Filter -->
+
+    <select
+    v-model="status"
+    @change="sortAppointments"
+    >
+
+        <option value="">
+            All
+        </option>
+
+        <option value="pending">
+            Pending
+        </option>
+
+        <option value="confirmed">
+            Confirmed
+        </option>
+
+        <option value="completed">
+            Completed
+        </option>
+
+        <option value="cancelled">
+            Cancelled
+        </option>
+
+
+    </select>
 
 
 
@@ -101,33 +193,42 @@ getAppointments();
 
         <tr>
 
-        <th>
-            Doctor
-        </th>
+            <th>
+                Doctor
+            </th>
 
 
-        <th>
-            Speciality
-        </th>
+            <th>
+                Speciality
+            </th>
 
 
-        <th>
-            Patient
-        </th>
+            <th>
+                Patient
+            </th>
 
 
-        <th>
-            Appointment Date
-        </th>
+            <th>
+                Appointment Date
+            </th>
 
 
-        <th>
-            Status
-        </th>
+            <th>
+                Status
+            </th>
+
+
+            <th>
+                Action
+            </th>
+
+
+            <th>
+                Cancel Reason
+            </th>
 
 
         </tr>
-
 
         </thead>
 
@@ -138,6 +239,7 @@ getAppointments();
         <tbody>
 
 
+
         <tr
         v-for="appointment in appointments"
         :key="appointment._id"
@@ -145,102 +247,239 @@ getAppointments();
 
 
 
-        <td>
 
-        <div class="doctor">
+            <!-- Doctor -->
 
-            <div class="avatar">
-                👨‍⚕️
-            </div>
+            <td>
+
+                <div class="doctor">
 
 
-            <span>
-                {{appointment.doctor?.name || "N/A"}}
-            </span>
-
-        </div>
-
-        </td>
+                    <div class="avatar">
+                        👨‍⚕️
+                    </div>
 
 
 
+                    <span>
 
+                        {{
+                        appointment.doctor?.name 
+                        || 
+                        "N/A"
+                        }}
 
-        <td>
-
-        <span class="speciality">
-
-            {{appointment.doctor?.specialties || "N/A"}}
-
-        </span>
-
-        </td>
-
+                    </span>
 
 
 
+                </div>
 
 
-        <td>
-
-        {{appointment.patient?.user?.name || "Not Booked"}}
-
-        </td>
+            </td>
 
 
 
 
 
 
-        <td>
 
-        {{formatDateTime(appointment.appointmentDateTime)}}
-
-        </td>
+            <!-- Speciality -->
 
 
+            <td>
+
+
+                <span class="speciality">
+
+
+                {{
+                appointment.doctor?.specialties?.join(", ")
+                ||
+                "N/A"
+                }}
+
+
+                </span>
+
+
+            </td>
 
 
 
 
-        <td>
 
 
-        <span
-        class="status"
-        :class="appointment.status"
+
+            <!-- Patient -->
+
+
+            <td>
+
+
+                {{
+                appointment.patient?.user?.name
+                ||
+                "Not Booked"
+                }}
+
+
+            </td>
+
+
+
+
+
+
+
+
+            <!-- Date -->
+
+
+            <td>
+
+
+                {{
+                formatDateTime(
+                appointment.appointmentDateTime
+                )
+                }}
+
+
+            </td>
+
+
+
+
+
+
+
+
+            <!-- Status -->
+
+
+            <td>
+
+
+                <span
+                class="status"
+                :class="appointment.status"
+                >
+
+                    {{
+                    appointment.status
+                    }}
+
+
+                </span>
+
+
+            </td>
+
+
+
+
+
+
+
+            <!-- Action -->
+
+
+            <td>
+
+
+
+                <button
+
+                v-if="
+                appointment.status !== 'cancelled'
+                "
+
+                @click="
+                cancelAppointment(appointment._id)
+                "
+
+                >
+
+                    Cancel
+
+
+                </button>
+
+
+
+                <span v-else>
+
+                    -
+
+                </span>
+
+
+
+            </td>
+
+
+
+
+
+
+
+
+            <!-- Cancel Reason -->
+
+
+            <td>
+
+
+                {{
+
+                appointment.cancelReason
+
+                ||
+
+                "-"
+
+                }}
+
+
+            </td>
+
+
+
+
+
+        </tr>
+
+
+
+
+
+
+
+
+
+        <!-- Empty -->
+
+
+        <tr
+        v-if="appointments.length===0"
         >
 
-        {{appointment.status}}
 
-        </span>
-
-
-        </td>
-
+            <td 
+            colspan="7"
+            class="empty"
+            >
 
 
-
-        </tr>
-
+                No Appointments Found
 
 
-
-
-
-        <tr v-if="appointments.length===0">
-
-
-        <td colspan="5" class="empty">
-
-
-            No Appointments Found
-
-
-        </td>
+            </td>
 
 
         </tr>
+
 
 
 
@@ -257,6 +496,7 @@ getAppointments();
 
 
     </div>
+
 
 
 

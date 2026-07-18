@@ -47,6 +47,8 @@ const doctorRoutes = require("./routes/doctorRoutes");
 
 const patientProfileRoutes = require("./routes/patientProfileRoutes");
 const publicRoutes = require("./routes/publicDoc");
+const feedbackRoutes =
+require("./routes/feedbackRoutes");
 
 
 
@@ -115,13 +117,11 @@ patientRoutes
 );
 
 
-// Test Route
-
-app.get("/",(req,res)=>{
-
-res.send("Hospital API Running");
-
-});
+//feedback
+app.use(
+"/feedback",
+feedbackRoutes
+);
 
 //For public Access
 app.use("/api", publicRoutes);

@@ -31,6 +31,10 @@ status:{
         "cancelled"
     ],
     default:"pending"
+},
+cancelReason:{
+    type:String,
+    default:""
 }
 
 
