@@ -30,7 +30,8 @@ import DoctorLayout from "../layouts/DoctorLayout.vue";
 import DoctorDashboard from "../views/Doctors/DoctorDashboard.vue";
 import DoctorProfile from "../views/Doctors/DoctorProfile.vue";
 import DoctorAppointments from "../views/Doctors/Appointments.vue";
-
+import WritePrescription from "../views/Doctors/WritePrescription.vue";
+import ViewPrescriptions from "../views/Doctors/ViewPrescriptions.vue";
 //Public pages
 import Home from "../views/public/Home.vue"
 import Doctor from "../views/public/Doctors.vue";
@@ -180,6 +181,40 @@ component:DoctorProfile
 {
 path:"appointments",
 component:DoctorAppointments
+},
+
+{
+path:"/doctor/patient-history/:patientId",
+component:()=>import(
+"../views/Doctors/PatientHistory.vue"
+)
+
+},
+{
+path:"/doctor/write-prescription/:patientId/:appointmentId",
+
+component:WritePrescription,
+
+meta:{
+role:"doctor"
+}
+
+},
+{
+path:"/doctor/prescriptions/:patientId",
+name:"ViewPrescriptions",
+component:ViewPrescriptions,
+meta:{
+role:"doctor"
+}
+},
+{
+path:"/doctor/feedback",
+
+component:()=>import(
+"../views/Doctors/DoctorFeedback.vue"
+)
+
 }
 
 

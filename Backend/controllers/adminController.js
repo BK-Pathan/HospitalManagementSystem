@@ -329,31 +329,126 @@ message:error.message
 // Update Doctor
 // ======================
 
+// ======================
+// Update Doctor
+// ======================
+
 exports.updateDoctor = async(req,res)=>{
 
 try{
 
-const doctor = await Doctor.findByIdAndUpdate(
-req.params.id,
-req.body,
-{
-new:true
-}
-);
+
+const {
+name,
+email,
+password,
+specialties,
+qualifications,
+experience,
+contactInformation,
+availability
+}=req.body;
 
 
-res.json(doctor);
+
+// Find Doctor
+
+const doctor = await Doctor.findById(req.params.id);
 
 
-}catch(error){
+if(!doctor){
 
-res.status(500).json({
-message:error.message
+return res.status(404).json({
+message:"Doctor not found"
 });
 
 }
 
+
+
+// Update Doctor Profile
+
+doctor.name = name;
+doctor.specialties = specialties;
+doctor.qualifications = qualifications;
+doctor.experience = experience;
+doctor.contactInformation = contactInformation;
+doctor.availability = availability;
+
+
+await doctor.save();
+
+
+
+
+// Update User Account
+
+if(doctor.user){
+
+
+const user = await User.findById(doctor.user);
+
+
+
+if(user){
+
+
+user.name = name;
+
+user.email = email;
+
+
+
+// update password only if entered
+
+if(password){
+
+user.password = await bcrypt.hash(password,10);
+
 }
+
+
+
+await user.save();
+
+
+}
+
+
+}
+
+
+
+
+res.json({
+
+message:"Doctor updated successfully",
+
+doctor
+
+
+});
+
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+
+};
 
 
 

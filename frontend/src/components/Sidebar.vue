@@ -70,7 +70,7 @@ path:"/admin/users"
     path:"/admin/patientprofile",
 },
 {
-name:"👤 Profile",
+name:"👤 Admin Profile",
 path:"/admin/profile"
 }
 
@@ -135,7 +135,12 @@ path:"/doctor/appointments"
 {
 name:"👤 Profile",
 path:"/doctor/profile"
+},
+{
+    name:"Feedback",
+    path:"/doctor/feedback"
 }
+
 
 
 ]

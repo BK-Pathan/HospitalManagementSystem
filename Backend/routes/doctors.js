@@ -18,3 +18,6 @@ router.put('/:id', doctorsController.updateDoctor);
 router.delete('/:id', doctorsController.deleteDoctor);
 
 module.exports = router;
+
+/// ye use n ha
+

@@ -44,6 +44,7 @@ const userRouter = require("./routes/user");
 const adminRoutes = require("./routes/admin");
 
 const doctorRoutes = require("./routes/doctorRoutes");
+const prescriptionRoutes = require("./routes/prescriptionRoutes");
 
 const patientProfileRoutes = require("./routes/patientProfileRoutes");
 const publicRoutes = require("./routes/publicDoc");
@@ -76,7 +77,7 @@ app.use("/facilities", facilitiesRouter);
 app.use("/news", newsRouter);
 
 
-
+app.use("/prescription", prescriptionRoutes);
 // Admin
 
 app.use(
