@@ -19,8 +19,8 @@ const {
     cancelAppointment,
     doctorPerformance,
     createPatient,
-    doctorAvailabilityStatus
-
+    doctorAvailabilityStatus,
+    requestReschedule
 } = require("../controllers/adminController");
 
 // Dashboard Statistics
@@ -128,5 +128,17 @@ auth,
 role("admin"),
 doctorAvailabilityStatus
 );
+
+// const {
+// requestReschedule
+// }=require("../controllers/appointmentController");
+
+
+// router.put(
+// "/reschedule/:id",
+// auth,
+// role("patient"),
+// requestReschedule
+// );
 
 module.exports = router;

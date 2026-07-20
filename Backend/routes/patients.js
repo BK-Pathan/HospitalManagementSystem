@@ -11,8 +11,8 @@ const {
 getDoctors,
 getDoctorById,
 bookAppointment,
-getMyAppointments
-
+getMyAppointments,
+requestReschedule
 }=require("../controllers/patientsController");
 
 
@@ -48,7 +48,17 @@ role("patient"),
 bookAppointment
 );
 
+router.put(
 
+"/reschedule/:id",
+
+auth,
+
+role("patient"),
+
+requestReschedule
+
+);
 
 // My Appointments
 
@@ -58,6 +68,7 @@ auth,
 role("patient"),
 getMyAppointments
 );
+
 
 
 

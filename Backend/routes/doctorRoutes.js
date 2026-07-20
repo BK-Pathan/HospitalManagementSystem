@@ -22,7 +22,8 @@ appointmentAnalytics
 
 const {
 getMyAppointments,
-updateAppointmentStatus
+updateAppointmentStatus,
+approveReschedule
 }=require("../controllers/DoctorsAppointmentController");
 
 const {

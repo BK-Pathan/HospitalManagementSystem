@@ -579,3 +579,116 @@ message:error.message
 }
 
 };
+
+// ======================
+// Patient Request Reschedule
+// ======================
+
+exports.requestReschedule = async(req,res)=>{
+
+try{
+
+
+const appointment = await Appointment.findById(
+req.params.id
+);
+
+
+if(!appointment){
+
+return res.status(404).json({
+
+message:"Appointment not found"
+
+});
+
+}
+
+
+
+// find patient profile
+
+const patient = await Patient.findOne({
+
+user:req.user.id
+
+});
+
+
+
+if(!patient){
+
+return res.status(404).json({
+
+message:"Patient profile not found"
+
+});
+
+}
+
+
+
+// ownership check
+
+if(
+appointment.patient.toString() !== patient._id.toString()
+){
+
+return res.status(403).json({
+
+message:"Not allowed"
+
+});
+
+}
+
+
+
+
+appointment.rescheduleRequested = true;
+
+
+appointment.rescheduleReason =
+req.body.rescheduleReason;
+
+
+
+appointment.rescheduledDateTime =
+req.body.rescheduledDateTime;
+
+
+
+appointment.rescheduleStatus =
+"pending";
+
+
+
+await appointment.save();
+
+
+
+res.json({
+
+message:"Reschedule request sent successfully",
+
+appointment
+
+});
+
+
+
+}
+catch(error){
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
+
+};

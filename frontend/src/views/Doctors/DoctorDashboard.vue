@@ -108,31 +108,27 @@ averageRating:0
 const feedbackChart = ref({
 
 labels:[
+
 "1 Star",
+
 "2 Star",
+
 "3 Star",
+
 "4 Star",
+
 "5 Star"
+
 ],
 
 
 datasets:[{
 
-data:[0,0,0,0,0],
+label:"Reviews",
 
+data:[0,0,0,0,0]
 
-backgroundColor:[
-
-"#EF4444",
-"#F97316",
-"#EAB308",
-"#22C55E",
-"#0F766E"
-
-]
-
-
-}]
+}],
 
 
 });
