@@ -81,6 +81,17 @@ console.log(error);
 const openFeedback = (appointment)=>{
 
 
+if(appointment.status !== "completed"){
+
+alert(
+"Please complete your appointment first before giving feedback"
+);
+
+return;
+
+}
+
+
 selectedAppointment.value = appointment;
 
 
@@ -261,27 +272,21 @@ v-for="appointment in appointments"
 
 <td>
 
-
 <button
 
-v-if="appointment.status === 'completed'"
-
 class="feedback-btn"
+
+:class="{
+disabled: appointment.status !== 'completed'
+}"
 
 @click="openFeedback(appointment)"
 
 >
 
-Give Feedback
+⭐ Give Feedback
 
 </button>
-
-
-<span
-v-else
->
--
-</span>
 
 
 </td>
@@ -561,8 +566,29 @@ border-radius:10px;
 
 cursor:pointer;
 
+transition:.3s;
+
 }
 
+
+
+.feedback-btn.disabled{
+
+background:#9ca3af;
+
+cursor:not-allowed;
+
+opacity:.7;
+
+}
+
+
+
+.feedback-btn:not(.disabled):hover{
+
+transform:translateY(-2px);
+
+}
 
 .modal-overlay{
 

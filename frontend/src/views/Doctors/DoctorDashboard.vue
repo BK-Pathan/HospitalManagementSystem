@@ -3,9 +3,7 @@
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 import {
-Doughnut
-} from "vue-chartjs";
-import {
+  Doughnut,
   Bar
 } from "vue-chartjs";
 
@@ -17,7 +15,8 @@ import {
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 } from "chart.js";
 
 
@@ -27,23 +26,11 @@ ChartJS.register(
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
-import {
 
-ArcElement
-
-}
-
-from "chart.js";
-
-
-ChartJS.register(
-
-ArcElement
-
-);
 // =====================
 // CHART DATA
 // =====================
@@ -95,43 +82,38 @@ const stats = ref({
   completed: 0,
   cancelled: 0
 });
+
 const feedbackStats = ref({
-
-totalReviews:0,
-
-averageRating:0
-
+  totalReviews: 0,
+  averageRating: 0
 });
 
-
-
+// ✅ FIX: backgroundColor pehle chartData ke top level pe thi, jahan
+// Chart.js use nahi karta. Ye dataset ke andar honi chahiye taake har
+// slice ko color mile.
 const feedbackChart = ref({
-
-labels:[
-
-"1 Star",
-
-"2 Star",
-
-"3 Star",
-
-"4 Star",
-
-"5 Star"
-
-],
-
-
-datasets:[{
-
-label:"Reviews",
-
-data:[0,0,0,0,0]
-
-}],
-
-
+  labels: [
+    "1 Star",
+    "2 Star",
+    "3 Star",
+    "4 Star",
+    "5 Star"
+  ],
+  datasets: [
+    {
+      label: "Reviews",
+      data: [0, 0, 0, 0, 0],
+      backgroundColor: [
+        "#EF4444",
+        "#F97316",
+        "#EAB308",
+        "#22C55E",
+        "#0F766E"
+      ]
+    }
+  ]
 });
+
 
 // =====================
 // DASHBOARD STATS
@@ -187,8 +169,6 @@ const getAnalytics = async () => {
     const res = await api.get("/doctor/appointment-analytics");
     console.log("Analytics Data:", res.data);
 
-    // ✅ FIX: pura naya object assign kar rahe hain (sirf nested array
-    // mutate karne se vue-chartjs reliably re-render nahi karta)
     chartData.value = {
       labels: [
         "Pending",
@@ -215,65 +195,60 @@ const getAnalytics = async () => {
     console.log("Analytics Error:", error.response?.data || error.message);
   }
 };
-const getFeedbackAnalytics = async()=>{
 
 
-try{
+// =====================
+// FEEDBACK ANALYTICS
+// =====================
 
+const getFeedbackAnalytics = async () => {
+  try {
+    const res = await api.get("/doctor/feedback-analytics");
+    console.log("Feedback Analytics:", res.data);
 
-const res = await api.get(
-"/doctor/feedback-analytics"
-);
+    feedbackStats.value = {
+      totalReviews: res.data.totalReviews || 0,
+      averageRating: res.data.averageRating || 0
+    };
 
+    // ✅ FIX: pura naya object assign kiya (sirf .data array mutate
+    // karne se Doughnut chart re-render nahi hota) + ratingDistribution
+    // ke missing keys ke liye fallback 0 laga diya taake undefined na aaye
+    const dist = res.data.ratingDistribution || {};
 
-
-console.log(
-"Feedback Analytics:",
-res.data
-);
-
-
-
-feedbackStats.value={
-
-totalReviews:res.data.totalReviews,
-
-averageRating:res.data.averageRating
-
+    feedbackChart.value = {
+      labels: [
+        "1 Star",
+        "2 Star",
+        "3 Star",
+        "4 Star",
+        "5 Star"
+      ],
+      datasets: [
+        {
+          label: "Reviews",
+          data: [
+            dist[1] || 0,
+            dist[2] || 0,
+            dist[3] || 0,
+            dist[4] || 0,
+            dist[5] || 0
+          ],
+          backgroundColor: [
+            "#EF4444",
+            "#F97316",
+            "#EAB308",
+            "#22C55E",
+            "#0F766E"
+          ]
+        }
+      ]
+    };
+  } catch (error) {
+    console.log("Feedback Analytics Error:", error.response?.data || error.message);
+  }
 };
 
-
-
-feedbackChart.value.datasets[0].data=[
-
-res.data.ratingDistribution[1],
-
-res.data.ratingDistribution[2],
-
-res.data.ratingDistribution[3],
-
-res.data.ratingDistribution[4],
-
-res.data.ratingDistribution[5]
-
-];
-
-
-
-}
-
-catch(error){
-
-
-console.log(
-error.response?.data || error.message
-);
-
-
-}
-
-
-};
 
 onMounted(() => {
   getStats();
@@ -287,461 +262,169 @@ onMounted(() => {
 
 <template>
 
-<div class="dashboard-page">
-
-
-<h2 class="page-title">
-Doctor Dashboard
-</h2>
-
-
-
-<!-- =====================
-STATS CARDS
-===================== -->
-
-<div class="cards">
-
-
-<div class="stat-card">
-
-<h3>
-Patients
-</h3>
-
-<h1>
-{{stats.patients}}
-</h1>
-
-</div>
-
-
-
-<div class="stat-card">
-
-<h3>
-Pending
-</h3>
-
-<h1>
-{{stats.pending}}
-</h1>
-
-</div>
-
-
-
-<div class="stat-card">
-
-<h3>
-Confirmed
-</h3>
-
-<h1>
-{{stats.confirmed}}
-</h1>
-
-</div>
-
-
-
-<div class="stat-card">
-
-<h3>
-Completed
-</h3>
-
-<h1>
-{{stats.completed}}
-</h1>
-
-</div>
-
-
-
-<div class="stat-card">
-
-<h3>
-Cancelled
-</h3>
-
-<h1>
-{{stats.cancelled}}
-</h1>
-
-</div>
-
-
-
-<!-- Feedback Cards -->
-
-
-<div class="stat-card">
-
-<h3>
-Average Rating
-</h3>
-
-
-<h1>
-⭐ {{feedbackStats.averageRating}}
-</h1>
-
-
-</div>
-
-
-
-
-<div class="stat-card">
-
-<h3>
-Total Reviews
-</h3>
-
-
-<h1>
-{{feedbackStats.totalReviews}}
-</h1>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<!-- =====================
-TODAY APPOINTMENTS
-===================== -->
-
-
-<h2 class="section-title">
-
-📅 Today's Appointments
-
-</h2>
-
-
-
-
-<div class="table-card">
-
-
-<table 
-class="appointments-table"
-v-if="todaysAppointments.length"
->
-
-
-<tr>
-
-<th>
-Patient
-</th>
-
-
-<th>
-Problem
-</th>
-
-
-<th>
-Time
-</th>
-
-
-<th>
-Status
-</th>
-
-
-</tr>
-
-
-
-<tr
-v-for="item in todaysAppointments"
-:key="item._id"
->
-
-
-<td>
-
-{{item.patient?.user?.name || "N/A"}}
-
-</td>
-
-
-
-<td>
-
-{{item.patient?.DescribeYourProblem || "N/A"}}
-
-</td>
-
-
-
-<td>
-
-{{
-new Date(item.appointmentDateTime)
-.toLocaleTimeString([],{
-hour:"2-digit",
-minute:"2-digit"
-})
-}}
-
-</td>
-
-
-
-<td>
-
-<span class="status">
-
-{{item.status}}
-
-</span>
-
-</td>
-
-
-</tr>
-
-
-</table>
-
-
-<p v-else>
-
-No appointments today.
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-<!-- =====================
-APPOINTMENT ANALYTICS
-===================== -->
-
-
-<h2 class="section-title">
-
-📊 Appointment Analytics
-
-</h2>
-
-
-
-<div class="table-card">
-
-
-<Bar
-
-:key="chartData.datasets[0].data.join('-')"
-
-:data="chartData"
-
-:options="chartOptions"
-
-/>
-
-
-</div>
-
-
-
-
-
-
-<!-- =====================
-FEEDBACK ANALYTICS
-===================== -->
-
-
-<h2 class="section-title">
-
-⭐ Patient Feedback Analytics
-
-</h2>
-
-
-
-
-<div class="table-card">
-
-
-<Doughnut
-
-:key="feedbackChart.datasets[0].data.join('-')"
-
-:data="feedbackChart"
-
-/>
-
-
-
-</div>
-
-
-
-
-
-
-<!-- =====================
-UPCOMING APPOINTMENTS
-===================== -->
-
-
-<h2 class="section-title">
-
-📅 Upcoming Appointments
-
-</h2>
-
-
-
-<div class="table-card">
-
-
-
-<table class="appointments-table">
-
-
-
-<tr>
-
-<th>
-Patient
-</th>
-
-
-<th>
-Problem
-</th>
-
-
-<th>
-Date
-</th>
-
-
-<th>
-Time
-</th>
-
-
-<th>
-Status
-</th>
-
-
-</tr>
-
-
-
-
-<tr
-v-for="item in upcomingAppointments"
-:key="item._id"
->
-
-
-
-<td>
-
-{{item.patient?.user?.name || "N/A"}}
-
-</td>
-
-
-
-
-<td>
-
-{{item.patient?.DescribeYourProblem || "N/A"}}
-
-</td>
-
-
-
-
-
-<td>
-
-{{
-new Date(item.appointmentDateTime)
-.toLocaleDateString()
-}}
-
-</td>
-
-
-
-
-
-<td>
-
-{{
-new Date(item.appointmentDateTime)
-.toLocaleTimeString([],{
-hour:"2-digit",
-minute:"2-digit"
-})
-}}
-
-</td>
-
-
-
-
-
-<td>
-
-<span class="status">
-
-{{item.status}}
-
-</span>
-
-</td>
-
-
-
-</tr>
-
-
-
-</table>
-
-
-
-
-<p v-if="!upcomingAppointments.length">
-
-No upcoming appointments.
-
-</p>
-
-
-
-</div>
-
-
-
-</div>
-
+  <div class="dashboard-page">
+
+    <h2 class="page-title">
+      Doctor Dashboard
+    </h2>
+
+    <!-- =====================
+    STATS CARDS
+    ===================== -->
+
+    <div class="cards">
+
+      <div class="stat-card">
+        <h3>Patients</h3>
+        <h1>{{ stats.patients }}</h1>
+      </div>
+
+      <div class="stat-card">
+        <h3>Pending</h3>
+        <h1>{{ stats.pending }}</h1>
+      </div>
+
+      <div class="stat-card">
+        <h3>Confirmed</h3>
+        <h1>{{ stats.confirmed }}</h1>
+      </div>
+
+      <div class="stat-card">
+        <h3>Completed</h3>
+        <h1>{{ stats.completed }}</h1>
+      </div>
+
+      <div class="stat-card">
+        <h3>Cancelled</h3>
+        <h1>{{ stats.cancelled }}</h1>
+      </div>
+
+      <!-- Feedback Cards -->
+
+      <div class="stat-card">
+        <h3>Average Rating</h3>
+        <h1>⭐ {{ feedbackStats.averageRating }}</h1>
+      </div>
+
+      <div class="stat-card">
+        <h3>Total Reviews</h3>
+        <h1>{{ feedbackStats.totalReviews }}</h1>
+      </div>
+
+    </div>
+
+
+    <!-- =====================
+    TODAY APPOINTMENTS
+    ===================== -->
+
+    <h2 class="section-title">
+      📅 Today's Appointments
+    </h2>
+
+    <div class="table-card">
+
+      <table class="appointments-table" v-if="todaysAppointments.length">
+        <tr>
+          <th>Patient</th>
+          <th>Problem</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+
+        <tr v-for="item in todaysAppointments" :key="item._id">
+          <td>{{ item.patient?.user?.name || "N/A" }}</td>
+          <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
+          <td>
+            {{
+              new Date(item.appointmentDateTime)
+                .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            }}
+          </td>
+          <td>
+            <span class="status">{{ item.status }}</span>
+          </td>
+        </tr>
+      </table>
+
+      <p v-else>No appointments today.</p>
+
+    </div>
+
+
+    <!-- =====================
+    APPOINTMENT ANALYTICS
+    ===================== -->
+
+    <h2 class="section-title">
+      📊 Appointment Analytics
+    </h2>
+
+    <div class="table-card">
+      <Bar
+        :key="chartData.datasets[0].data.join('-')"
+        :data="chartData"
+        :options="chartOptions"
+      />
+    </div>
+
+
+    <!-- =====================
+    FEEDBACK ANALYTICS
+    ===================== -->
+
+    <h2 class="section-title">
+      ⭐ Patient Feedback Analytics
+    </h2>
+
+    <div class="table-card">
+      <Doughnut
+        :key="feedbackChart.datasets[0].data.join('-')"
+        :data="feedbackChart"
+      />
+    </div>
+
+
+    <!-- =====================
+    UPCOMING APPOINTMENTS
+    ===================== -->
+
+    <h2 class="section-title">
+      📅 Upcoming Appointments
+    </h2>
+
+    <div class="table-card">
+
+      <table class="appointments-table">
+        <tr>
+          <th>Patient</th>
+          <th>Problem</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+
+        <tr v-for="item in upcomingAppointments" :key="item._id">
+          <td>{{ item.patient?.user?.name || "N/A" }}</td>
+          <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
+          <td>{{ new Date(item.appointmentDateTime).toLocaleDateString() }}</td>
+          <td>
+            {{
+              new Date(item.appointmentDateTime)
+                .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            }}
+          </td>
+          <td>
+            <span class="status">{{ item.status }}</span>
+          </td>
+        </tr>
+      </table>
+
+      <p v-if="!upcomingAppointments.length">No upcoming appointments.</p>
+
+    </div>
+
+  </div>
 
 </template>
 
