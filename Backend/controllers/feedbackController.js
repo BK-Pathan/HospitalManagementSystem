@@ -1,6 +1,7 @@
 const Feedback = require("../models/feedback");
 const Patient = require("../models/patient");
 const Doctor = require("../models/doctor");
+const Appointment = require("../models/appointment");
 
 exports.createFeedback = async(req,res)=>{
 
@@ -21,14 +22,30 @@ message:"Patient profile not found"
 }
 
 
+// appointment find karo
+const appointment = await Appointment.findById(
+    req.body.appointment
+);
+
+
+if(!appointment){
+
+return res.status(404).json({
+message:"Appointment not found"
+});
+
+}
+
+
+
 
 const feedback = await Feedback.create({
 
-doctor:req.body.doctor,
+doctor: appointment.doctor,
 
-patient:patient._id,
+patient: patient._id,
 
-appointment:req.body.appointment,
+appointment: appointment._id,
 
 rating:req.body.rating,
 
@@ -60,9 +77,7 @@ message:error.message
 
 }
 
-
 };
-
 // Doctor Feedback
 
 exports.getDoctorFeedback = async(req,res)=>{

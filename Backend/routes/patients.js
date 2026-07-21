@@ -12,10 +12,10 @@ getDoctors,
 getDoctorById,
 bookAppointment,
 getMyAppointments,
-requestReschedule
+requestReschedule,
+getPatientDashboard,
+getDoctorProfileForPatient
 }=require("../controllers/patientsController");
-
-
 
 // All Doctors
 
@@ -25,8 +25,6 @@ auth,
 role("patient"),
 getDoctors
 );
-
-
 
 // Single Doctor
 
@@ -70,6 +68,30 @@ getMyAppointments
 );
 
 
+router.get(
+
+"/doctors/profile/:id",
+
+auth,
+
+role("patient"),
+
+getDoctorProfileForPatient
+
+);
+
+
+router.get(
+
+"/dashboard",
+
+auth,
+
+role("patient"),
+
+getPatientDashboard
+
+);
 
 
 module.exports=router;

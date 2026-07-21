@@ -4,6 +4,9 @@ import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 const profilecompleted = ref(false);
 
+
+const name = ref("");
+const email = ref("");
 const age = ref("");
 const gender = ref("");
 const contactInformation = ref("");
@@ -12,7 +15,7 @@ const insuranceDetails = ref("");
 const DescribeYourProblem = ref("");
 
 const isEdit = ref(false);
-
+const profileExists = ref(false);
 
 
 const saveProfile = async()=>{
@@ -60,26 +63,51 @@ const res = await api.get("/patient/profile");
 
 if(res.data){
 
+
+profileExists.value = true;
+
+
+name.value = res.data.user?.name || "";
+
+email.value = res.data.user?.email || "";
+
 age.value = res.data.age || "";
+
 gender.value = res.data.gender || "";
+
 contactInformation.value = res.data.contactInformation || "";
+
 medicalHistory.value = res.data.medicalHistory || "";
+
 insuranceDetails.value = res.data.insuranceDetails || "";
+
 DescribeYourProblem.value = res.data.DescribeYourProblem || "";
+
 profilecompleted.value = res.data.profilecompleted || false;
+
 
 }
 
 
-}catch(error){
+
+}
+catch(error){
+
 
 console.log(error);
 
-}
+
+// agar profile nahi mili to first time user hai
+
+profileExists.value = false;
+
+isEdit.value = true;
 
 
 }
 
+
+}
 
 
 
@@ -139,6 +167,33 @@ getProfile();
 
         </div>
 
+        <div class="input-group">
+
+<label>
+Name
+</label>
+
+<input
+v-model="name"
+disabled
+/>
+
+</div>
+
+
+
+<div class="input-group">
+
+<label>
+Email
+</label>
+
+<input
+v-model="email"
+disabled
+/>
+
+</div>
 
 
 
@@ -289,14 +344,14 @@ getProfile();
         <div class="actions">
 
 
-            <button 
-            v-if="!isEdit"
-            class="edit-btn"
-            @click="isEdit=true">
+<button 
+v-if="!isEdit && profileExists"
+class="edit-btn"
+@click="isEdit=true">
 
-                ✏️ Edit Profile
+✏️ Edit Profile
 
-            </button>
+</button>
 
 
 

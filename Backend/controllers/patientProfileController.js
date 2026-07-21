@@ -47,8 +47,8 @@ const Patient = require("../models/patient");
 exports.createProfile = async(req,res)=>{
 
 try{
-
-
+console.log("USER:", req.user);
+console.log("BODY:", req.body);
 const patient = await Patient.findOneAndUpdate(
 
 {

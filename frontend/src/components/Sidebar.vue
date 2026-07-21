@@ -108,6 +108,10 @@ path:"/patient/doctors"
 {
 name:"📅 My Appointments",
 path:"/patient/appointments"
+},
+{
+    name:"💊 Prescription History",
+    path:"/patient/prescriptions",
 }
 
 

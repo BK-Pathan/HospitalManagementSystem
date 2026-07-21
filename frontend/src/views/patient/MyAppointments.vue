@@ -1,7 +1,20 @@
 <script setup>
 
-import {ref,onMounted,reactive} from "vue";
+import {
+ref,
+onMounted,
+reactive
+} from "vue";
+
 import api from "../../api/axios";
+
+import {
+useRouter
+} from "vue-router";
+
+
+const router = useRouter();
+
 
 
 const appointments = ref([]);
@@ -14,11 +27,50 @@ const selectedAppointment = ref(null);
 
 
 
+
+// =======================
+// Navigation
+// =======================
+
+
+const openPrescription = ()=>{
+
+
+router.push(
+"/patient/prescriptions"
+);
+
+
+};
+
+
+
+
+
+// const viewDoctorProfile = (doctorId)=>{
+
+
+// router.push(
+// `/patient/doctors/profile/${doctorId}`
+// );
+
+
+// };
+
+
+
+
+
+// =======================
+// Feedback
+// =======================
+
+
 const feedback = reactive({
 
-    rating:5,
+rating:5,
 
-    comment:""
+comment:""
 
 });
 
@@ -26,25 +78,43 @@ const feedback = reactive({
 
 
 
+
 const formatDateTime = (date)=>{
 
+
 return new Date(date).toLocaleString(
+
 "en-US",
+
 {
-    year:"numeric",
-    month:"short",
-    day:"numeric",
-    hour:"2-digit",
-    minute:"2-digit",
-    hour12:true
+
+year:"numeric",
+
+month:"short",
+
+day:"numeric",
+
+hour:"2-digit",
+
+minute:"2-digit",
+
+hour12:true
+
 }
 
 );
+
 
 };
 
 
 
+
+
+
+// =======================
+// Get Appointments
+// =======================
 
 
 const getAppointments = async()=>{
@@ -54,17 +124,30 @@ try{
 
 
 const res =
-await api.get("/patient/appointments");
+await api.get(
+"/patient/appointments"
+);
+
+
+
+console.log(
+"Appointments:",
+res.data
+);
+
 
 
 appointments.value =
 res.data.appointments;
 
 
+
 }
 catch(error){
 
+
 console.log(error);
+
 
 }
 
@@ -76,26 +159,39 @@ console.log(error);
 
 
 
+
+// =======================
 // Open Feedback
+// =======================
+
 
 const openFeedback = (appointment)=>{
 
 
 if(appointment.status !== "completed"){
 
+
 alert(
+
 "Please complete your appointment first before giving feedback"
+
 );
+
 
 return;
 
 }
 
 
-selectedAppointment.value = appointment;
 
 
-showFeedback.value = true;
+selectedAppointment.value =
+appointment;
+
+
+
+showFeedback.value=true;
+
 
 
 };
@@ -106,54 +202,96 @@ showFeedback.value = true;
 
 
 
+
+
+// =======================
 // Submit Feedback
+// =======================
+
 
 const submitFeedback = async()=>{
 
+
 try{
 
-console.log("Selected Appointment:", selectedAppointment.value);
 
-console.log("Feedback Data:", {
-    doctor:selectedAppointment.value.doctor._id,
-    appointment:selectedAppointment.value._id,
-    rating:feedback.rating,
-    comment:feedback.comment
-});
+const data={
 
 
-const res = await api.post(
-"/feedback/create",
-{
-    doctor:selectedAppointment.value.doctor._id,
-    appointment:selectedAppointment.value._id,
-    rating:feedback.rating,
-    comment:feedback.comment
-}
+doctor:selectedAppointment.value.doctor._id,
+
+
+appointment:selectedAppointment.value._id,
+
+
+rating:feedback.rating,
+
+
+comment:feedback.comment
+
+
+};
+
+
+
+console.log(
+"Sending Feedback:",
+data
 );
 
 
-console.log("Response:",res.data);
 
 
-alert("Feedback submitted successfully");
+const res = await api.post(
+
+"/feedback/create",
+
+data
+
+);
+
+
+
+console.log(
+res.data
+);
+
+
+
+alert(
+"Feedback submitted successfully"
+);
+
 
 
 showFeedback.value=false;
 
 
+
 feedback.rating=5;
+
 feedback.comment="";
+
 
 
 }
 catch(error){
 
-console.log("Feedback Error:",error.response?.data || error);
+
+console.log(
+
+"Feedback Error:",
+
+error.response?.data || error
+
+);
+
 
 }
 
+
 };
+
 
 
 
@@ -162,15 +300,15 @@ console.log("Feedback Error:",error.response?.data || error);
 
 onMounted(()=>{
 
+
 getAppointments();
+
+
 
 });
 
 
 </script>
-
-
-
 
 <template>
 
@@ -187,6 +325,7 @@ My Appointments
 
 
 
+
 <div class="table-card">
 
 
@@ -195,26 +334,34 @@ My Appointments
 
 <tr>
 
+
 <th>
 Doctor
 </th>
+
 
 <th>
 Speciality
 </th>
 
+
 <th>
 Date
 </th>
+
 
 <th>
 Status
 </th>
 
+
 <th>
 Action
 </th>
+
+
 </tr>
+
 
 
 
@@ -229,9 +376,13 @@ v-for="appointment in appointments"
 >
 
 
+
+
 <td class="doctor-name">
 
+
 {{appointment.doctor.name}}
+
 
 </td>
 
@@ -241,9 +392,12 @@ v-for="appointment in appointments"
 
 <td class="speciality">
 
+
 {{appointment.doctor?.specialties?.join(", ")}}
 
+
 </td>
+
 
 
 
@@ -251,7 +405,15 @@ v-for="appointment in appointments"
 
 <td class="appointment-date">
 
-{{formatDateTime(appointment.appointmentDateTime)}}
+
+{{
+
+formatDateTime(
+appointment.appointmentDateTime
+)
+
+}}
+
 
 </td>
 
@@ -259,34 +421,97 @@ v-for="appointment in appointments"
 
 
 
+
 <td>
+
 
 <span class="status">
 
+
 {{appointment.status}}
 
+
 </span>
+
 
 </td>
 
 
+
+
+
+
+
 <td>
+
+
+
+
+<!-- Doctor Profile -->
+
+
+
+
+
+
+
+
+
+<!-- Feedback -->
+
 
 <button
 
 class="feedback-btn"
 
 :class="{
-disabled: appointment.status !== 'completed'
+
+disabled:
+appointment.status !== 'completed'
+
 }"
+
 
 @click="openFeedback(appointment)"
 
+
 >
+
 
 ⭐ Give Feedback
 
+
 </button>
+
+
+
+
+
+
+
+
+<!-- Prescription -->
+
+
+<button
+
+v-if="appointment.status==='completed'"
+
+class="prescription-btn"
+
+@click="openPrescription"
+
+
+>
+
+
+📄 Prescription
+
+
+</button>
+
+
+
 
 
 </td>
@@ -297,15 +522,32 @@ disabled: appointment.status !== 'completed'
 </tr>
 
 
+
 </table>
 
+
+
+
+
+
+
+
+<!-- Feedback Modal -->
+
+
 <div
+
 v-if="showFeedback"
+
 class="modal-overlay"
+
+
 >
 
 
+
 <div class="feedback-modal">
+
 
 
 <h2>
@@ -314,40 +556,65 @@ Give Feedback
 
 
 
+
+
+
 <label>
 Rating
 </label>
 
 
-<select v-model="feedback.rating">
+
+
+<select
+
+v-model="feedback.rating"
+
+>
 
 
 <option :value="5">
+
 ⭐⭐⭐⭐⭐
+
 </option>
 
 
 <option :value="4">
+
 ⭐⭐⭐⭐
+
 </option>
+
 
 
 <option :value="3">
+
 ⭐⭐⭐
+
 </option>
+
 
 
 <option :value="2">
+
 ⭐⭐
+
 </option>
+
 
 
 <option :value="1">
+
 ⭐
+
 </option>
 
 
+
 </select>
+
+
 
 
 
@@ -359,17 +626,34 @@ v-model="feedback.comment"
 
 placeholder="Write your experience..."
 
-></textarea>
+>
+
+</textarea>
+
+
+
 
 
 
 
 <button
+
 class="submit-btn"
+
 @click="submitFeedback"
+
 >
+
+
 Submit
+
+
 </button>
+
+
+
+
+
 
 
 
@@ -380,15 +664,25 @@ class="cancel-btn"
 @click="showFeedback=false"
 
 >
+
+
 Cancel
+
+
 </button>
 
 
 
+
+
 </div>
 
 
 </div>
+
+
+
+
 
 </div>
 
@@ -398,6 +692,8 @@ Cancel
 
 
 </template>
+
+
 <style scoped>
 
 

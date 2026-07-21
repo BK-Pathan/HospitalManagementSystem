@@ -146,7 +146,24 @@ const routes = [
         {
             path:"appointments",
             component:MyAppointments
-        }
+        },
+        {
+path:"/patient/prescriptions",
+
+component:()=>import(
+"../views/patient/PrescriptionHistory.vue"
+)
+
+},
+{
+path:"/patient/doctors/profile/:id",
+
+component:
+()=>import(
+"../views/patient/DoctorProfile.vue"
+)
+
+}
 
 
     ]

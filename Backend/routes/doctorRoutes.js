@@ -17,7 +17,8 @@ getDoctorById,
 getTodaysAppointments,
 getUpcomingAppointments,
 getPatientStats,
-appointmentAnalytics
+appointmentAnalytics,
+
 }=require("../controllers/doctorsController");
 
 const {

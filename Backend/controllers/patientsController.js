@@ -1,7 +1,8 @@
 const Appointment = require("../models/appointment");
 const Patient = require("../models/patient");
 const Doctor = require("../models/doctor");
-
+const Prescription = require("../models/prescription");
+const Feedback = require("../models/feedback");
 
 
 
@@ -408,7 +409,9 @@ patient:patient._id,
 
 doctor:doctor,
 
-appointmentDateTime:selectedDate
+appointmentDateTime:selectedDate,
+
+status:"pending"
 
 });
 
@@ -530,7 +533,7 @@ message:error.message
 
 };
 
-exports.dashboardStats = async(req,res)=>{
+exports.dashboardStatsOLD = async(req,res)=>{
 
 try{
 
@@ -690,5 +693,521 @@ message:error.message
 });
 
 }
+
+};
+
+
+// ===============================
+// PATIENT DASHBOARD
+// ===============================
+
+exports.getPatientDashboard = async(req,res)=>{
+
+try{
+
+
+console.log(
+"========== PATIENT DASHBOARD =========="
+);
+
+
+console.log(
+"LOGIN USER FROM TOKEN:",
+req.user
+);
+
+
+
+console.log(
+"LOGIN USER ID:",
+req.user.id
+);
+
+
+
+
+// Find Patient Profile
+
+const patient = await Patient.findOne({
+
+user:req.user.id
+
+});
+
+
+
+console.log(
+"PATIENT PROFILE FOUND:",
+patient
+);
+
+
+
+
+if(!patient){
+
+return res.status(404).json({
+
+message:"Patient profile not found"
+
+});
+
+}
+
+
+
+console.log(
+"PATIENT PROFILE ID:",
+patient._id
+);
+
+
+
+
+// ===============================
+// TOTAL APPOINTMENTS
+// ===============================
+
+
+const totalAppointments =
+await Appointment.countDocuments({
+
+patient:patient._id
+
+});
+
+
+console.log(
+"TOTAL APPOINTMENTS:",
+totalAppointments
+);
+
+
+
+// ===============================
+// PENDING APPOINTMENTS
+// ===============================
+
+const pendingAppointments =
+await Appointment.countDocuments({
+
+patient:patient._id,
+
+appointmentDateTime:{
+    $gte:new Date()
+},
+
+$or:[
+    {
+        status:"pending"
+    },
+    {
+        status:{
+            $exists:false
+        }
+    }
+]
+
+});
+
+
+// ===============================
+// ALL APPOINTMENTS CHECK
+// ===============================
+
+
+const allAppointments = await Appointment.find({
+
+patient:patient._id
+
+});
+
+
+console.log(
+"ALL MY APPOINTMENTS:",
+allAppointments
+);
+
+
+
+
+
+
+
+
+// ===============================
+// UPCOMING APPOINTMENT
+// ===============================
+
+// ===============================
+// UPCOMING APPOINTMENTS COUNT
+// ===============================
+
+const upcomingAppointments =
+await Appointment.countDocuments({
+
+patient:patient._id,
+
+appointmentDateTime:{
+    $gte:new Date()
+},
+
+status:{
+    $nin:[
+        "completed",
+        "cancelled"
+    ]
+}
+
+});
+
+
+console.log(
+"UPCOMING APPOINTMENTS:",
+upcomingAppointments
+);
+
+
+// ===============================
+// UPCOMING APPOINTMENTS LIST
+// ===============================
+
+const upcomingAppointmentList = await Appointment.find({
+
+patient:patient._id,
+
+appointmentDateTime:{
+    $gte:new Date()
+},
+
+status:{
+    $nin:[
+        "completed",
+        "cancelled"
+    ]
+}
+
+})
+.populate({
+
+path:"doctor",
+
+select:"name specialties"
+
+})
+.sort({
+
+appointmentDateTime:1
+
+})
+.limit(5);
+
+
+
+console.log(
+"UPCOMING LIST:",
+upcomingAppointmentList
+);
+
+// ===============================
+// COMPLETED
+// ===============================
+
+
+const completedAppointments =
+await Appointment.countDocuments({
+
+patient:patient._id,
+
+status:"completed"
+
+});
+
+
+
+console.log(
+"COMPLETED APPOINTMENTS:",
+completedAppointments
+);
+
+
+
+
+
+
+
+// ===============================
+// PRESCRIPTIONS
+// ===============================
+
+
+const prescriptions =
+await Prescription.find({
+
+patient:patient._id
+
+});
+
+
+
+console.log(
+"MY PRESCRIPTIONS:",
+prescriptions
+);
+
+
+
+const totalPrescriptions =
+prescriptions.length;
+
+
+
+console.log(
+"TOTAL PRESCRIPTIONS:",
+totalPrescriptions
+);
+
+
+
+
+
+
+
+
+
+// ===============================
+// DOCTORS VISITED
+// ===============================
+
+
+const doctorsVisited =
+await Appointment.distinct(
+
+"doctor",
+
+{
+
+patient:patient._id,
+
+status:"completed"
+
+}
+
+);
+
+
+
+console.log(
+"DOCTORS VISITED:",
+doctorsVisited
+);
+
+
+
+
+
+
+
+// ===============================
+// FEEDBACK
+// ===============================
+
+
+// const latestFeedback =
+// await Feedback.findOne({
+
+// patient:patient._id
+
+// })
+
+// .populate({
+
+// path:"doctor",
+
+// select:"name"
+
+// })
+
+// .sort({
+
+// createdAt:-1
+
+// });
+
+
+
+// console.log(
+// "LATEST FEEDBACK:",
+// latestFeedback
+// );
+
+
+
+
+
+
+
+// FINAL RESPONSE
+
+
+const response = {
+
+totalAppointments,
+
+pendingAppointments,
+
+completedAppointments,
+
+totalPrescriptions,
+
+doctorsVisited:doctorsVisited.length,
+
+upcomingAppointments,
+upcomingAppointmentList
+
+// latestFeedback
+
+};
+
+
+
+console.log(
+"FINAL DASHBOARD RESPONSE:",
+response
+);
+
+
+
+
+res.json({
+
+success:true,
+
+data:response
+
+});
+
+
+
+}
+catch(error){
+
+
+console.log(
+"PATIENT DASHBOARD ERROR:",
+error
+);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+
+};
+
+
+
+// ===============================
+// PATIENT VIEW DOCTOR PROFILE
+// ===============================
+
+exports.getDoctorProfileForPatient = async(req,res)=>{
+
+try{
+
+
+const doctor = await Doctor.findById(
+req.params.id
+);
+
+
+
+if(!doctor){
+
+return res.status(404).json({
+
+message:"Doctor not found"
+
+});
+
+}
+
+
+
+
+const feedbacks = await Feedback.find({
+
+doctor:doctor._id
+
+})
+.populate({
+
+path:"patient",
+select:"name"
+
+})
+.sort({
+
+createdAt:-1
+
+});
+
+
+
+
+
+const averageRating =
+feedbacks.length > 0
+?
+(
+feedbacks.reduce(
+(sum,item)=>sum+item.rating,
+0
+)
+/ feedbacks.length
+).toFixed(1)
+
+:
+0;
+
+
+
+
+res.json({
+
+success:true,
+
+doctor,
+
+averageRating,
+
+feedbacks
+
+});
+
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
 
 };

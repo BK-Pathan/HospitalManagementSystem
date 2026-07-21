@@ -34,6 +34,15 @@ console.log(error);
 
 }
 
+const viewDoctorProfile = (doctorId)=>{
+
+
+router.push(
+`/patient/doctors/profile/${doctorId}`
+);
+
+
+};
 
 
 onMounted(()=>{
@@ -191,7 +200,17 @@ getDoctors();
 
     </button>
 
+<button
 
+class="profile-btn"
+
+@click="viewDoctorProfile(doctor._id)"
+
+>
+
+👨‍⚕️ View Doctor
+
+</button>
     </td>
 
 
