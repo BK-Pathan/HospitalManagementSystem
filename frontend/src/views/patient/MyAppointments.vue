@@ -1,16 +1,17 @@
 <script setup>
 
 import {
-ref,
-onMounted,
-reactive
+    ref,
+    onMounted,
+    reactive
 } from "vue";
 
 import api from "../../api/axios";
 
 import {
-useRouter
+    useRouter
 } from "vue-router";
+
 
 
 const router = useRouter();
@@ -22,11 +23,134 @@ const appointments = ref([]);
 
 const showFeedback = ref(false);
 
-
 const selectedAppointment = ref(null);
 
 
 
+
+const selectedDate = ref("");
+
+const selectedTime = ref("");
+
+// =======================
+// Reschedule
+// =======================
+
+
+const showReschedule = ref(false);
+
+
+const selectedRescheduleAppointment = ref(null);
+
+
+
+
+// Open Reschedule Modal
+
+const openReschedule = (appointment)=>{
+
+
+    selectedRescheduleAppointment.value = appointment;
+
+
+    showReschedule.value = true;
+
+
+    selectedDate.value = "";
+
+    selectedTime.value = "";
+
+
+};
+
+
+
+
+
+// Submit Reschedule Request
+
+const submitReschedule = async()=>{
+
+
+if(!selectedDate.value || !selectedTime.value){
+
+
+alert(
+"Please select date and time"
+);
+
+
+return;
+
+
+}
+
+
+
+try{
+
+
+await api.post(
+
+`/appointments/${selectedRescheduleAppointment.value._id}/reschedule`,
+
+{
+
+newDate:selectedDate.value,
+
+newTime:selectedTime.value
+
+}
+
+);
+
+
+
+alert(
+"Reschedule request sent successfully"
+);
+
+
+
+showReschedule.value=false;
+
+
+selectedDate.value="";
+
+selectedTime.value="";
+
+
+getAppointments();
+
+
+
+}
+
+catch(error){
+
+
+console.log(
+
+error.response?.data || error
+
+);
+
+
+
+alert(
+
+error.response?.data?.message ||
+"Slot already booked"
+
+);
+
+
+
+}
+
+
+
+};
 
 // =======================
 // Navigation
@@ -36,9 +160,9 @@ const selectedAppointment = ref(null);
 const openPrescription = ()=>{
 
 
-router.push(
-"/patient/prescriptions"
-);
+    router.push(
+        "/patient/prescriptions"
+    );
 
 
 };
@@ -46,16 +170,6 @@ router.push(
 
 
 
-
-// const viewDoctorProfile = (doctorId)=>{
-
-
-// router.push(
-// `/patient/doctors/profile/${doctorId}`
-// );
-
-
-// };
 
 
 
@@ -68,12 +182,11 @@ router.push(
 
 const feedback = reactive({
 
-rating:5,
+    rating:5,
 
-comment:""
+    comment:""
 
 });
-
 
 
 
@@ -82,30 +195,33 @@ comment:""
 const formatDateTime = (date)=>{
 
 
-return new Date(date).toLocaleString(
+    return new Date(date).toLocaleString(
 
-"en-US",
+        "en-US",
 
-{
+        {
 
-year:"numeric",
+            year:"numeric",
 
-month:"short",
+            month:"short",
 
-day:"numeric",
+            day:"numeric",
 
-hour:"2-digit",
+            hour:"2-digit",
 
-minute:"2-digit",
+            minute:"2-digit",
 
-hour12:true
+            hour12:true
 
-}
+        }
 
-);
+    );
 
 
 };
+
+
+
 
 
 
@@ -120,39 +236,49 @@ hour12:true
 const getAppointments = async()=>{
 
 
-try{
+    try{
 
 
-const res =
-await api.get(
-"/patient/appointments"
-);
+        const res = await api.get(
 
+            "/patient/appointments"
 
-
-console.log(
-"Appointments:",
-res.data
-);
+        );
 
 
 
-appointments.value =
-res.data.appointments;
+        console.log(
+
+            "Appointments:",
+
+            res.data
+
+        );
 
 
 
-}
-catch(error){
+        appointments.value = res.data.appointments;
 
 
-console.log(error);
+
+    }
+
+    catch(error){
 
 
-}
+        console.log(
+
+            error
+
+        );
+
+
+    }
 
 
 };
+
+
 
 
 
@@ -168,29 +294,28 @@ console.log(error);
 const openFeedback = (appointment)=>{
 
 
-if(appointment.status !== "completed"){
+    if(appointment.status !== "completed"){
 
 
-alert(
+        alert(
 
-"Please complete your appointment first before giving feedback"
+            "Please complete your appointment first before giving feedback"
 
-);
-
-
-return;
-
-}
+        );
 
 
+        return;
 
 
-selectedAppointment.value =
-appointment;
+    }
 
 
 
-showFeedback.value=true;
+    selectedAppointment.value = appointment;
+
+
+
+    showFeedback.value = true;
 
 
 
@@ -212,85 +337,81 @@ showFeedback.value=true;
 const submitFeedback = async()=>{
 
 
-try{
+    try{
 
 
-const data={
+        const data = {
 
 
-doctor:selectedAppointment.value.doctor._id,
+            doctor:selectedAppointment.value.doctor._id,
 
 
-appointment:selectedAppointment.value._id,
+            appointment:selectedAppointment.value._id,
 
 
-rating:feedback.rating,
+            rating:feedback.rating,
 
 
-comment:feedback.comment
+            comment:feedback.comment
 
 
-};
-
-
-
-console.log(
-"Sending Feedback:",
-data
-);
+        };
 
 
 
 
-const res = await api.post(
+        await api.post(
 
-"/feedback/create",
+            "/feedback/create",
 
-data
+            data
 
-);
-
-
-
-console.log(
-res.data
-);
+        );
 
 
 
-alert(
-"Feedback submitted successfully"
-);
+
+        alert(
+
+            "Feedback submitted successfully"
+
+        );
 
 
 
-showFeedback.value=false;
+        showFeedback.value = false;
 
 
 
-feedback.rating=5;
-
-feedback.comment="";
+        feedback.rating = 5;
 
 
-
-}
-catch(error){
+        feedback.comment = "";
 
 
-console.log(
 
-"Feedback Error:",
-
-error.response?.data || error
-
-);
+    }
 
 
-}
+    catch(error){
+
+
+
+        console.log(
+
+            "Feedback Error:",
+
+            error.response?.data || error
+
+        );
+
+
+    }
 
 
 };
+
+
 
 
 
@@ -301,397 +422,247 @@ error.response?.data || error
 onMounted(()=>{
 
 
-getAppointments();
-
+    getAppointments();
 
 
 });
+
 
 
 </script>
 
 <template>
 
-
 <div class="appointments-page">
 
-
-<h2 class="page-title">
-
-My Appointments
-
-</h2>
-
-
-
-
-
-<div class="table-card">
-
-
-<table class="appointments-table">
-
-
-<tr>
-
-
-<th>
-Doctor
-</th>
-
-
-<th>
-Speciality
-</th>
-
-
-<th>
-Date
-</th>
-
-
-<th>
-Status
-</th>
-
-
-<th>
-Action
-</th>
-
-
-</tr>
-
-
-
-
-
-
-<tr
-
-v-for="appointment in appointments"
-
-:key="appointment._id"
-
->
-
-
-
-
-<td class="doctor-name">
-
-
-{{appointment.doctor.name}}
-
-
-</td>
-
-
-
-
-
-<td class="speciality">
-
-
-{{appointment.doctor?.specialties?.join(", ")}}
-
-
-</td>
-
-
-
-
-
-
-<td class="appointment-date">
-
-
-{{
-
-formatDateTime(
-appointment.appointmentDateTime
-)
-
-}}
-
-
-</td>
-
-
-
-
-
-
-<td>
-
-
-<span class="status">
-
-
-{{appointment.status}}
-
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-<td>
-
-
-
-
-<!-- Doctor Profile -->
-
-
-
-
-
-
-
-
-
-<!-- Feedback -->
-
+    <h2 class="page-title">
+        My Appointments
+    </h2>
+
+    <div class="table-card">
+
+        <table class="appointments-table">
+
+            <tr>
+                <th>Doctor</th>
+                <th>Speciality</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            <tr
+                v-for="appointment in appointments"
+                :key="appointment._id"
+            >
+
+                <td class="doctor-name">
+                  {{ appointment.doctor?.user?.name || appointment.doctor?.name || "Doctor" }}
+                </td>
+
+                <td class="speciality">
+                    {{ appointment.doctor?.specialties?.join(", ") }}
+                </td>
+
+                <td class="appointment-date">
+                    {{ formatDateTime(appointment.appointmentDateTime) }}
+                </td>
+
+                <td>
+                    <span class="status">
+                        {{ appointment.status }}
+                    </span>
+                </td>
+
+                <td>
+
+                    <button
+                        v-if="appointment.status==='confirmed'"
+                        class="reschedule-btn"
+                        @click="openReschedule(appointment)"
+                    >
+                        🔄 Reschedule
+                    </button>
 
 <button
-
 class="feedback-btn"
-
-:class="{
-
-disabled:
-appointment.status !== 'completed'
-
-}"
-
-
+:class="{ disabled: appointment.status !== 'completed' }"
+:disabled="appointment.status !== 'completed'"
 @click="openFeedback(appointment)"
-
-
 >
-
-
 ⭐ Give Feedback
-
-
 </button>
 
+                    <button
+                        v-if="appointment.status==='completed'"
+                        class="prescription-btn"
+                       @click="openPrescription(appointment)"
+                    >
+                        📄 Prescription
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
 
 
 
+    <!-- ========================= -->
+    <!-- Reschedule Modal -->
+    <!-- ========================= -->
 
-
-
-
-<!-- Prescription -->
-
-
-<button
-
-v-if="appointment.status==='completed'"
-
-class="prescription-btn"
-
-@click="openPrescription"
-
-
->
-
-
-📄 Prescription
-
-
-</button>
-
-
-
-
-
-</td>
-
-
-
-
-</tr>
-
-
-
-</table>
-
-
-
-
-
-
-
-
-<!-- Feedback Modal -->
-
+<!-- ========================= -->
+<!-- Reschedule Modal -->
+<!-- ========================= -->
 
 <div
-
-v-if="showFeedback"
-
-class="modal-overlay"
-
-
+    v-if="showReschedule"
+    class="modal-overlay"
 >
 
+    <div class="feedback-modal">
+
+        <h2>
+            Reschedule Appointment
+        </h2>
 
 
-<div class="feedback-modal">
+        <p>
+            <b>Current Appointment:</b><br>
+
+            {{
+                formatDateTime(
+                    selectedRescheduleAppointment.appointmentDateTime
+                )
+            }}
+
+        </p>
+<label>
+Select Date
+</label>
 
 
+<input
 
-<h2>
-Give Feedback
-</h2>
+type="date"
 
+v-model="selectedDate"
 
-
+/>
 
 
 
 <label>
-Rating
+Select Time
 </label>
 
 
+<input
 
+type="time"
 
-<select
+v-model="selectedTime"
 
-v-model="feedback.rating"
+/>
+        <button
 
->
+        class="submit-btn"
 
+        @click="submitReschedule"
 
-<option :value="5">
+        >
 
-⭐⭐⭐⭐⭐
+            Submit Request
 
-</option>
+        </button>
 
 
-<option :value="4">
 
-⭐⭐⭐⭐
 
-</option>
+        <button
 
+        class="cancel-btn"
 
+        @click="showReschedule=false"
 
-<option :value="3">
+        >
 
-⭐⭐⭐
+            Cancel
 
-</option>
+        </button>
 
 
 
-<option :value="2">
-
-⭐⭐
-
-</option>
-
-
-
-<option :value="1">
-
-⭐
-
-</option>
-
-
-
-</select>
-
-
-
-
-
-
-
-<textarea
-
-v-model="feedback.comment"
-
-placeholder="Write your experience..."
-
->
-
-</textarea>
-
-
-
-
-
-
-
-<button
-
-class="submit-btn"
-
-@click="submitFeedback"
-
->
-
-
-Submit
-
-
-</button>
-
-
-
-
-
-
-
-
-<button
-
-class="cancel-btn"
-
-@click="showFeedback=false"
-
->
-
-
-Cancel
-
-
-</button>
-
-
-
-
-
-</div>
-
+    </div>
 
 </div>
 
 
 
+    <!-- ========================= -->
+    <!-- Feedback Modal -->
+    <!-- ========================= -->
 
+    <div
+        v-if="showFeedback"
+        class="modal-overlay"
+    >
+
+        <div class="feedback-modal">
+
+            <h2>
+                Give Feedback
+            </h2>
+
+            <label>
+                Rating
+            </label>
+
+            <select v-model="feedback.rating">
+
+                <option :value="5">⭐⭐⭐⭐⭐</option>
+                <option :value="4">⭐⭐⭐⭐</option>
+                <option :value="3">⭐⭐⭐</option>
+                <option :value="2">⭐⭐</option>
+                <option :value="1">⭐</option>
+
+            </select>
+
+            <textarea
+                v-model="feedback.comment"
+                placeholder="Write your experience..."
+            ></textarea>
+
+            <button
+                class="submit-btn"
+                @click="submitFeedback"
+            >
+                Submit
+            </button>
+
+            <button
+                class="cancel-btn"
+                @click="showFeedback=false"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
-
-
-
-</div>
-
 
 </template>
+
+
+
+
+
 
 
 <style scoped>
@@ -699,7 +670,7 @@ Cancel
 
 .appointments-page{
 
-    min-height:100%;
+min-height:100%;
 
 }
 
@@ -707,11 +678,11 @@ Cancel
 
 .page-title{
 
-    color:var(--text);
+color:var(--text);
 
-    font-size:32px;
+font-size:32px;
 
-    margin-bottom:30px;
+margin-bottom:30px;
 
 }
 
@@ -721,29 +692,28 @@ Cancel
 
 .table-card{
 
-    background:var(--white);
+background:var(--white);
 
-    padding:30px;
+padding:30px;
 
-    border-radius:22px;
+border-radius:22px;
 
-    box-shadow:var(--shadow);
+box-shadow:var(--shadow);
 
-    border:1px solid var(--border);
+border:1px solid var(--border);
 
-    overflow-x:auto;
+overflow-x:auto;
 
 }
 
 
 
 
-
 .appointments-table{
 
-    width:100%;
+width:100%;
 
-    border-collapse:collapse;
+border-collapse:collapse;
 
 }
 
@@ -753,19 +723,17 @@ Cancel
 
 .appointments-table th{
 
-    background:
+background:linear-gradient(
+135deg,
+var(--primary),
+var(--primary-dark)
+);
 
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--primary-dark)
-    );
+color:white;
 
-    color:white;
+padding:16px;
 
-    padding:16px;
-
-    text-align:left;
+text-align:left;
 
 }
 
@@ -775,21 +743,9 @@ Cancel
 
 .appointments-table td{
 
-    padding:16px;
+padding:16px;
 
-    border-bottom:1px solid var(--border);
-
-    color:var(--text);
-
-}
-
-
-
-
-
-.appointments-table tr:hover{
-
-    background:#f8fafc;
+border-bottom:1px solid var(--border);
 
 }
 
@@ -799,70 +755,64 @@ Cancel
 
 .doctor-name{
 
-    font-weight:700;
+font-weight:700;
 
-    color:var(--primary);
-
-}
-
-
-
-
-
-.speciality{
-
-    color:var(--muted);
+color:var(--primary);
 
 }
-
-
-
-
-
-.appointment-date{
-
-    font-weight:600;
-
-}
-
 
 
 
 
 .status{
 
-    display:inline-block;
-
-    padding:8px 15px;
-
-    border-radius:20px;
-
-    background:rgba(20,184,166,.15);
-
-    color:var(--primary);
-
-    font-weight:700;
-
-    font-size:13px;
-
-    text-transform:capitalize;
-
-}
-.feedback-btn{
-
-background:#2563eb;
-
-color:white;
-
-border:none;
+display:inline-block;
 
 padding:8px 15px;
+
+border-radius:20px;
+
+background:rgba(20,184,166,.15);
+
+color:var(--primary);
+
+font-weight:700;
+
+}
+
+
+
+button{
+
+margin:5px;
+
+padding:8px 15px;
+
+border:none;
 
 border-radius:10px;
 
 cursor:pointer;
 
-transition:.3s;
+}
+
+
+
+.reschedule-btn{
+
+background:#f59e0b;
+
+color:white;
+
+}
+
+
+
+.feedback-btn{
+
+background:#2563eb;
+
+color:white;
 
 }
 
@@ -874,26 +824,30 @@ background:#9ca3af;
 
 cursor:not-allowed;
 
-opacity:.7;
-
 }
 
 
 
-.feedback-btn:not(.disabled):hover{
+.prescription-btn{
 
-transform:translateY(-2px);
+background:#16a34a;
+
+color:white;
 
 }
+
+
 
 .modal-overlay{
 
 position:fixed;
 
 top:0;
+
 left:0;
 
 width:100%;
+
 height:100%;
 
 background:rgba(0,0,0,.4);
@@ -928,9 +882,9 @@ gap:15px;
 
 
 
-.feedback-modal textarea{
-
-height:100px;
+.feedback-modal input,
+.feedback-modal textarea,
+.feedback-modal select{
 
 padding:10px;
 
@@ -944,12 +898,6 @@ background:#16a34a;
 
 color:white;
 
-padding:10px;
-
-border:none;
-
-border-radius:10px;
-
 }
 
 
@@ -959,12 +907,6 @@ border-radius:10px;
 background:#dc2626;
 
 color:white;
-
-padding:10px;
-
-border:none;
-
-border-radius:10px;
 
 }
 

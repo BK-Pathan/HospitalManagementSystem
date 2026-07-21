@@ -34,6 +34,55 @@ cancelReason:{
 type:String,
 default:""
 },
+rescheduleStatus:{
+    type:String,
+    enum:[
+        "pending",
+        "approved",
+        "rejected"
+    ],
+    default:"pending"
+},
+
+rescheduledDateTime:{
+    type:Date
+},
+
+rescheduleRequested:{
+    type:Boolean,
+    default:false
+},
+
+rescheduleHistory:[
+{
+    oldDateTime:{
+        type:Date
+    },
+
+    newDateTime:{
+        type:Date
+    },
+
+    status:{
+        type:String,
+        enum:[
+            "pending",
+            "approved",
+            "rejected"
+        ]
+    },
+
+    doctorReply:{
+        type:String,
+        default:""
+    },
+
+    createdAt:{
+        type:Date,
+        default:Date.now
+    }
+}
+]
 
 },{
 timestamps:true

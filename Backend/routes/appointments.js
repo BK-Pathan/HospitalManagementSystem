@@ -1,20 +1,57 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const appointmentsController = require('../controllers/appointmentsController');
 
-// Route for fetching all appointments
-router.get('/', appointmentsController.getAllAppointments);
 
-// Route for fetching a single appointment by ID
-router.get('/:id', appointmentsController.getAppointmentById);
+const auth = require("../middleware/authMiddleware");
 
-// Route for creating a new appointment
-router.post('/', appointmentsController.createAppointment);
 
-// Route for updating an appointment
-router.put('/:id', appointmentsController.updateAppointment);
+const {
+requestReschedule,
+approveReschedule,
+rejectReschedule,
+getDoctorRescheduleRequests,
+getDoctorAvailability,
+getDoctorRescheduleHistory
+}=require("../controllers/appointmentsController");
 
-// Route for deleting an appointment
-router.delete('/:id', appointmentsController.deleteAppointment);
+
+
+router.post(
+"/:id/reschedule",
+auth,
+requestReschedule
+);
+
+
+router.put(
+"/:id/approve-reschedule",
+auth,
+approveReschedule
+);
+
+
+router.put(
+"/:id/reject-reschedule",
+auth,
+rejectReschedule
+);
+
+router.get(
+"/doctor/reschedule-requests",
+auth,
+getDoctorRescheduleRequests
+);
+
+router.get(
+"/doctor/:id/availability",
+auth,
+getDoctorAvailability
+);
+
+router.get(
+"/doctor/reschedule-history",
+auth,
+getDoctorRescheduleHistory
+);
 
 module.exports = router;

@@ -143,6 +143,10 @@ path:"/doctor/profile"
 {
     name:"Feedback",
     path:"/doctor/feedback"
+},
+{
+    name:"🔄 Reschedule Requests",
+    path:"/doctor/reschedule-requests"
 }
 
 

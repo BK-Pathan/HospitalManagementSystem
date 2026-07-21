@@ -200,15 +200,21 @@ path:"appointments",
 component:DoctorAppointments
 },
 
+
+
 {
-path:"/doctor/patient-history/:patientId",
+path:"patient-history/:patientId",
+
 component:()=>import(
 "../views/Doctors/PatientHistory.vue"
 )
 
 },
+
+
+
 {
-path:"/doctor/write-prescription/:patientId/:appointmentId",
+path:"write-prescription/:patientId/:appointmentId",
 
 component:WritePrescription,
 
@@ -217,19 +223,40 @@ role:"doctor"
 }
 
 },
+
+
+
 {
-path:"/doctor/prescriptions/:patientId",
+path:"prescriptions/:patientId",
+
 name:"ViewPrescriptions",
+
 component:ViewPrescriptions,
+
 meta:{
 role:"doctor"
 }
+
 },
+
+
+
 {
-path:"/doctor/feedback",
+path:"feedback",
 
 component:()=>import(
 "../views/Doctors/DoctorFeedback.vue"
+)
+
+},
+
+
+
+{
+path:"reschedule-requests",
+
+component:()=>import(
+"../views/Doctors/DoctorRescheduleRequests.vue"
 )
 
 }
@@ -237,7 +264,6 @@ component:()=>import(
 
 
 ]
-
 
 }
 
