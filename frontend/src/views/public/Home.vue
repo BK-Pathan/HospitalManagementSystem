@@ -15,7 +15,7 @@ import Footer from "../../components/public/Footer.vue"
   <Navbar />
   <Hero />
   <About/>
-  <!-- <Services/> -->
+  <Services/>
   <ChooseUs/>
   <DoctorsSection/>
   <Testimonials/>

@@ -189,10 +189,10 @@
     </div>
 
     <!-- Wave transition into the next section -->
-    <svg class="wave" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
+    <!-- <svg class="wave" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
       <path class="wave-path wave-path-1" d="M0,64 C240,120 480,0 720,32 C960,64 1200,112 1440,48 L1440,110 L0,110 Z" />
       <path class="wave-path wave-path-2" d="M0,80 C260,30 500,110 760,64 C1020,18 1260,90 1440,64 L1440,110 L0,110 Z" />
-    </svg>
+    </svg> -->
 
   </section>
 </template>
