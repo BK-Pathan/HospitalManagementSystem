@@ -16,7 +16,74 @@ const DescribeYourProblem = ref("");
 
 const isEdit = ref(false);
 const profileExists = ref(false);
+const profileImage = ref("");
+const selectedImage = ref(null);
 
+// Select Image
+const handleImage = (event) => {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  selectedImage.value = file;
+
+};
+
+// Upload Image
+const uploadImage = async () => {
+
+  if (!selectedImage.value) {
+    alert("Select image first");
+    return;
+  }
+
+  try {
+
+    const formData = new FormData();
+
+    formData.append("image", selectedImage.value);
+
+    await api.post(
+      "/users/profile-image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    );
+
+    alert("Profile image updated");
+
+    getProfile();
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+  }
+
+};
+
+// Remove Image
+const removeImage = async () => {
+
+  try {
+
+    await api.delete("/users/profile-image");
+
+    profileImage.value = "";
+
+    alert("Profile image removed");
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+  }
+
+};
 
 const saveProfile = async()=>{
 
@@ -71,6 +138,8 @@ name.value = res.data.user?.name || "";
 
 email.value = res.data.user?.email || "";
 
+profileImage.value = res.data.user?.profileImage || "";
+
 age.value = res.data.age || "";
 
 gender.value = res.data.gender || "";
@@ -120,9 +189,6 @@ getProfile();
 
 </script>
 
-
-
-
 <template>
 
 <div class="profile-page">
@@ -154,7 +220,44 @@ getProfile();
 
 
 
+<div class="patient-avatar">
 
+  <img
+    v-if="profileImage"
+    :src="profileImage"
+    alt="Profile"
+  />
+
+  <span v-else>
+    {{ name?.charAt(0)?.toUpperCase() }}
+  </span>
+
+</div>
+
+<input
+  type="file"
+  accept="image/*"
+  @change="handleImage"
+/>
+
+<div class="image-actions">
+
+  <button
+    class="update-btn"
+    @click="uploadImage"
+  >
+    Upload Image
+  </button>
+
+  <button
+    v-if="profileImage"
+    class="remove-btn"
+    @click="removeImage"
+  >
+    Remove Image
+  </button>
+
+</div>
 
     <div class="profile-card">
 
@@ -818,6 +921,37 @@ button:hover{
 
 
 }
+.patient-avatar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    overflow:hidden;
+    background:var(--secondary);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    font-weight:bold;
+    margin:20px auto;
+}
 
+.patient-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.image-actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.remove-btn{
+    background:#ef4444;
+    color:white;
+}
 
 </style>

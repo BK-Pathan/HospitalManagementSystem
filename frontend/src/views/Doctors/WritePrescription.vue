@@ -7,7 +7,7 @@ import api from "../../api/axios";
 
 const route = useRoute();
 const router = useRouter();
-
+const previousPrescriptions = ref([]);
 
 const patient = ref(null);
 
@@ -48,7 +48,8 @@ const res = await api.get(
 `/doctor/patient-history/${route.params.patientId}`
 );
 
-
+previousPrescriptions.value =
+res.data.previousPrescriptions || [];
 
 console.log(
 "Patient History Response:",
@@ -361,7 +362,68 @@ Problem:
 </div>
 
 
+<div
+v-if="previousPrescriptions.length"
+class="card"
+>
 
+<h3>
+Previous Prescription
+</h3>
+
+
+<div
+v-for="pres in previousPrescriptions"
+:key="pres._id"
+>
+
+<p>
+Date:
+{{ new Date(pres.createdAt).toLocaleDateString() }}
+</p>
+
+
+<h4>
+Medicines
+</h4>
+
+
+<ul>
+
+<li
+v-for="med in pres.medicines"
+:key="med._id"
+>
+
+{{med.name}}
+-
+{{med.dosage}}
+-
+{{med.frequency}}
+
+</li>
+
+</ul>
+
+
+<p>
+Instructions:
+{{pres.instructions}}
+</p>
+
+
+<p>
+Notes:
+{{pres.notes}}
+</p>
+
+
+<hr>
+
+</div>
+
+
+</div>
 
 
 <div class="card">

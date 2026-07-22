@@ -115,37 +115,25 @@ message:error.message
 
 // Get Profile
 
-exports.getProfile = async(req,res)=>{
+exports.getProfile = async (req, res) => {
 
+    try {
 
-try{
+        const patient = await Patient.findOne({
+            user: req.user.id
+        }).populate({
+            path: "user",
+            select: "name email profileImage"
+        });
 
+        res.json(patient);
 
-const patient = await Patient.findOne({
+    } catch (error) {
 
-user:req.user.id
+        res.status(500).json({
+            message: error.message
+        });
 
-})
-.populate(
-"user",
-"name email"
-);
-
-
-
-res.json(patient);
-
-
-
-}catch(error){
-
-res.status(500).json({
-
-message:error.message
-
-});
-
-}
-
+    }
 
 };

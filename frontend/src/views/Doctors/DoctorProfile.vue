@@ -1,8 +1,16 @@
 <script setup>
+
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 
+
 const name = ref("");
+const profileImage = ref("");
+
+const selectedImage = ref(null);
+
+
+
 const specialties = ref("");
 const qualifications = ref("");
 const experience = ref("");
@@ -14,112 +22,425 @@ const day = ref("");
 const startTime = ref("");
 const endTime = ref("");
 
+
+
+
+// =======================
 // Convert 24hr -> 12hr
+// =======================
+
 const convertTo12Hour = (time) => {
-  if (!time) return "";
 
-  let [hour, minute] = time.split(":");
+if (!time) return "";
 
-  hour = parseInt(hour);
+let [hour, minute] = time.split(":");
 
-  const ampm = hour >= 12 ? "PM" : "AM";
+hour = parseInt(hour);
 
-  hour = hour % 12 || 12;
+const ampm = hour >= 12 ? "PM" : "AM";
 
-  return `${hour}:${minute} ${ampm}`;
+hour = hour % 12 || 12;
+
+return `${hour}:${minute} ${ampm}`;
+
 };
 
-// Add availability slot
+
+
+
+// =======================
+// Select Image
+// =======================
+
+const handleImage=(event)=>{
+
+
+const file = event.target.files[0];
+
+
+if(!file) return;
+
+
+selectedImage.value=file;
+
+
+};
+
+
+
+
+
+// =======================
+// Upload Image
+// =======================
+
+const uploadImage = async()=>{
+
+
+if(!selectedImage.value){
+
+alert("Select image first");
+
+return;
+
+}
+
+
+
+try{
+
+
+const formData = new FormData();
+
+
+formData.append(
+"image",
+selectedImage.value
+);
+
+
+
+const res = await api.post(
+
+"/users/profile-image",
+
+formData,
+
+{
+
+headers:{
+
+"Content-Type":"multipart/form-data"
+
+}
+
+}
+
+);
+
+
+
+alert(
+"Profile image updated"
+);
+
+
+
+getProfile();
+
+
+
+}
+catch(error){
+
+console.log(
+error.response?.data || error.message
+);
+
+
+}
+
+
+
+};
+
+
+
+
+
+// =======================
+// Remove Image
+// =======================
+
+const removeImage = async()=>{
+
+
+try{
+
+
+await api.delete(
+"/users/profile-image"
+);
+
+
+
+alert(
+"Image removed"
+);
+
+
+
+profileImage.value="";
+
+
+
+}
+catch(error){
+
+console.log(
+error.response?.data || error.message
+);
+
+
+}
+
+
+};
+
+
+
+
+
+
+// =======================
+// Add Availability
+// =======================
+
 const addAvailability = () => {
 
-  if (!day.value || !startTime.value || !endTime.value) {
-    alert("Fill all fields");
-    return;
-  }
 
-  availability.value.push({
-    day: day.value,
-    startTime: convertTo12Hour(startTime.value),
-    endTime: convertTo12Hour(endTime.value),
-  });
+if (!day.value || !startTime.value || !endTime.value) {
 
-  day.value = "";
-  startTime.value = "";
-  endTime.value = "";
+alert("Fill all fields");
+
+return;
+
+}
+
+
+
+availability.value.push({
+
+day:day.value,
+
+startTime:convertTo12Hour(startTime.value),
+
+endTime:convertTo12Hour(endTime.value),
+
+});
+
+
+
+day.value="";
+
+startTime.value="";
+
+endTime.value="";
+
 };
+
+
+
+
+
 
 // Remove slot
-const removeAvailability = (index) => {
-  availability.value.splice(index, 1);
-};
 
-// Save profile
-const saveProfile = async () => {
+const removeAvailability=(index)=>{
 
-  try {
-
-    await api.post("/doctor/profile", {
-
-      name: name.value,
-
-      specialties: specialties.value
-        .split(",")
-        .map((item) => item.trim()),
-
-      qualifications: qualifications.value,
-
-      experience: experience.value,
-
-      contactInformation: contactInformation.value,
-
-      availability: availability.value,
-
-    });
-
-    alert("Profile Saved");
-
-  } catch (error) {
-    console.log(error);
-  }
+availability.value.splice(index,1);
 
 };
 
-// Load profile
-const getProfile = async () => {
 
-  try {
 
-    const res = await api.get("/doctor/profile");
 
-    if (!res.data) return;
 
-    name.value = res.data.name || "";
 
-    specialties.value = (res.data.specialties || []).join(",");
 
-    qualifications.value = res.data.qualifications || "";
+// =======================
+// Save Profile
+// =======================
 
-    experience.value = res.data.experience || "";
+const saveProfile = async()=>{
 
-    contactInformation.value = res.data.contactInformation || "";
 
-    availability.value = res.data.availability || [];
+try{
 
-  } catch (error) {
-    console.log(error);
-  }
+
+await api.post(
+
+"/doctor/profile",
+
+{
+
+
+name:name.value,
+
+
+specialties:specialties.value
+.split(",")
+.map(item=>item.trim()),
+
+
+qualifications:qualifications.value,
+
+
+experience:experience.value,
+
+
+contactInformation:contactInformation.value,
+
+
+availability:availability.value,
+
+
+}
+
+);
+
+
+
+alert(
+"Profile Saved"
+);
+
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+}
+
 
 };
 
-onMounted(() => {
-  getProfile();
+
+
+
+
+
+
+
+// =======================
+// Get Profile
+// =======================
+
+const getProfile = async()=>{
+
+
+try{
+
+
+const res = await api.get(
+"/doctor/profile"
+);
+
+
+
+if(!res.data) return;
+
+
+
+name.value =
+res.data.name || "";
+
+
+
+profileImage.value =
+res.data.profileImage || "";
+
+
+
+specialties.value =
+(res.data.specialties || []).join(",");
+
+
+
+qualifications.value =
+res.data.qualifications || "";
+
+
+
+experience.value =
+res.data.experience || "";
+
+
+
+contactInformation.value =
+res.data.contactInformation || "";
+
+
+
+availability.value =
+res.data.availability || [];
+
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+
+};
+
+
+
+
+onMounted(()=>{
+
+getProfile();
+
 });
+
+
 </script>
 
 <template>
 
 <div class="profile-page">
+<div class="doctor-avatar">
 
+
+<img
+v-if="profileImage"
+:src="profileImage"
+/>
+
+
+<span v-else>
+  {{
+    name
+    ?.replace(/^Dr\.?\s*/i, "")
+    ?.charAt(0)
+    ?.toUpperCase()
+  }}
+</span>
+
+
+</div>
+
+
+
+<input
+type="file"
+accept="image/*"
+@change="handleImage"
+/>
+
+
+<button
+class="primary-btn"
+@click="uploadImage"
+>
+Upload Image
+</button>
+
+
+<button
+v-if="profileImage"
+class="remove-btn"
+@click="removeImage"
+>
+Remove Image
+</button>
 
 <h2 class="page-title">
 Doctor Profile
@@ -584,7 +905,31 @@ button:hover{
 }
 
 
+.doctor-avatar{
 
+width:100px;
+height:100px;
+border-radius:50%;
+background:var(--secondary);
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+font-weight:bold;
+overflow:hidden;
+margin-bottom:20px;
+
+}
+
+
+.doctor-avatar img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
 
 
 @media(max-width:800px){

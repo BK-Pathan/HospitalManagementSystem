@@ -59,15 +59,53 @@ exports.getProfile = async(req,res)=>{
 
 try{
 
+
 const doctor = await Doctor.findOne({
 user:req.user.id
+})
+.populate(
+"user",
+"name profileImage email"
+);
+
+
+
+if(!doctor){
+
+return res.status(404).json({
+message:"Doctor profile not found"
+});
+
+}
+
+
+
+res.json({
+
+_id:doctor._id,
+
+name:doctor.name,
+
+specialties:doctor.specialties,
+
+qualifications:doctor.qualifications,
+
+experience:doctor.experience,
+
+contactInformation:doctor.contactInformation,
+
+availability:doctor.availability,
+
+
+profileImage: doctor.user?.profileImage || "",
+
+email: doctor.user?.email || ""
+
 });
 
 
-res.json(doctor);
-
-
-}catch(error){
+}
+catch(error){
 
 res.status(500).json({
 message:error.message
@@ -76,8 +114,6 @@ message:error.message
 }
 
 };
-
-
 
 
 // Get My Appointments

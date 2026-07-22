@@ -9,7 +9,8 @@ const role = require("../middleware/roleMiddleware");
 const {
 createPrescription,
 getMyPrescriptions,
-getPatientPrescriptions
+getPatientPrescriptions,
+getPatientAllPrescriptions
 }=require("../controllers/prescriptionController");
 
 
@@ -47,6 +48,11 @@ role("doctor","patient"),
 getPatientPrescriptions
 );
 
-
+router.get(
+"/patient/:patientId/all",
+auth,
+role("doctor"),
+getPatientAllPrescriptions
+);
 
 module.exports = router;

@@ -20,7 +20,18 @@ const userSchema = new Schema({
         type:String,
         enum:["admin","doctor","patient"],
         default:"patient"
-    }
+    },
+profileImage:{
+ type:String,
+ default:""
+},
+
+
+profileImagePublicId:{
+    type:String,
+    default:""
+}
+
 
 }, { timestamps: true });
 

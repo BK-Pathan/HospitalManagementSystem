@@ -304,3 +304,55 @@ message:error.message
 
 };
 
+
+exports.getPatientAllPrescriptions = async(req,res)=>{
+
+try{
+
+const prescriptions = await Prescription.find({
+
+patient:req.params.patientId
+
+})
+
+.populate({
+
+path:"doctor",
+
+populate:{
+path:"user",
+select:"name email"
+}
+
+})
+
+.populate({
+
+path:"appointment",
+
+select:"appointmentDateTime status"
+
+})
+
+.sort({
+
+createdAt:-1
+
+});
+
+
+res.json(prescriptions);
+
+
+}
+catch(error){
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
+
+};

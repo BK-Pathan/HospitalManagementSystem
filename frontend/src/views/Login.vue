@@ -1,8 +1,9 @@
 <script setup>
 
-import {ref} from "vue";
+import { ref } from "vue";
 import api from "../api/axios";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
+import socket from "../socket";
 
 
 const router = useRouter();
@@ -30,22 +31,30 @@ const res = await api.post("/auth/login",{
 
 
 
-console.log("LOGIN RESPONSE:", res.data);
-
-
-
-const userRole = res.data.user.role;
-
-
-
-// save user data
-localStorage.setItem(
-    "user",
-    JSON.stringify(res.data.user)
+console.log(
+"LOGIN RESPONSE:",
+res.data
 );
 
 
-// save role
+
+const user = res.data.user;
+
+const userRole = user.role;
+
+
+
+// Save User Data
+
+localStorage.setItem(
+    "user",
+    JSON.stringify(user)
+);
+
+
+
+// Save Role
+
 localStorage.setItem(
     "role",
     userRole
@@ -53,15 +62,36 @@ localStorage.setItem(
 
 
 
+
+
+// =============================
+// SOCKET CONNECTION
+// =============================
+
+
+socket.connect();
+
+
+
+socket.emit(
+    "joinRoom",
+    user.id
+);
+
+
+
 console.log(
-    "SAVED ROLE:",
-    localStorage.getItem("role")
+"Socket Room Joined:",
+user.id
 );
 
 
 
 
-// redirect according to role
+
+
+// Redirect According To Role
+
 
 if(userRole === "admin"){
 
@@ -81,7 +111,7 @@ else if(userRole === "doctor"){
 }
 
 
-else {
+else{
 
 
     router.push("/patient");
@@ -91,27 +121,34 @@ else {
 
 
 
-
 }
 catch(error){
 
 
-console.log("FULL ERROR:",error);
+
+console.log(
+"FULL ERROR:",
+error
+);
+
 
 
 
 if(error.response){
 
 
-alert(error.response.data.message);
+alert(
+error.response.data.message
+);
 
 
 }
-
 else{
 
 
-alert("Backend server not reachable");
+alert(
+"Backend server not reachable"
+);
 
 
 }
