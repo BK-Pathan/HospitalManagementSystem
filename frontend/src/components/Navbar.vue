@@ -2,6 +2,11 @@
 
 import { ref, computed, onMounted } from "vue";
 import api from "../api/axios";
+import { useRouter } from "vue-router";
+import socket from "../socket";
+
+
+const router = useRouter();
 
 
 const role = computed(()=>localStorage.getItem("role"));
@@ -10,7 +15,12 @@ const role = computed(()=>localStorage.getItem("role"));
 const user = ref({});
 
 
-// latest user profile get karo
+const notifications = ref([]);
+
+
+
+// latest user profile
+
 const getProfile = async()=>{
 
 try{
@@ -21,15 +31,14 @@ const res = await api.get("/auth/profile");
 user.value = res.data;
 
 
-// localStorage update bhi kar do
-
 localStorage.setItem(
     "user",
     JSON.stringify(res.data)
 );
 
 
-}catch(error){
+}
+catch(error){
 
 console.log(error);
 
@@ -39,11 +48,94 @@ console.log(error);
 
 
 
+
+// get notification count
+
+const getNotifications = async()=>{
+
+try{
+
+
+const res = await api.get("/notifications");
+
+
+notifications.value = res.data;
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+
+};
+
+
+
+
+
 onMounted(()=>{
+
 
 getProfile();
 
+
+getNotifications();
+
+
+
+// realtime notification
+
+socket.on(
+"notification",
+(data)=>{
+
+
+notifications.value.unshift({
+
+...data,
+
+isRead:false
+
 });
+    
+
+});
+
+
+});
+
+
+
+
+
+const notificationCount = computed(()=>{
+
+
+return notifications.value.filter(
+n=>!n.isRead
+).length;
+
+
+});
+
+
+
+
+
+const openNotifications = ()=>{
+
+
+router.push("/notifications");
+
+
+};
+
+
+
+
 
 
 
@@ -55,7 +147,10 @@ return user.value.name || "";
 
 
 
+
+
 const userRole = computed(()=>{
+
 
 const currentRole = role.value;
 
@@ -76,6 +171,8 @@ return "";
 
 
 });
+
+
 
 
 
@@ -101,6 +198,7 @@ return "Hospital";
 
 
 });
+
 
 
 </script>
@@ -129,7 +227,26 @@ return "Hospital";
 
     </div>
 
+<div 
+class="notification-icon"
+@click="openNotifications"
+>
 
+
+🔔
+
+
+<span 
+v-if="notificationCount > 0"
+class="notification-badge"
+>
+
+{{notificationCount}}
+
+</span>
+
+
+</div>
 
     <div class="user-section">
 
@@ -400,6 +517,57 @@ return "Hospital";
     border-radius:20px;
     background:#14B8A6;
     color:white;
+}
+.notification-icon{
+
+
+position:relative;
+
+font-size:28px;
+
+cursor:pointer;
+
+margin-right:25px;
+
+}
+
+
+
+.notification-badge{
+
+
+position:absolute;
+
+top:-8px;
+
+right:-10px;
+
+
+background:red;
+
+color:white;
+
+
+width:20px;
+
+height:20px;
+
+
+border-radius:50%;
+
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+
+font-size:12px;
+
+font-weight:bold;
+
+
 }
 </style>
 

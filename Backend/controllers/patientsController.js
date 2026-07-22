@@ -3,7 +3,7 @@ const Patient = require("../models/patient");
 const Doctor = require("../models/doctor");
 const Prescription = require("../models/prescription");
 const Feedback = require("../models/feedback");
-
+const Notification = require("../models/notification");
 
 
 // ===============================
@@ -415,7 +415,49 @@ status:"pending"
 
 });
 
+// ===============================
+// CREATE DOCTOR NOTIFICATION
+// ===============================
 
+
+await Notification.create({
+
+user: doctorData.user,
+
+title:"New Appointment Request",
+
+message:"You have a new appointment request from patient",
+
+type:"appointment"
+
+});
+
+
+
+// ===============================
+// REAL TIME NOTIFICATION
+// ===============================
+
+
+if(global.io){
+
+
+global.io
+.to(doctorData.user.toString())
+.emit(
+"notification",
+{
+
+title:"New Appointment Request",
+
+message:"You have a new appointment request from patient"
+
+}
+
+);
+
+
+}
 
 
 
@@ -668,7 +710,55 @@ appointment.rescheduleStatus =
 
 await appointment.save();
 
+// ===============================
+// SEND RESCHEDULE REQUEST TO DOCTOR
+// ===============================
 
+
+const doctorData = await Doctor.findById(
+    appointment.doctor
+);
+
+
+if(doctorData){
+
+
+await Notification.create({
+
+user: doctorData.user,
+
+title:"Reschedule Request",
+
+message:"Patient has requested to reschedule appointment",
+
+type:"reschedule"
+
+});
+
+
+
+// realtime
+
+if(global.io){
+
+global.io
+.to(doctorData.user.toString())
+.emit(
+"notification",
+{
+
+title:"Reschedule Request",
+
+message:"Patient has requested to reschedule appointment"
+
+}
+
+);
+
+}
+
+
+}
 
 res.json({
 

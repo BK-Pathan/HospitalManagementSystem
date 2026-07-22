@@ -497,8 +497,26 @@ if(lastHistory){
 
 await appointment.save();
 
+// ===============================
+// SEND NOTIFICATION TO DOCTOR
+// ===============================
 
+if (doctor.user) {
 
+    await Notification.create({
+        user: doctor.user,
+        title: "Reschedule Request",
+        message: `${appointment.patient?.user?.name || "A patient"} requested a reschedule for your appointment`,
+        type: "reschedule"
+    });
+
+    if (global.io) {
+        global.io.to(doctor.user.toString()).emit("notification", {
+            title: "Reschedule Request",
+            message: `${appointment.patient?.user?.name || "A patient"} requested a reschedule for your appointment`
+        });
+    }
+}
 
 res.json({
 

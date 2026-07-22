@@ -1,6 +1,9 @@
 const Appointment = require('../models/appointment');
 const Doctor = require("../models/doctor");
 // const Appointment = require("../models/appointment");
+const Notification = require("../models/notification");
+const Patient = require("../models/patient");
+
 exports.getMyAppointments = async(req,res)=>{
 
 try{
@@ -91,32 +94,299 @@ exports.updateAppointmentStatus = async(req,res)=>{
 try{
 
 
-const appointment = await Appointment.findByIdAndUpdate(
+const appointment = await Appointment.findById(
+    req.params.id
+);
 
-req.params.id,
+
+if(!appointment){
+
+return res.status(404).json({
+
+message:"Appointment not found"
+
+});
+
+}
+
+
+
+// update status
+
+appointment.status = req.body.status;
+
+
+await appointment.save();
+
+
+
+
+// ===============================
+// SEND NOTIFICATION TO PATIENT
+// ===============================
+
+
+// patient profile find
+
+const patient = await Patient.findById(
+    appointment.patient
+);
+
+
+
+if(patient){
+
+
+await Notification.create({
+
+user: patient.user,
+
+title:
+`Appointment ${req.body.status}`,
+
+message:
+`Doctor has ${req.body.status} your appointment request`,
+
+type:"appointment"
+
+
+});
+
+
+
+
+
+// realtime notification
+
+if(global.io){
+
+
+global.io
+.to(patient.user.toString())
+.emit(
+
+"notification",
 
 {
-status:req.body.status
-},
 
-{
-new:true
+title:
+`Appointment ${req.body.status}`,
+
+message:
+`Doctor has ${req.body.status} your appointment request`
+
 }
 
 );
 
 
+}
+
+
+
+}
+
+
+
+
 res.json({
+
 message:"Status updated",
+
 appointment
+
 });
 
 
-}catch(error){
+
+}
+catch(error){
+
+
+console.log(error);
+
 
 res.status(500).json({
+
 message:error.message
+
 });
+
+
+}
+
+
+};
+
+// ===============================
+// HANDLE RESCHEDULE REQUEST
+// ===============================
+
+exports.handleReschedule = async(req,res)=>{
+
+try{
+
+
+const appointment = await Appointment.findById(
+req.params.id
+);
+
+
+
+if(!appointment){
+
+return res.status(404).json({
+
+message:"Appointment not found"
+
+});
+
+}
+
+
+
+const {
+status
+}=req.body;
+
+
+
+
+// APPROVE RESCHEDULE
+
+if(status==="approved"){
+
+
+appointment.appointmentDateTime =
+appointment.rescheduledDateTime;
+
+
+appointment.rescheduleStatus =
+"approved";
+
+
+appointment.rescheduleRequested =
+false;
+
+
+}
+
+
+
+// REJECT RESCHEDULE
+
+if(status==="rejected"){
+
+
+appointment.rescheduleStatus =
+"rejected";
+
+
+appointment.rescheduleRequested =
+false;
+
+
+}
+
+
+
+await appointment.save();
+
+
+
+
+// ===============================
+// SEND NOTIFICATION TO PATIENT
+// ===============================
+
+
+const patient = await Patient.findById(
+appointment.patient
+);
+
+
+
+if(patient){
+
+
+const message =
+status==="approved"
+?
+"Doctor approved your reschedule request"
+:
+"Doctor rejected your reschedule request";
+
+
+
+await Notification.create({
+
+user:patient.user,
+
+title:
+`Reschedule ${status}`,
+
+message,
+
+type:"reschedule"
+
+});
+
+
+
+
+// REAL TIME
+
+if(global.io){
+
+
+global.io
+.to(patient.user.toString())
+.emit(
+
+"notification",
+
+{
+
+title:
+`Reschedule ${status}`,
+
+message
+
+}
+
+);
+
+
+}
+
+
+}
+
+
+
+
+res.json({
+
+message:"Reschedule updated successfully",
+
+appointment
+
+});
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
 
 }
 

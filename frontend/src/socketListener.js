@@ -1,8 +1,14 @@
 import socket from "./socket";
 
 
-socket.on("notification", (data)=>{
+socket.on(
+"notification",
+(data)=>{
 
-    console.log("Notification Received:", data);
+console.log(
+"Global Notification:",
+data
+);
+
 
 });

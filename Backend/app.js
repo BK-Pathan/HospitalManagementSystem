@@ -62,25 +62,6 @@ io.on("connection", (socket) => {
 // Controllers ke liye access
 global.io = io;
 
-setTimeout(()=>{
-
-
-console.log("Sending test notification");
-
-
-global.io
-.to("6a563b70507905e7c60c3bfc")
-.emit(
-"notification",
-{
-title:"Test Notification",
-message:"Socket working"
-});
-
-
-},5000);
-
-
 // Middleware
 
 app.use(express.json());

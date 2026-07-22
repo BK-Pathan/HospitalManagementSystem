@@ -4,7 +4,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
 
-
 // Layouts
 import AdminLayout from "../layouts/AdminLayout.vue";
 import PatientLayout from "../layouts/PatientLayout.vue";
@@ -58,6 +57,11 @@ const routes = [
     path:"/signup",
     component:Signup
 },
+{
+ path:"/notifications",
+ component:()=>import("../views/Notification.vue")
+},
+
 
 
 

@@ -24,7 +24,8 @@ appointmentAnalytics,
 const {
 getMyAppointments,
 updateAppointmentStatus,
-approveReschedule
+approveReschedule,
+handleReschedule
 }=require("../controllers/DoctorsAppointmentController");
 
 const {
@@ -141,6 +142,12 @@ role("doctor"),
 
 getDoctorFeedbackAnalytics
 
+);
+
+router.put(
+"/appointments/:id/reschedule",
+auth,
+handleReschedule
 );
 
 router.get(
