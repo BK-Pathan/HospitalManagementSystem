@@ -128,8 +128,9 @@ const userRoutes = require("./routes/userProfileRoutes");
 
 const notificationRoutes = require("./routes/notificationRoutes");
 
-
-
+const roomRoutes=require("./routes/roomRoutes");
+const bedRoutes=require("./routes/bedRoutes");
+const admissionRoutes=require("./routes/admissionRoutes");
 
 
 
@@ -174,6 +175,11 @@ app.use("/news", newsRouter);
 app.use("/prescription", prescriptionRoutes);
 
 
+app.use("/api/rooms",roomRoutes);
+
+app.use("/api/beds",bedRoutes);
+
+app.use("/api/admissions",admissionRoutes);
 
 app.use("/users", userRoutes);
 

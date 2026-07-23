@@ -31,6 +31,7 @@ import DoctorProfile from "../views/Doctors/DoctorProfile.vue";
 import DoctorAppointments from "../views/Doctors/Appointments.vue";
 import WritePrescription from "../views/Doctors/WritePrescription.vue";
 import ViewPrescriptions from "../views/Doctors/ViewPrescriptions.vue";
+
 //Public pages
 import Home from "../views/public/Home.vue"
 import Doctor from "../views/public/Doctors.vue";
@@ -105,7 +106,29 @@ const routes = [
         {
  path:"profile",
  component:AdminProfile
-}
+},
+{
+    path:"/admin/rooms",
+    name:"AdminRooms",
+    component:()=>import(
+        "../views/admin/Rooms.vue"
+    )
+},
+{
+    path:"/admin/beds",
+    name:"AdminBeds",
+    component:()=>import(
+        "../views/admin/Beds.vue"
+    )
+},
+{
+ path:"/admin/admissions",
+ name:"AdminAdmissions",
+ component:()=>import(
+ "../views/admin/Admissions.vue"
+ )
+},
+
 
     ]
 
@@ -267,6 +290,20 @@ component:()=>import(
 "../views/Doctors/DoctorRescheduleRequests.vue"
 )
 
+},
+{
+path:"/doctor/admissions",
+name:"DoctorAdmissions",
+component:()=>import(
+"../views/Doctors/DoctorAdmissions.vue"
+)
+},
+{
+    path:"/doctor/all-history/:patientId",
+    name:"AllHistory",
+    component:()=>import(
+        "../views/Doctors/AllHistory.vue"
+    )
 }
 
 
