@@ -2,7 +2,9 @@ const Notification = require("../models/notification");
 
 
 
+// =====================================
 // Get My Notifications
+// =====================================
 
 exports.getMyNotifications = async(req,res)=>{
 
@@ -14,6 +16,8 @@ const notifications = await Notification.find({
 user:req.user.id
 
 })
+.populate("sender","name")
+.populate("appointment")
 .sort({
 createdAt:-1
 });
@@ -40,7 +44,10 @@ message:error.message
 
 
 
+
+// =====================================
 // Mark As Read
+// =====================================
 
 exports.markAsRead = async(req,res)=>{
 
@@ -49,19 +56,39 @@ try{
 
 
 const notification =
-await Notification.findByIdAndUpdate(
+await Notification.findOneAndUpdate(
 
-req.params.id,
+
+{
+_id:req.params.id,
+
+user:req.user.id
+
+},
+
 
 {
 isRead:true
 },
+
 
 {
 new:true
 }
 
 );
+
+
+
+if(!notification){
+
+return res.status(404).json({
+
+message:"Notification not found"
+
+});
+
+}
 
 
 
@@ -88,7 +115,10 @@ message:error.message
 
 
 
+
+// =====================================
 // Delete Notification
+// =====================================
 
 exports.deleteNotification = async(req,res)=>{
 
@@ -96,9 +126,26 @@ exports.deleteNotification = async(req,res)=>{
 try{
 
 
-await Notification.findByIdAndDelete(
-req.params.id
-);
+const notification =
+await Notification.findOneAndDelete({
+
+_id:req.params.id,
+
+user:req.user.id
+
+});
+
+
+
+if(!notification){
+
+return res.status(404).json({
+
+message:"Notification not found"
+
+});
+
+}
 
 
 
@@ -107,6 +154,7 @@ res.json({
 message:"Notification deleted"
 
 });
+
 
 
 }
@@ -120,5 +168,54 @@ message:error.message
 
 }
 
+
+};
+
+
+
+
+
+
+// =====================================
+// Get Unread Count
+// =====================================
+
+exports.getUnreadCount = async(req,res)=>{
+
+
+try{
+
+
+const count =
+await Notification.countDocuments({
+
+user:req.user.id,
+
+isRead:false
+
+});
+
+
+
+res.json({
+
+count
+
+});
+
+
+
+}
+catch(error){
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
 
 };

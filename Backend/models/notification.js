@@ -37,7 +37,22 @@ const notificationSchema = new mongoose.Schema({
     isRead:{
         type:Boolean,
         default:false
-    }
+    },
+    sender:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User"
+},
+
+
+appointment:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Appointment"
+},
+
+
+redirectUrl:{
+    type:String
+}
 
 
 },

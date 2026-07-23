@@ -114,7 +114,7 @@ const {doctor, appointmentDateTime} = req.body;
 
 const patient = await Patient.findOne({
     user:req.user.id
-});
+}).populate("user");
 
 
 if(!patient){
@@ -420,17 +420,31 @@ status:"pending"
 // ===============================
 
 
+if(doctorData.user){
+
+
 await Notification.create({
 
-user: doctorData.user,
+user:doctorData.user,
+
+sender:req.user.id,
+
+appointment:appointment._id,
+
+type:"appointment",
 
 title:"New Appointment Request",
 
-message:"You have a new appointment request from patient",
+message:
+`${patient.user.name} requested an appointment`,
 
-type:"appointment"
+redirectUrl:
+`/doctor/appointments/${appointment._id}`
 
 });
+
+
+}
 
 
 
@@ -439,7 +453,12 @@ type:"appointment"
 // ===============================
 
 
-if(global.io){
+// ===============================
+// REAL TIME NOTIFICATION
+// ===============================
+
+
+if(global.io && doctorData.user){
 
 
 global.io
@@ -450,8 +469,16 @@ global.io
 
 title:"New Appointment Request",
 
-message:"You have a new appointment request from patient"
+message:
+`${patient.user.name} requested an appointment`,
 
+type:"appointment",
+
+appointmentId:
+appointment._id,
+
+redirectUrl:
+`/doctor/appointments`
 }
 
 );
@@ -722,18 +749,26 @@ const doctorData = await Doctor.findById(
 
 if(doctorData){
 
-
 await Notification.create({
 
 user: doctorData.user,
 
+sender:req.user.id,
+
+appointment:appointment._id,
+
 title:"Reschedule Request",
 
-message:"Patient has requested to reschedule appointment",
+message:
+`${patient.user.name} requested a reschedule`,
 
-type:"reschedule"
+type:"reschedule",
+
+redirectUrl:
+`/doctor/appointments/${appointment._id}`
 
 });
+
 
 
 

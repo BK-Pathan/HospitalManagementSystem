@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import api from "../../api/axios";
-import { useRouter } from "vue-router";
 
 
 const appointments = ref([]);
@@ -11,39 +11,73 @@ const cancelReason = ref("");
 const selectedAppointment = ref(null);
 
 const router = useRouter();
-
-const getAppointments = async () => {
-
-  try {
-
-    loading.value = true;
-
-    const res = await api.get("/doctor/appointments");
-
-    console.log("Appointments:", res.data);
-
-    appointments.value = res.data;
+const route = useRoute();
 
 
-  } catch (error) {
 
-    console.error(error);
+// Get Appointments
 
-    appointments.value = [];
+const getAppointments = async()=>{
 
-  } finally {
+try{
 
-    loading.value = false;
+loading.value=true;
 
-  }
+
+const res = await api.get("/doctor/appointments");
+
+
+appointments.value = res.data;
+
+
+
+// Notification se aya hua appointment id
+
+if(route.params.id){
+
+const found =
+appointments.value.find(
+item=>item._id === route.params.id
+);
+
+
+if(found){
+
+selectedAppointment.value = found._id;
+
+
+console.log(
+"Opened Appointment:",
+found
+);
+
+}
+
+}
+
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+finally{
+
+loading.value=false;
+
+}
 
 };
 
 
 
+
+
 // Confirm / Complete
 
-const updateStatus = async (id,status)=>{
+const updateStatus = async(id,status)=>{
 
 try{
 
@@ -56,11 +90,13 @@ status
 );
 
 
+
 await getAppointments();
 
 
 
-}catch(error){
+}
+catch(error){
 
 console.log(error);
 
@@ -68,8 +104,10 @@ alert("Unable to update status");
 
 }
 
-
 };
+
+
+
 
 
 
@@ -100,11 +138,13 @@ cancelReason.value="";
 selectedAppointment.value=null;
 
 
+
 await getAppointments();
 
 
 
-}catch(error){
+}
+catch(error){
 
 
 console.log(
@@ -120,10 +160,14 @@ alert("Cancel failed");
 
 };
 
+
+
+
+
+
+// Patient History
+
 const viewHistory=(patient)=>{
-
-
-console.log("PATIENT OBJECT:",patient);
 
 
 router.push(
@@ -132,6 +176,10 @@ router.push(
 
 
 };
+
+
+
+
 
 onMounted(()=>{
 
@@ -221,6 +269,11 @@ No appointments found
 <tr
 v-for="item in appointments"
 :key="item._id"
+
+:class="{
+highlight:item._id === route.params.id
+}"
+
 >
 
 
@@ -665,5 +718,11 @@ color:var(--muted);
 
 }
 
+.highlight{
 
+background:#ecfeff !important;
+
+border-left:5px solid var(--primary);
+
+}
 </style>

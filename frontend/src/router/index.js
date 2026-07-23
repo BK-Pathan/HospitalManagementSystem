@@ -203,6 +203,10 @@ component:DoctorProfile
 path:"appointments",
 component:DoctorAppointments
 },
+{
+    path:"appointments/:id",
+component:DoctorAppointments
+},
 
 
 

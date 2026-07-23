@@ -1,22 +1,26 @@
-const express=require("express");
+const express = require("express");
 
-const router=express.Router();
+const router = express.Router();
 
 
-const auth=require("../middleware/authMiddleware");
+const auth = require("../middleware/authMiddleware");
 
 
 const {
 
 getMyNotifications,
 markAsRead,
-deleteNotification
+deleteNotification,
+getUnreadCount
 
-}=require("../controllers/notificationController");
+} = require("../controllers/notificationController");
 
 
 
 
+// =====================================
+// Get All Notifications
+// =====================================
 
 router.get(
 "/",
@@ -26,6 +30,24 @@ getMyNotifications
 
 
 
+
+// =====================================
+// Get Unread Count
+// =====================================
+
+router.get(
+"/unread-count",
+auth,
+getUnreadCount
+);
+
+
+
+
+// =====================================
+// Mark Notification Read
+// =====================================
+
 router.patch(
 "/:id/read",
 auth,
@@ -33,6 +55,11 @@ markAsRead
 );
 
 
+
+
+// =====================================
+// Delete Notification
+// =====================================
 
 router.delete(
 "/:id",
@@ -42,4 +69,4 @@ deleteNotification
 
 
 
-module.exports=router;
+module.exports = router;

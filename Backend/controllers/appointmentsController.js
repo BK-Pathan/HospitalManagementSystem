@@ -1,6 +1,7 @@
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
-
+const Notification = require("../models/notification");
+const Patient = require("../models/patient");
 
 
 // =====================================
@@ -15,7 +16,6 @@ try{
 const appointment = await Appointment.findById(
     req.params.id
 );
-
 
 
 if(!appointment){
@@ -52,10 +52,7 @@ message:"Invalid date time"
 
 
 
-// =====================================
-// CHECK DOCTOR DAY & TIME AVAILABILITY
-// =====================================
-
+// Doctor
 
 const doctor = await Doctor.findById(
     appointment.doctor
@@ -75,13 +72,15 @@ message:"Doctor not found"
 
 
 
+
+// Availability check
+
 const requestDay = dateTime.toLocaleDateString(
     "en-US",
     {
         weekday:"short"
     }
 );
-
 
 
 const requestTime = dateTime.toLocaleTimeString(
@@ -95,7 +94,6 @@ const requestTime = dateTime.toLocaleTimeString(
 
 
 
-
 const isDoctorAvailable = doctor.availability.some(slot=>{
 
 
@@ -106,21 +104,11 @@ return false;
 }
 
 
+const start = convertTime(slot.startTime);
 
-const start = convertTime(
-    slot.startTime
-);
+const end = convertTime(slot.endTime);
 
-
-const end = convertTime(
-    slot.endTime
-);
-
-
-const request = convertTime(
-    requestTime
-);
-
+const request = convertTime(requestTime);
 
 
 
@@ -137,7 +125,6 @@ request.hour * 60 + request.minute;
 
 
 
-
 return (
 
 requestMinutes >= startMinutes &&
@@ -147,22 +134,17 @@ requestMinutes < endMinutes
 );
 
 
-
 });
-
-
 
 
 
 if(!isDoctorAvailable){
 
-
 return res.status(400).json({
 
-message:"Doctor is not available at this day or time"
+message:"Doctor is not available"
 
 });
-
 
 }
 
@@ -170,31 +152,24 @@ message:"Doctor is not available at this day or time"
 
 
 
-
-
-// =====================================
-// CHECK SLOT ALREADY BOOKED
-// =====================================
-
+// Slot check
 
 const alreadyBooked = await Appointment.findOne({
 
 doctor:appointment.doctor,
 
-
 appointmentDateTime:dateTime,
 
-
 status:{
-    $in:[
-        "pending",
-        "confirmed"
-    ]
+$in:[
+"pending",
+"confirmed"
+]
 },
 
 
 _id:{
-    $ne:appointment._id
+$ne:appointment._id
 }
 
 
@@ -202,10 +177,7 @@ _id:{
 
 
 
-
-
 if(alreadyBooked){
-
 
 return res.status(400).json({
 
@@ -213,51 +185,108 @@ message:"This slot is already booked"
 
 });
 
-
 }
 
 
 
 
 
+// Patient
+
+const patient = await Patient.findById(
+appointment.patient
+)
+.populate("user");
 
 
-// =====================================
-// SAVE REQUEST
-// =====================================
 
+
+
+// Save reschedule request
 
 appointment.rescheduleRequested = true;
 
-
 appointment.rescheduledDateTime = dateTime;
-
 
 appointment.rescheduleReason =
 req.body.reason || "";
 
+appointment.rescheduleStatus =
+"pending";
 
-appointment.rescheduleStatus = "pending";
 
-
-// Save reschedule history
 
 appointment.rescheduleHistory.push({
 
-    oldDateTime: appointment.appointmentDateTime,
+oldDateTime:
+appointment.appointmentDateTime,
 
-    newDateTime: dateTime,
+newDateTime:
+dateTime,
 
-    status: "pending",
+status:"pending",
 
-    doctorReply:""
+doctorReply:""
 
 });
+
 
 
 await appointment.save();
 
 
+
+
+// Notification to doctor
+
+await Notification.create({
+
+user:doctor.user,
+
+sender:patient.user._id,
+
+appointment:appointment._id,
+
+type:"reschedule",
+
+title:"Reschedule Request",
+
+message:
+`${patient.user.name} requested a reschedule`,
+
+redirectUrl:
+"/doctor/appointments"
+});
+
+
+
+
+// realtime
+
+if(global.io){
+
+global.io
+.to(doctor.user.toString())
+.emit(
+"notification",
+{
+
+title:"Reschedule Request",
+
+message:
+`${patient.user.name} requested a reschedule`,
+
+type:"reschedule",
+
+appointmentId: appointment._id,
+
+redirectUrl:"/doctor/appointments"
+
+}
+
+);
+
+}
 
 
 
@@ -274,7 +303,6 @@ appointment
 }
 catch(error){
 
-
 console.log(error);
 
 
@@ -286,7 +314,6 @@ message:error.message
 
 
 }
-
 
 };
 
@@ -421,39 +448,31 @@ message:"Appointment not found"
 
 
 
-// check again before approval
-
-
 const alreadyBooked = await Appointment.findOne({
 
-doctor: appointment.doctor,
-
+doctor:appointment.doctor,
 
 appointmentDateTime:
 appointment.rescheduledDateTime,
 
 
 status:{
-    $in:[
-        "pending",
-        "confirmed"
-    ]
+$in:[
+"pending",
+"confirmed"
+]
 },
 
 
 _id:{
-    $ne:appointment._id
+$ne:appointment._id
 }
-
 
 });
 
 
 
-
-
 if(alreadyBooked){
-
 
 return res.status(400).json({
 
@@ -461,8 +480,8 @@ message:"This slot is already booked"
 
 });
 
-
 }
+
 
 
 
@@ -471,25 +490,22 @@ appointment.appointmentDateTime =
 appointment.rescheduledDateTime;
 
 
-
-appointment.rescheduleRequested = false;
-
-
-appointment.rescheduleStatus = "approved";
+appointment.rescheduleRequested=false;
 
 
+appointment.rescheduleStatus="approved";
 
-// update history
+
 
 let lastHistory =
 appointment.rescheduleHistory[
-appointment.rescheduleHistory.length - 1
+appointment.rescheduleHistory.length-1
 ];
 
 
 if(lastHistory){
 
-    lastHistory.status = "approved";
+lastHistory.status="approved";
 
 }
 
@@ -497,26 +513,74 @@ if(lastHistory){
 
 await appointment.save();
 
-// ===============================
-// SEND NOTIFICATION TO DOCTOR
-// ===============================
 
-if (doctor.user) {
 
-    await Notification.create({
-        user: doctor.user,
-        title: "Reschedule Request",
-        message: `${appointment.patient?.user?.name || "A patient"} requested a reschedule for your appointment`,
-        type: "reschedule"
-    });
 
-    if (global.io) {
-        global.io.to(doctor.user.toString()).emit("notification", {
-            title: "Reschedule Request",
-            message: `${appointment.patient?.user?.name || "A patient"} requested a reschedule for your appointment`
-        });
-    }
+
+// Get doctor + patient
+
+const doctor = await Doctor.findById(
+appointment.doctor
+);
+
+
+
+const patient = await Patient.findById(
+appointment.patient
+)
+.populate("user");
+
+
+
+
+
+// Notification to patient
+
+await Notification.create({
+
+user:patient.user._id,
+
+sender:doctor.user,
+
+appointment:appointment._id,
+
+type:"reschedule",
+
+title:"Reschedule Approved",
+
+message:
+"Doctor approved your reschedule request",
+
+redirectUrl:
+`/patient/appointments`
+});
+
+
+
+
+
+// realtime patient
+
+if(global.io){
+
+global.io
+.to(patient.user._id.toString())
+.emit(
+"notification",
+{
+
+title:"Reschedule Approved",
+
+message:
+"Doctor approved your reschedule request"
+
 }
+
+);
+
+}
+
+
 
 res.json({
 
@@ -857,90 +921,68 @@ minute:parseInt(minute)
 // Doctor Reschedule History
 // =====================================
 
-exports.getDoctorRescheduleHistory = async(req,res)=>{
-
-try{
 
 
-const doctor = await Doctor.findOne({
+exports.getDoctorRescheduleHistory = async (req, res) => {
 
-user:req.user.id
+try {
 
-});
+    // Logged in doctor profile
+    const doctor = await Doctor.findOne({
+        user: req.user.id
+    });
 
+    if (!doctor) {
+        return res.status(404).json({
+            message: "Doctor not found"
+        });
+    }
 
-if(!doctor){
+    // Sirf approved/rejected reschedule history lao
+    const history = await Appointment.find({
 
-return res.status(404).json({
+        doctor: doctor._id,
 
-message:"Doctor not found"
+        rescheduleStatus: {
+            $in: ["approved", "rejected"]
+        }
 
-});
+    })
 
-}
+    .populate({
 
+        path: "patient",
 
+        populate: {
 
+            path: "user",
 
+            select: "name email"
 
-const history = await Appointment.find({
+        }
 
-doctor:doctor._id,
+    })
 
-"rescheduleHistory.0":{
+    .sort({
+        updatedAt: -1
+    });
 
-$exists:true
+    console.log(
+        "RESCHEDULE HISTORY:",
+        JSON.stringify(history, null, 2)
+    );
 
-}
-
-})
-.populate({
-
-path:"patient",
-
-populate:{
-
-path:"user",
-
-select:"name email"
-
-}
-
-});
-
-
-
-
-
-// Debug check
-
-console.log(
-"RESCHEDULE HISTORY:",
-JSON.stringify(history,null,2)
-);
-
-
-
-
-
-res.json(history);
-
-
+    res.json(history);
 
 }
-catch(error){
+catch (error) {
 
-console.log(error);
+    console.log(error);
 
-
-res.status(500).json({
-
-message:error.message
-
-});
-
+    res.status(500).json({
+        message: error.message
+    });
 
 }
-
 
 };

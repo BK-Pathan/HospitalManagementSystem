@@ -2,6 +2,7 @@ const Prescription = require("../models/prescription");
 const Doctor = require("../models/doctor");
 const Patient = require("../models/patient");
 const Appointment = require("../models/appointment");
+const Notification = require("../models/notification");
 
 
 
@@ -50,6 +51,7 @@ message:"Appointment not found"
 
 
 
+
 const prescription = await Prescription.create({
 
 patient:appointment.patient,
@@ -65,6 +67,106 @@ instructions:req.body.instructions,
 notes:req.body.notes
 
 });
+
+
+
+
+
+// ===============================
+// SEND NOTIFICATION TO PATIENT
+// ===============================
+
+
+const patient = await Patient.findById(
+appointment.patient
+)
+.populate("user");
+
+
+
+const doctorData = await Doctor.findById(
+doctor._id
+)
+.populate("user");
+
+console.log(
+"PATIENT:",
+patient
+);
+
+
+console.log(
+"DOCTOR:",
+doctorData
+);
+
+
+
+if(patient && patient.user && doctorData.user){
+
+
+
+// Save Notification
+
+await Notification.create({
+
+user:patient.user._id,
+
+sender:req.user.id,
+
+appointment:appointment._id,
+
+type:"prescription",
+
+title:"New Prescription Added",
+
+message:
+`Dr. ${doctorData.user.name} added a new prescription for you`,
+
+redirectUrl:
+"/patient/prescriptions"
+
+});
+
+
+
+
+
+// Real Time Notification
+
+if(global.io){
+
+console.log(
+"EMIT TO PATIENT ROOM:",
+patient.user._id.toString()
+);
+
+
+global.io
+.to(
+patient.user._id.toString()
+)
+.emit(
+"notification",
+{
+
+title:"New Prescription Added",
+
+message:
+`Dr. ${doctorData.user.name} added a new prescription for you`,
+
+type:"prescription",
+
+redirectUrl:"/patient/prescriptions"
+
+}
+
+);
+
+}
+
+
+}
 
 
 
@@ -96,7 +198,6 @@ message:error.message
 }
 
 };
-
 
 
 
