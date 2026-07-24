@@ -1,35 +1,37 @@
-const mongoose = require("mongoose");
+// IN future
+
+// const mongoose = require("mongoose");
 
 
-const bedSchema = new mongoose.Schema({
+// const bedSchema = new mongoose.Schema({
 
 
-    bedNumber:{
-        type:String,
-        required:true
-    },
+//     bedNumber:{
+//         type:String,
+//         required:true
+//     },
 
 
-    room:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Room",
-        required:true
-    },
+//     room:{
+//         type:mongoose.Schema.Types.ObjectId,
+//         ref:"Room",
+//         required:true
+//     },
 
 
-    status:{
-        type:String,
-        enum:[
-            "available",
-            "occupied"
-        ],
-        default:"available"
-    }
+//     status:{
+//         type:String,
+//         enum:[
+//             "available",
+//             "occupied"
+//         ],
+//         default:"available"
+//     }
 
 
-},{
-    timestamps:true
-});
+// },{
+//     timestamps:true
+// });
 
 
-module.exports = mongoose.model("Bed",bedSchema);
+// module.exports = mongoose.model("Bed",bedSchema);

@@ -1,3 +1,6 @@
+
+
+// IN future
 const Bed = require("../models/bed");
 
 

@@ -73,18 +73,18 @@ path:"/admin/users"
 name:"👤 Admin Profile",
 path:"/admin/profile"
 },
-{
-    name:"AdminRooms",
-     path:"/admin/rooms",
-},
-{
-     name:"AdminBeds",
-      path:"/admin/beds",
-},
-{
-    name:"AdminAdmissions",
-     path:"/admin/admissions",
-}
+// {
+//     name:"AdminRooms",
+//      path:"/admin/rooms",
+// },
+// {
+//      name:"AdminBeds",
+//       path:"/admin/beds",
+// },
+// {
+//     name:"AdminAdmissions",
+//      path:"/admin/admissions",
+// }
 
 
 ]
@@ -160,10 +160,10 @@ path:"/doctor/profile"
     name:"🔄 Reschedule Requests",
     path:"/doctor/reschedule-requests"
 },
-{
-    name:"DoctorAdmissions",
-    path:"/doctor/admissions",
-}
+// {
+//     name:"DoctorAdmissions",
+//     path:"/doctor/admissions",
+// }
 
 
 

@@ -1,56 +1,59 @@
-const mongoose = require("mongoose");
+// IN future
 
 
-const roomSchema = new mongoose.Schema({
-
-    roomNumber:{
-        type:String,
-        required:true,
-        unique:true
-    },
-
-    type:{
-        type:String,
-        enum:[
-            "General",
-            "Private",
-            "Semi Private",
-            "ICU",
-            "Emergency"
-        ],
-        required:true
-    },
+// const mongoose = require("mongoose");
 
 
-    floor:{
-        type:String,
-        default:"Ground Floor"
-    },
+// const roomSchema = new mongoose.Schema({
+
+//     roomNumber:{
+//         type:String,
+//         required:true,
+//         unique:true
+//     },
+
+//     type:{
+//         type:String,
+//         enum:[
+//             "General",
+//             "Private",
+//             "Semi Private",
+//             "ICU",
+//             "Emergency"
+//         ],
+//         required:true
+//     },
 
 
-    chargesPerDay:{
-        type:Number,
-        default:0
-    },
+//     floor:{
+//         type:String,
+//         default:"Ground Floor"
+//     },
 
 
-    status:{
-        type:String,
-        enum:[
-            "available",
-            "occupied"
-        ],
-        default:"available"
-    },
-    totalBeds:{
-    type:Number,
-    default:0
-}
+//     chargesPerDay:{
+//         type:Number,
+//         default:0
+//     },
 
 
-},{
-    timestamps:true
-});
+//     status:{
+//         type:String,
+//         enum:[
+//             "available",
+//             "occupied"
+//         ],
+//         default:"available"
+//     },
+//     totalBeds:{
+//     type:Number,
+//     default:0
+// }
 
 
-module.exports = mongoose.model("Room",roomSchema);
+// },{
+//     timestamps:true
+// });
+
+
+// module.exports = mongoose.model("Room",roomSchema);

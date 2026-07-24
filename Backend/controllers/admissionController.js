@@ -1,3 +1,5 @@
+// in future
+
 const Admission = require("../models/admission");
 const Bed = require("../models/bed");
 const Room = require("../models/room");
