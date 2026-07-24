@@ -291,13 +291,13 @@ component:()=>import(
 )
 
 },
-{
-path:"/doctor/admissions",
-name:"DoctorAdmissions",
-component:()=>import(
-"../views/Doctors/DoctorAdmissions.vue"
-)
-},
+// {
+// path:"/doctor/admissions",
+// name:"DoctorAdmissions",
+// component:()=>import(
+// "../views/Doctors/DoctorAdmissions.vue"
+// )
+// },
 // {
 //     path:"/doctor/all-history/:patientId",
 //     name:"AllHistory",
@@ -346,82 +346,65 @@ top:0
 
 // ================= AUTH GUARD =================
 
-router.beforeEach((to, from, next) => {
-
+router.beforeEach((to)=>{
 
     const user = JSON.parse(localStorage.getItem("user"));
 
 
-    // Admin routes protection
+    // Login page
+    if(to.path === "/login"){
+        return true;
+    }
+
+
+
+    // Admin
     if(to.path.startsWith("/admin")){
 
-
         if(!user){
-
-            return next("/");
-
+            return "/";
         }
-
 
         if(user.role !== "admin"){
-
-            return next("/");
-
+            return "/";
         }
-
 
     }
 
 
 
-    // Doctor routes protection
+    // Doctor
     if(to.path.startsWith("/doctor")){
 
-
         if(!user){
-
-            return next("/");
-
+            return "/";
         }
-
 
         if(user.role !== "doctor"){
-
-            return next("/");
-
+            return "/";
         }
-
 
     }
 
 
 
-    // Patient routes protection
+    // Patient
     if(to.path.startsWith("/patient")){
 
-
         if(!user){
-
-            return next("/");
-
+            return "/";
         }
-
 
         if(user.role !== "patient"){
-
-            return next("/");
-
+            return "/";
         }
-
 
     }
 
 
-
-    next();
+    return true;
 
 });
-
 
 
 export default router;

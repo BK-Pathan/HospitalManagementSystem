@@ -1,669 +1,453 @@
 <template>
-  <header class="navbar">
-
-    <div class="container">
-
+  <header class="navbar" :class="{ 'navbar--scrolled': scrolled }">
+    <div class="navbar__inner">
       <!-- Logo -->
-      <a href="/" class="logo">
+      <RouterLink to="/" class="navbar__logo" @click="closeMenu">
+        <span class="navbar__logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M11 2h2v7h7v2h-7v7h-2v-7H4V9h7z"
+            />
+          </svg>
+        </span>
+        <span class="navbar__logo-text">
+          Care<span class="navbar__logo-accent">Plus</span>
+          <small>Medical</small>
+        </span>
+      </RouterLink>
 
-        <div class="logo-icon">
-          <span class="logo-icon-glyph">🏥</span>
-        </div>
-
-        <div>
-          <h2>MediCare</h2>
-          <span>Hospital & Healthcare</span>
-        </div>
-
-      </a>
-
-      <!-- Navigation -->
-
-      <nav :class="['nav-menu', { active: menuOpen }]">
-
-        <router-link to="/">
-          Home
-        </router-link>
-
-        <router-link to="/#doctors">
-          Doctors
-        </router-link>
-
-        <router-link to="/#services">
-          Services
-        </router-link>
-
-        <router-link to="/#about">
-          About
-        </router-link>
-
-        <router-link to="/#contact">
-          Contact
-        </router-link>
-
+      <!-- Desktop nav links -->
+      <nav class="navbar__links" aria-label="Primary">
+        <a
+          v-for="link in navLinks"
+          :key="link.label"
+          :href="link.href"
+          class="navbar__link"
+          :class="{ 'navbar__link--active': isActive(link) }"
+          @click="handleLinkClick(link)"
+        >
+          {{ link.label }}
+        </a>
       </nav>
 
-      <!-- Buttons -->
+      <!-- Desktop actions -->
+<div class="navbar__actions">
 
-      <div class="actions">
+  <button 
+    class="navbar__login"
+    type="button"
+    @click="goLogin"
+  >
+    Login
+  </button>
 
-        <router-link
-          to="/login"
-          class="login-btn"
-        >
-          Login
-        </router-link>
+  <button 
+    class="navbar__cta"
+    type="button"
+    @click="goLogin"
+  >
+    Appointment
+  </button>
 
-        <router-link
-          to="/login"
-          class="book-btn"
-        >
-          <span>Appointment</span>
-        </router-link>
+</div>
 
-      </div>
+      <!-- Mobile toggle -->
+<!-- Mobile toggle -->
+<button
+class="navbar__toggle"
+:class="{ 'navbar__toggle--open': menuOpen }"
+@click="menuOpen=!menuOpen"
+>
 
-      <!-- Mobile Menu -->
+<span></span>
+<span></span>
+<span></span>
 
-      <button
-        class="menu-btn"
-        :class="{ active: menuOpen }"
-        @click="menuOpen = !menuOpen"
-        aria-label="Toggle menu"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
+</button>
     </div>
 
+    <!-- Mobile menu -->
+    <Transition name="navbar-slide">
+      <div v-if="menuOpen" class="navbar__mobile">
+        <a
+          v-for="link in navLinks"
+          :key="link.label"
+          :href="link.href"
+          class="navbar__mobile-link"
+          :class="{ 'navbar__link--active': isActive(link) }"
+          @click="handleLinkClick(link)"
+        >
+          {{ link.label }}
+        </a>
+        <div class="navbar__mobile-actions">
+          <RouterLink to="/login" class="navbar__login navbar__login--mobile" @click="closeMenu">
+            Login
+          </RouterLink>
+          <RouterLink to="/login" class="navbar__cta navbar__cta--mobile" @click="closeMenu">
+            Appointment
+          </RouterLink>
+        </div>
+      </div>
+    </Transition>
   </header>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const menuOpen = ref(false);
+const route = useRoute()
+const router = useRouter()
+
+const menuOpen = ref(false)
+const scrolled = ref(false)
+
+const navLinks = [
+  { label: 'Home', href: '/', type: 'route' },
+  { label: 'Doctors', href: '/#doctors', type: 'hash', hash: '#doctors' },
+  { label: 'Services', href: '/#services', type: 'hash', hash: '#services' },
+  { label: 'About', href: '/#about', type: 'hash', hash: '#about' },
+  { label: 'Contact', href: '/#contact', type: 'hash', hash: '#contact' },
+]
+
+function closeMenu() {
+  menuOpen.value = false
+}
+
+// Highlights "Home" for the bare route, or the matching hash link
+// when the current URL hash matches.
+function isActive(link) {
+  if (link.type === 'route') {
+    return route.path === '/' && !route.hash
+  }
+  return route.path === '/' && route.hash === link.hash
+}
+
+// Smooth-scrolls to in-page sections instead of a hard reload,
+// and still works correctly when navigating in from another route.
+function handleLinkClick(link) {
+  closeMenu()
+
+  if (link.type === 'route') {
+    return
+  }
+
+  const scrollToHash = () => {
+    const el = document.querySelector(link.hash)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  if (route.path !== '/') {
+    // Navigate home first, then scroll once the page has mounted.
+    router.push({ path: '/', hash: link.hash }).then(() => {
+      requestAnimationFrame(scrollToHash)
+    })
+  } else {
+    router.replace({ path: '/', hash: link.hash })
+    scrollToHash()
+  }
+}
+
+function handleScroll() {
+  scrolled.value = window.scrollY > 8
+}
+
+function goLogin(){
+
+    closeMenu();
+    console.log("LOGIN CLICKED");
+
+
+    router.push("/login");
+
+}
+
+onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
+onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
 <style scoped>
-
-/* ============================================
-   Local design tokens — layered on top of the
-   global --primary / --secondary / --border /
-   --shadow / --text / --muted variables already
-   defined app-wide, so the navbar always stays
-   on-brand automatically.
-   ============================================ */
-
-.navbar,
-.navbar *{
-
-    box-sizing:border-box;
-
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(15, 118, 128, 0.08);
+  transition: box-shadow 0.25s ease, background 0.25s ease;
 }
 
-.navbar{
-
-    /* Depth system: three shadow layers simulate a
-       floating glass panel instead of a flat bar */
-    --nav-blur: 22px;
-    --nav-bg: rgba(255,255,255,.72);
-    --nav-border: rgba(255,255,255,.5);
-
-    --shadow-ambient: 0 1px 1px rgba(15,23,42,.03);
-    --shadow-key: 0 18px 40px -12px rgba(15,23,42,.16);
-    --shadow-rim: inset 0 1px 0 rgba(255,255,255,.9);
-
-    --glow-primary: 0 8px 20px -6px color-mix(in srgb, var(--primary) 55%, transparent);
-    --glow-primary-lg: 0 22px 45px -14px color-mix(in srgb, var(--primary) 60%, transparent);
-
-    --ease: cubic-bezier(.22,1,.36,1);
-
-    position:sticky;
-    top:0;
-    z-index:1000;
-
-    background:var(--nav-bg);
-
-    backdrop-filter:blur(var(--nav-blur)) saturate(1.4);
-    -webkit-backdrop-filter:blur(var(--nav-blur)) saturate(1.4);
-
-    border-bottom:1px solid var(--nav-border);
-
-    box-shadow:var(--shadow-ambient), var(--shadow-key), var(--shadow-rim);
-
-    overflow-x:clip;
-
+.navbar--scrolled {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px -12px rgba(13, 95, 105, 0.25);
 }
 
-.container{
-
-    max-width:1300px;
-    width:100%;
-    /* width:100px; */
-    margin:auto;
-    height:100px;
-    padding:16px 25px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:16px;
-
-    /* gives child 3D transforms somewhere to project into */
-    perspective:1200px;
-
+.navbar__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
 }
 
-.logo,
-.nav-menu,
-.actions{
-
-    flex-shrink:0;
-
+/* Logo */
+.navbar__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  flex-shrink: 0;
 }
 
-/* ============ Logo ============ */
-
-.logo{
-
-    display:flex;
-    align-items:center;
-    gap:14px;
-
-    text-decoration:none;
-
+.navbar__logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #38b6c4, #0f7680);
+  box-shadow: 0 4px 10px -3px rgba(15, 118, 128, 0.55);
 }
 
-.logo-icon{
-
-    position:relative;
-
-    flex-shrink:0;
-
-    width:58px;
-    height:58px;
-
-    border-radius:18px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:linear-gradient(155deg,var(--primary),var(--secondary) 120%);
-
-    color:white;
-
-    transform-style:preserve-3d;
-    transform:perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0);
-
-    /* stacked shadows: contact shadow + long throw + inner bevel highlight
-       + inner bevel shade = the "3D chip" look */
-    box-shadow:
-        0 2px 4px rgba(0,0,0,.12),
-        var(--glow-primary),
-        inset 0 2px 2px rgba(255,255,255,.45),
-        inset 0 -3px 5px rgba(0,0,0,.22);
-
-    transition:transform .5s var(--ease), box-shadow .5s var(--ease);
-
+.navbar__logo-text {
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  color: #0d3b40;
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo-icon-glyph{
-
-    font-size:28px;
-
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));
-
-    transform:translateZ(10px);
-
+.navbar__logo-accent {
+  color: #17909c;
 }
 
-.logo:hover .logo-icon{
-
-    transform:perspective(600px) rotateX(10deg) rotateY(-14deg) translateZ(2px);
-
-    box-shadow:
-        0 6px 10px rgba(0,0,0,.14),
-        var(--glow-primary-lg),
-        inset 0 2px 2px rgba(255,255,255,.5),
-        inset 0 -3px 5px rgba(0,0,0,.22);
-
+.navbar__logo-text small {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #5c8a8f;
+  text-transform: uppercase;
 }
 
-.logo > div{
-
-    min-width:0;
-
+/* Desktop links */
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1;
+  justify-content: center;
 }
 
-.logo h2{
-
-    color:var(--primary);
-
-    font-size:26px;
-    line-height:1.15;
-    margin:0;
-    font-weight:800;
-    letter-spacing:-.02em;
-
-    white-space:nowrap;
-
+.navbar__link {
+  position: relative;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #33555a;
+  text-decoration: none;
+  padding: 0.35rem 0;
+  transition: color 0.2s ease;
 }
 
-.logo span{
-
-    color:var(--muted);
-
-    font-size:12.5px;
-    font-weight:600;
-    letter-spacing:.02em;
-
-    white-space:nowrap;
-    display:block;
-
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: #17909c;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
 }
 
-/* ============ Menu ============ */
-
-.nav-menu{
-
-    display:flex;
-    gap:8px;
-
+.navbar__link:hover {
+  color: #0f7680;
 }
 
-.nav-menu a{
-
-    position:relative;
-
-    padding:10px 16px;
-    border-radius:10px;
-
-    text-decoration:none;
-
-    color:var(--text);
-
-    font-weight:600;
-    font-size:15px;
-
-    transition:color .3s var(--ease), background .3s var(--ease), transform .3s var(--ease);
-
+.navbar__link:hover::after {
+  transform: scaleX(1);
 }
 
-.nav-menu a::before{
-
-    /* soft "raised pill" that appears on hover, giving the
-       impression the link lifts toward the user */
-    content:"";
-
-    position:absolute;
-    inset:0;
-
-    border-radius:10px;
-
-    background:color-mix(in srgb, var(--primary) 8%, transparent);
-
-    box-shadow:0 6px 14px -6px color-mix(in srgb, var(--primary) 35%, transparent);
-
-    opacity:0;
-
-    transform:translateY(4px) scale(.95);
-
-    transition:opacity .3s var(--ease), transform .3s var(--ease);
-
-    z-index:-1;
-
+.navbar__link--active {
+  color: #0f7680;
+  font-weight: 600;
 }
 
-.nav-menu a::after{
-
-    content:"";
-
-    position:absolute;
-
-    bottom:2px;
-    left:16px;
-    right:16px;
-
-    height:2.5px;
-    border-radius:2px;
-
-    background:linear-gradient(90deg,var(--primary),var(--secondary));
-
-    transform:scaleX(0);
-    transform-origin:left;
-
-    transition:transform .35s var(--ease);
-
+.navbar__link--active::after {
+  transform: scaleX(1);
 }
 
-.nav-menu a:hover{
-
-    color:var(--primary);
-
-    transform:translateY(-2px);
-
+/* Actions */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  flex-shrink: 0;
 }
 
-.nav-menu a:hover::before{
-
-    opacity:1;
-
-    transform:translateY(0) scale(1);
-
+.navbar__login {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #33555a;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.nav-menu a:hover::after{
-
-    transform:scaleX(1);
-
+.navbar__login:hover {
+  color: #0f7680;
 }
 
-.nav-menu a.router-link-exact-active{
-
-    color:var(--primary);
-
+.navbar__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.35rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2bb4c2, #0f7680);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 18px -8px rgba(15, 118, 128, 0.65);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.nav-menu a.router-link-exact-active::after{
-
-    transform:scaleX(1);
-
+.navbar__cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -8px rgba(15, 118, 128, 0.75);
 }
 
-/* ============ Buttons ============ */
-
-.actions{
-
-    display:flex;
-    align-items:center;
-    gap:10px;
-
+/* Mobile toggle */
+.navbar__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
 }
 
-.actions a{
-
-    text-decoration:none;
-
+.navbar__toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: #0d3b40;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-/* Both buttons share one compact glass sizing scale so they
-   always stay visually paired, regardless of their color */
-
-/* .login-btn, */
-.book-btn{
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:8px 28px;
-
-    font-size:13.5px;
-    font-weight:700;
-    line-height:1.3;
-
-    border-radius:40px;
-
+.navbar__toggle--open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
 }
 
-.login-btn{
-
-    border:1px solid rgba(255,255,255,.6);
-
-    color:var(--primary);
-
-    background:color-mix(in srgb, var(--primary) 10%, rgba(255,255,255,.35));
-
-    backdrop-filter:blur(14px) saturate(1.6);
-    -webkit-backdrop-filter:blur(14px) saturate(1.6);
-
-    box-shadow:
-        0 4px 12px -6px rgba(15,23,42,.18),
-        inset 0 1px 0 rgba(255,255,255,.7),
-        inset 0 -1px 2px rgba(255,255,255,.2);
-
-    transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), color .35s var(--ease);
-
-    /* display:inline-flex;
-    align-items:center; */
-    justify-content:center;
-
-    padding:8px 13px;
-
-    font-size:13.5px;
-    font-weight:700;
-    line-height:1.3;
-text-align:center;
-    border-radius:40px;
+.navbar__toggle--open span:nth-child(2) {
+  opacity: 0;
 }
 
-.login-btn:hover{
-
-    background:color-mix(in srgb, var(--primary) 22%, rgba(255,255,255,.4));
-    color:var(--primary);
-
-    transform:translateY(-3px);
-
-    box-shadow:
-        var(--glow-primary),
-        inset 0 1px 0 rgba(255,255,255,.8),
-        inset 0 -1px 2px rgba(255,255,255,.25);
-
+.navbar__toggle--open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
-.login-btn:active{
-
-    transform:translateY(-1px);
-
+/* Mobile menu panel */
+.navbar__mobile {
+  display: none;
 }
 
-.book-btn{
-
-    position:relative;
-    overflow:hidden;
-
-    border:1px solid rgba(255,255,255,.35);
-
-    background:linear-gradient(135deg,
-        color-mix(in srgb, var(--primary) 82%, transparent),
-        color-mix(in srgb, var(--secondary) 82%, transparent) 120%);
-
-    backdrop-filter:blur(14px) saturate(1.6);
-    -webkit-backdrop-filter:blur(14px) saturate(1.6);
-
-    color:white;
-
-    /* layered elevation: contact shadow, colored ambient glow,
-       top-edge highlight, bottom-edge shade -> reads as a
-       physically raised glass button */
-    box-shadow:
-        0 1px 1px rgba(0,0,0,.08),
-        var(--glow-primary),
-        inset 0 1.5px 1px rgba(255,255,255,.55),
-        inset 0 -2px 4px rgba(0,0,0,.15);
-
-    transition:transform .35s var(--ease), box-shadow .35s var(--ease);
-
+.navbar-slide-enter-active,
+.navbar-slide-leave-active {
+  transition: max-height 0.25s ease, opacity 0.25s ease;
+  overflow: hidden;
 }
 
-.book-btn span{
-
-    position:relative;
-    z-index:1;
-
+.navbar-slide-enter-from,
+.navbar-slide-leave-to {
+  max-height: 0;
+  opacity: 0;
 }
 
-.book-btn::before{
-
-    /* sheen sweep on hover */
-    content:"";
-
-    position:absolute;
-
-    top:0;
-    left:-60%;
-
-    width:40%;
-    height:100%;
-
-    background:linear-gradient(115deg, transparent, rgba(255,255,255,.55), transparent);
-
-    transform:skewX(-20deg);
-
-    transition:left .6s var(--ease);
-
+.navbar-slide-enter-to,
+.navbar-slide-leave-from {
+  max-height: 420px;
+  opacity: 1;
 }
 
-.book-btn:hover{
-
-    transform:translateY(-4px) scale(1.015);
-
-    box-shadow:
-        0 4px 6px rgba(0,0,0,.1),
-        var(--glow-primary-lg),
-        inset 0 1.5px 1px rgba(255,255,255,.5),
-        inset 0 -2px 4px rgba(0,0,0,.18);
-
-}
-
-.book-btn:hover::before{
-
-    left:120%;
-
-}
-
-.book-btn:active{
-
-    transform:translateY(-1px) scale(1);
-
-}
-
-/* ============ Mobile ============ */
-
-.menu-btn{
-
-    display:none;
-
-    width:48px;
-    height:48px;
-
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:5px;
-
-    background:rgba(255,255,255,.6);
-    border:1px solid var(--nav-border);
-    border-radius:12px;
-
-    cursor:pointer;
-
-    box-shadow:var(--shadow-ambient), 0 6px 14px -8px rgba(15,23,42,.25);
-
-    transition:box-shadow .3s var(--ease), transform .3s var(--ease);
-
-}
-
-.menu-btn:hover{
-
-    transform:translateY(-2px);
-
-}
-
-.menu-btn span{
-
-    width:22px;
-    height:2.5px;
-    border-radius:2px;
-
-    background:var(--primary);
-
-    transition:transform .35s var(--ease), opacity .35s var(--ease);
-
-}
-
-.menu-btn.active span:nth-child(1){ transform:translateY(7.5px) rotate(45deg); }
-.menu-btn.active span:nth-child(2){ opacity:0; }
-.menu-btn.active span:nth-child(3){ transform:translateY(-7.5px) rotate(-45deg); }
-
-@media(max-width:1200px){
-
-.nav-menu,
-.actions{
-
-display:none;
-
-}
-
-.nav-menu.active{
-
-display:flex;
-
-flex-direction:column;
-gap:4px;
-
-position:absolute;
-
-left:20px;
-right:20px;
-top:88px;
-
-background:rgba(255,255,255,.92);
-backdrop-filter:blur(var(--nav-blur));
-
-padding:18px;
-
-border:1px solid var(--nav-border);
-border-radius:20px;
-
-box-shadow:var(--shadow-key), var(--shadow-rim);
-
-}
-
-.nav-menu.active a::before{
-
-display:none;
-
-}
-
-.nav-menu.active + .actions{
-
-display:flex;
-
-flex-direction:column;
-
-position:absolute;
-
-left:20px;
-right:20px;
-top:calc(88px + 240px);
-
-padding:0 2px;
-
-}
-
-.menu-btn{
-
-display:flex;
-
-}
-
-}
-
-/* Respect reduced-motion preferences */
-@media (prefers-reduced-motion: reduce){
-
-  .navbar *{
-
-    transition-duration:.01ms !important;
-    animation-duration:.01ms !important;
-
+@media (max-width: 860px) {
+  .navbar__links,
+  .navbar__actions {
+    display: none;
   }
 
+  .navbar__toggle {
+    display: flex;
+  }
+
+  .navbar__mobile {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1.5rem 1.25rem;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid rgba(15, 118, 128, 0.08);
+  }
+
+  .navbar__mobile-link {
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #33555a;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(15, 118, 128, 0.08);
+  }
+
+  .navbar__mobile-link.navbar__link--active {
+    color: #0f7680;
+    font-weight: 600;
+  }
+
+  .navbar__mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .navbar__login--mobile {
+    text-align: center;
+    padding: 0.7rem 0;
+    border: 1px solid rgba(15, 118, 128, 0.25);
+    border-radius: 999px;
+  }
+
+  .navbar__cta--mobile {
+    width: 100%;
+  }
 }
 
+@media (max-width: 400px) {
+  .navbar__logo-text small {
+    display: none;
+  }
+}
+
+.navbar__login,
+.navbar__cta{
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+}
 </style>
