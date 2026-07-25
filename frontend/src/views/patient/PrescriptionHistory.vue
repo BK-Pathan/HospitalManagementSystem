@@ -98,7 +98,6 @@ doc.text(
 );
 
 
-
 doc.text(
 `Date: ${new Date(item.createdAt).toLocaleDateString()}`,
 20,
@@ -282,44 +281,80 @@ class="prescription-card"
 
 <div class="header">
 
-
 <div>
 
 <h3>
-
 👤 Patient:
-
 {{ item.patient?.user?.name || "Patient" }}
-
 </h3>
 
 
 <h3>
-
 👨‍⚕️ Doctor:
-
-{{ item.doctor?.user?.name || "Doctor" }}
-
+{{ item.doctor?.user?.name || item.doctor?.name || "Doctor" }}
 </h3>
+
+
+<p v-if="item.doctor?.specialties">
+
+🏥 Speciality:
+{{ item.doctor.specialties.join(", ") }}
+
+</p>
+
+
+<p v-if="item.doctor?.department">
+
+🏢 Department:
+{{ item.doctor.department }}
+
+</p>
+
 
 </div>
 
 
 
 
+<div class="date-box">
+
+
 <p>
 
-📅
+📅 Prescription Date:
 
 {{
 
 new Date(item.createdAt)
-
 .toLocaleDateString()
 
 }}
 
 </p>
+
+
+<p>
+
+⏰ Time:
+
+{{
+
+new Date(item.createdAt)
+.toLocaleTimeString(
+"en-US",
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+)
+
+}}
+
+</p>
+
+
+</div>
+
 
 
 </div>
@@ -421,7 +456,30 @@ v-for="med in item.medicines"
 </table>
 
 
+<div class="appointment-info">
 
+<h4>
+📋 Appointment Information
+</h4>
+
+
+<p>
+Status:
+<span class="status">
+Completed
+</span>
+</p>
+
+
+<p v-if="item.doctor?.experience">
+
+Experience:
+{{item.doctor.experience}} Years
+
+</p>
+
+
+</div>
 
 
 <div class="info">
@@ -673,4 +731,52 @@ transform:translateY(-2px);
 
 }
 
+
+.date-box{
+
+text-align:right;
+color:#475569;
+font-weight:600;
+
+}
+
+
+
+.appointment-info{
+
+margin-top:20px;
+
+background:#eff6ff;
+
+padding:20px;
+
+border-radius:15px;
+
+}
+
+
+
+.appointment-info h4{
+
+color:var(--primary);
+
+margin-bottom:10px;
+
+}
+
+
+
+.status{
+
+background:#dcfce7;
+
+color:#16a34a;
+
+padding:5px 12px;
+
+border-radius:20px;
+
+font-weight:700;
+
+}
 </style>

@@ -44,69 +44,54 @@ const Patient = require("../models/patient");
 
 // Create / Update Profile
 
-exports.createProfile = async(req,res)=>{
+exports.createProfile = async (req, res) => {
 
-try{
-console.log("USER:", req.user);
-console.log("BODY:", req.body);
-const patient = await Patient.findOneAndUpdate(
+  try {
 
-{
-    user:req.user.id
-},
+    const patient = await Patient.findOneAndUpdate(
 
+      { user: req.user.id },
 
-{
+      {
 
-user:req.user.id,
+        user: req.user.id,
 
-age:req.body.age,
+        age: req.body.age,
+        gender: req.body.gender,
+        contactInformation: req.body.contactInformation,
+        medicalHistory: req.body.medicalHistory,
+        DescribeYourProblem: req.body.DescribeYourProblem,
+        insuranceDetails: req.body.insuranceDetails,
+        profilecompleted: req.body.profilecompleted
 
-gender:req.body.gender,
+      },
 
-contactInformation:req.body.contactInformation,
+      {
 
-medicalHistory:req.body.medicalHistory,
+        new: true,
+        upsert: true,
+        runValidators: true
 
-DescribeYourProblem:req.body.DescribeYourProblem,
+      }
 
-insuranceDetails:req.body.insuranceDetails,
+    );
 
-profilecompleted:req.body.profilecompleted
+    res.status(200).json({
 
-},
+      message: "Profile saved successfully",
+      patient
 
+    });
 
-{
-    new:true,
-    upsert:true
-}
+  } catch (error) {
 
+    res.status(500).json({
 
-);
+      message: error.message
 
+    });
 
-
-res.status(200).json({
-
-message:"Profile saved successfully",
-
-patient
-
-});
-
-
-}
-catch(error){
-
-res.status(500).json({
-
-message:error.message
-
-});
-
-}
-
+  }
 
 };
 
@@ -117,23 +102,39 @@ message:error.message
 
 exports.getProfile = async (req, res) => {
 
-    try {
+  try {
 
-        const patient = await Patient.findOne({
-            user: req.user.id
-        }).populate({
-            path: "user",
-            select: "name email profileImage"
-        });
+    const patient = await Patient.findOne({
 
-        res.json(patient);
+      user: req.user.id
 
-    } catch (error) {
+    }).populate({
 
-        res.status(500).json({
-            message: error.message
-        });
+      path: "user",
+      select: "name email profileImage"
+
+    });
+
+    if (!patient) {
+
+      return res.status(404).json({
+
+        message: "Profile not found"
+
+      });
 
     }
+
+    res.status(200).json(patient);
+
+  } catch (error) {
+
+    res.status(500).json({
+
+      message: error.message
+
+    });
+
+  }
 
 };

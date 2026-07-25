@@ -85,36 +85,37 @@ const removeImage = async () => {
 
 };
 
-const saveProfile = async()=>{
+const saveProfile = async () => {
 
-try{
+  try {
 
+    await api.post("/patient/profile", {
 
-await api.post("/patient/profile",{
+      age: age.value,
+      gender: gender.value,
+      contactInformation: contactInformation.value,
+      medicalHistory: medicalHistory.value,
+      insuranceDetails: insuranceDetails.value,
+      DescribeYourProblem: DescribeYourProblem.value,
+      profilecompleted: profilecompleted.value
 
-age:age.value,
-gender:gender.value,
-contactInformation:contactInformation.value,
-medicalHistory:medicalHistory.value,
-insuranceDetails:insuranceDetails.value,
-DescribeYourProblem:DescribeYourProblem.value,
-profilecompleted: profilecompleted.value
-});
+    });
 
+    alert("Profile Updated Successfully");
 
-alert("Profile Updated");
+    profileExists.value = true;
 
+    await getProfile();
 
-isEdit.value=false;
+    isEdit.value = false;
 
+  } catch (error) {
 
-}catch(error){
+    console.log(error.response?.data || error);
 
-console.log(error);
+  }
 
-}
-
-}
+};
 
 
 

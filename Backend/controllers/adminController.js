@@ -160,7 +160,7 @@ const todaysAppointments = await Appointment.find({
 })
 .populate({
     path:"doctor",
-    select:"name specialties"
+    select:"name department specialties"
 })
 .limit(5);
 
@@ -233,6 +233,7 @@ const {
 name,
 email,
 password,
+department,
 specialties,
 qualifications,
 experience,
@@ -283,6 +284,8 @@ const doctor = await Doctor.create({
 user:user._id,
 
 name,
+
+department,
 
 specialties,
 
@@ -342,6 +345,7 @@ const {
 name,
 email,
 password,
+department,
 specialties,
 qualifications,
 experience,
@@ -369,6 +373,7 @@ message:"Doctor not found"
 // Update Doctor Profile
 
 doctor.name = name;
+doctor.department=department;
 doctor.specialties = specialties;
 doctor.qualifications = qualifications;
 doctor.experience = experience;
@@ -634,7 +639,7 @@ exports.getAllAppointments = async (req, res) => {
 
       .populate(
         "doctor",
-        "name specialties"
+        "name department specialties"
       )
 
       .populate({
@@ -1017,9 +1022,12 @@ const today = new Date()
 
 
 const doctors = await Doctor.find()
-.select("name specialties availability");
+.select("name specialties department availability");
 
-
+console.log(
+"Doctors from DB:",
+JSON.stringify(doctors,null,2)
+);
 
 const result = await Promise.all(
 
@@ -1067,6 +1075,10 @@ return {
 name:doctor.name,
 
 
+// Department Added
+department: doctor.department || null,
+
+
 specialties:doctor.specialties || [],
 
 
@@ -1091,7 +1103,6 @@ ratings.length
 
 
 };
-
 
 
 })

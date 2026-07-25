@@ -270,6 +270,10 @@ v-for="appointment in stats.upcomingAppointmentList"
 {{appointment.doctor?.name}}
 </h3>
 
+<p>
+Department:
+{{appointment.doctor?.department}}
+</p>
 
 <p>
 Speciality:

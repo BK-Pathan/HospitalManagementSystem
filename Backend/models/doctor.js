@@ -16,6 +16,10 @@ const doctorSchema = new mongoose.Schema({
         required:true
     },
 
+        department:{
+        type:String,
+        required:true
+    },
 
     specialties:[{
         type:String

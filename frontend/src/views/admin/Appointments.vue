@@ -197,6 +197,9 @@ console.log(error);
                 Doctor
             </th>
 
+            <th>
+    Department
+</th>
 
             <th>
                 Speciality
@@ -286,7 +289,21 @@ console.log(error);
 
             <!-- Speciality -->
 
+<!-- Department -->
 
+<td>
+
+    <span class="department">
+
+        {{
+        appointment.doctor?.department
+        ||
+        "N/A"
+        }}
+
+    </span>
+
+</td>
             <td>
 
 
@@ -864,7 +881,21 @@ tbody tr:hover{
 }
 
 
+.department{
 
+padding:7px 14px;
+
+border-radius:20px;
+
+background:rgba(37,99,235,.12);
+
+color:#2563eb;
+
+font-size:13px;
+
+font-weight:600;
+
+}
 </style>
 
 

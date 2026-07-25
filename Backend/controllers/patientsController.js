@@ -561,7 +561,7 @@ patient:patient._id
 
 "doctor",
 
-"name specialties availability"
+"name department specialties availability"
 
 )
 
@@ -956,14 +956,6 @@ allAppointments
 
 
 
-
-
-
-
-// ===============================
-// UPCOMING APPOINTMENT
-// ===============================
-
 // ===============================
 // UPCOMING APPOINTMENTS COUNT
 // ===============================
@@ -1017,7 +1009,7 @@ status:{
 
 path:"doctor",
 
-select:"name specialties"
+select:"name department specialties"
 
 })
 .sort({

@@ -5,6 +5,7 @@ import api from "../../api/axios";
 
 
 const name = ref("");
+const department = ref("");
 const profileImage = ref("");
 
 const selectedImage = ref(null);
@@ -267,7 +268,7 @@ await api.post(
 
 name:name.value,
 
-
+department:department.value,
 specialties:specialties.value
 .split(",")
 .map(item=>item.trim()),
@@ -339,7 +340,8 @@ if(!res.data) return;
 name.value =
 res.data.name || "";
 
-
+department.value =
+res.data.department || "";
 
 profileImage.value =
 res.data.profileImage || "";
@@ -462,7 +464,56 @@ v-model="name"
 placeholder="Name"
 />
 
+<select
+class="form-input"
+v-model="department"
+>
 
+<option value="">
+Select Department
+</option>
+
+<option>
+    24/7 Emergency
+</option>
+
+<option>
+Cardiology
+</option>
+
+<option>
+Neurology
+</option>
+
+<option>
+Dermatology
+</option>
+
+<option>
+Orthopedics
+</option>
+
+<option>
+Pediatrics
+</option>
+
+<option>
+Gynecology
+</option>
+
+<option>
+General Medicine
+</option>
+
+<option>
+ENT
+</option>
+
+<option>
+Dental
+</option>
+
+</select>
 
 
 <input

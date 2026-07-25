@@ -442,6 +442,11 @@ class="doctor-item"
 👨‍⚕️ {{doctor.name}}
 </h3>
 
+<p class="speciality">
+Department:
+{{doctor.department}}
+</p>
+
 
 <p class="speciality">
 Speciality:

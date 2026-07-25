@@ -181,11 +181,15 @@ Dr. {{doctor.name}}
 </h1>
 
 
+<p>
+🏥 Department:
+{{doctor.department}}
+</p>
+
 
 <p>
-
-{{doctor.specialties}}
-
+Speciality:
+{{doctor.specialties.join(", ")}}
 </p>
 
 
@@ -220,7 +224,15 @@ Doctor Information
 </h2>
 
 
+<p>
 
+<b>
+Department:
+</b>
+
+{{doctor.department}}
+
+</p>
 
 <p>
 

@@ -88,6 +88,7 @@ getDoctors();
 
     <th>Name</th>
 
+<th>Department</th>
     <th>Speciality</th>
 
     <th>Qualification</th>
@@ -119,7 +120,11 @@ getDoctors();
     </td>
 
 
+<td>
 
+{{doctor.department}}
+
+</td>
 
 
     <td>

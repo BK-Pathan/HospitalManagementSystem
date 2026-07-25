@@ -11,6 +11,7 @@ import api from "../../api/axios";
 const doctors = ref([]);
 
 const name = ref("");
+const department = ref("");
 const specialties = ref("");
 const qualifications = ref("");
 const experience = ref("");
@@ -192,6 +193,8 @@ email:email.value,
 
 password:password.value,
 
+department:department.value,
+
 specialties:
 Array.isArray(specialties.value)
 ?
@@ -289,7 +292,7 @@ doctorId.value=doctor._id;
 
 name.value=doctor.name;
 
-
+department.value=doctor.department,
 specialties.value =
 doctor.specialties?.join(", ");
 
@@ -348,6 +351,8 @@ const clearForm=()=>{
 
 
 name.value="";
+
+department.value="";
 
 specialties.value="";
 
@@ -467,6 +472,10 @@ placeholder="Search Doctor..."
             placeholder="Doctor Name"
             />
 
+            <input 
+            v-model="department"
+            placeholder="Department Name"
+            />
 
             <input 
             v-model="specialties"
@@ -657,6 +666,7 @@ type="password"
 
         <th>Name</th>
         <th>Email</th>
+        <th>Department</th>
         <th>Speciality</th>
         <th>Qualification</th>
         <th>Experience</th>
@@ -679,6 +689,9 @@ type="password"
 
 <td>
 {{doctor.user?.email}}
+</td>
+<td>
+    {{ doctor.department }}
 </td>
 <td>
 {{doctor.specialties?.join(", ")}}

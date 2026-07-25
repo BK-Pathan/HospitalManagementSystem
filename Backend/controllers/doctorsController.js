@@ -18,6 +18,7 @@ const doctor = await Doctor.findOneAndUpdate(
 
     user:req.user.id,
     name:req.body.name,
+    department:req.body.department,
     specialties:req.body.specialties,
     qualifications:req.body.qualifications,
     experience:req.body.experience,
@@ -85,6 +86,8 @@ res.json({
 _id:doctor._id,
 
 name:doctor.name,
+
+department:doctor.department,
 
 specialties:doctor.specialties,
 
@@ -352,7 +355,7 @@ try{
 
 const doctors = await Doctor.find()
 .select(
-"name specialties qualifications experience contactInformation availability"
+"name department specialties qualifications experience contactInformation availability"
 );
 
 
