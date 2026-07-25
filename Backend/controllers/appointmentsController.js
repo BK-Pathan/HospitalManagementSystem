@@ -2,7 +2,7 @@ const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
 const Notification = require("../models/notification");
 const Patient = require("../models/patient");
-
+const { createAdminNotification } = require("../utils/sendNotification");
 
 // =====================================
 // Patient Request Reschedule
@@ -536,6 +536,8 @@ appointment.patient
 
 // Notification to patient
 
+// Notification to patient
+
 await Notification.create({
 
 user:patient.user._id,
@@ -553,6 +555,28 @@ message:
 
 redirectUrl:
 `/patient/appointments`
+
+});
+
+
+
+
+
+// ===============================
+// ADMIN NOTIFICATION
+// ===============================
+
+await createAdminNotification({
+
+title:"Reschedule Approved",
+
+message:
+"Doctor approved a reschedule request",
+
+type:"reschedule",
+
+appointment:appointment._id
+
 });
 
 
@@ -680,6 +704,25 @@ if(lastHistory){
 
 await appointment.save();
 
+
+
+
+// ===============================
+// ADMIN NOTIFICATION
+// ===============================
+
+await createAdminNotification({
+
+title:"Reschedule Rejected",
+
+message:
+"Doctor rejected a reschedule request",
+
+type:"reschedule",
+
+appointment:appointment._id
+
+});
 
 
 

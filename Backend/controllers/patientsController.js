@@ -4,6 +4,7 @@ const Doctor = require("../models/doctor");
 const Prescription = require("../models/prescription");
 const Feedback = require("../models/feedback");
 const Notification = require("../models/notification");
+const { createAdminNotification } = require("../utils/sendNotification");
 
 
 // ===============================
@@ -412,6 +413,24 @@ doctor:doctor,
 appointmentDateTime:selectedDate,
 
 status:"pending"
+
+});
+
+
+// ===============================
+// CREATE ADMIN NOTIFICATION
+// ===============================
+
+await createAdminNotification({
+
+title:"New Appointment Request",
+
+message:
+`${patient.user.name} booked an appointment with Dr. ${doctorData.name}`,
+
+type:"appointment",
+
+appointment:appointment._id
 
 });
 

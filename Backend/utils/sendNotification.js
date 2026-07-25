@@ -1,25 +1,39 @@
 const Notification = require("../models/notification");
+const User = require("../models/user");
 
 
-const sendNotification = async({
-user,
-sender,
+const createAdminNotification = async({
+
 title,
 message,
 type="system",
-appointment=null,
-redirectUrl=""
+appointment=null
+
 })=>{
 
 
 try{
 
 
-const notification = await Notification.create({
+// find all admins
 
-user,
+const admins = await User.find({
+role:"admin"
+});
 
-sender,
+
+
+const notifications = [];
+
+
+
+for(const admin of admins){
+
+
+const notification =
+await Notification.create({
+
+user:admin._id,
 
 title,
 
@@ -27,11 +41,13 @@ message,
 
 type,
 
-appointment,
-
-redirectUrl
+appointment
 
 });
+
+
+notifications.push(notification);
+
 
 
 
@@ -39,33 +55,43 @@ redirectUrl
 
 if(global.io){
 
+
 global.io
-.to(user.toString())
+.to(admin._id.toString())
 .emit(
 "notification",
 {
 
 title,
+
 message,
+
 type,
-appointmentId:appointment,
-redirectUrl
+
+appointmentId:appointment
 
 }
 
 );
+
+
+}
+
+
 
 }
 
 
 
 console.log(
-"NOTIFICATION SENT:",
-notification
+"ADMIN NOTIFICATIONS SENT",
+notifications.length
 );
 
 
-return notification;
+
+return notifications;
+
 
 
 }
@@ -73,16 +99,17 @@ catch(error){
 
 
 console.log(
-"NOTIFICATION ERROR:",
+"ADMIN NOTIFICATION ERROR",
 error
 );
 
 
 }
 
-
-
 };
 
 
-module.exports = sendNotification;
+
+module.exports = {
+createAdminNotification
+};
