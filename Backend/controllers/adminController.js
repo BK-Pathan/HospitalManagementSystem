@@ -340,7 +340,6 @@ exports.updateDoctor = async(req,res)=>{
 
 try{
 
-
 const {
 name,
 email,
@@ -354,8 +353,6 @@ availability
 }=req.body;
 
 
-
-// Find Doctor
 
 const doctor = await Doctor.findById(req.params.id);
 
@@ -372,13 +369,24 @@ message:"Doctor not found"
 
 // Update Doctor Profile
 
-doctor.name = name;
-doctor.department=department;
-doctor.specialties = specialties;
-doctor.qualifications = qualifications;
-doctor.experience = experience;
-doctor.contactInformation = contactInformation;
-doctor.availability = availability;
+doctor.name = name || doctor.name;
+doctor.department = department || doctor.department;
+
+doctor.specialties =
+specialties || doctor.specialties;
+
+doctor.qualifications =
+qualifications || doctor.qualifications;
+
+doctor.experience =
+experience || doctor.experience;
+
+doctor.contactInformation =
+contactInformation || doctor.contactInformation;
+
+doctor.availability =
+availability || doctor.availability;
+
 
 
 await doctor.save();
@@ -394,21 +402,53 @@ if(doctor.user){
 const user = await User.findById(doctor.user);
 
 
-
 if(user){
 
 
-user.name = name;
+user.name = name || user.name;
+
+
+
+// Email update only if changed
+
+if(email && email !== user.email){
+
+
+const existingUser = await User.findOne({
+
+email,
+
+_id:{
+$ne:user._id
+}
+
+});
+
+
+if(existingUser){
+
+return res.status(400).json({
+
+message:"Email already exists"
+
+});
+
+}
+
 
 user.email = email;
 
 
+}
 
-// update password only if entered
+
+
+// Password update only if entered
 
 if(password){
 
-user.password = await bcrypt.hash(password,10);
+user.password =
+await bcrypt.hash(password,10);
 
 }
 
@@ -424,31 +464,25 @@ await user.save();
 
 
 
-
 res.json({
 
 message:"Doctor updated successfully",
 
 doctor
 
-
 });
-
 
 
 }
 catch(error){
 
-
 console.log(error);
-
 
 res.status(500).json({
 
 message:error.message
 
 });
-
 
 }
 

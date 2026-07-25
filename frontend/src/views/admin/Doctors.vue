@@ -187,12 +187,7 @@ try{
 
 const data={
 
-
 name:name.value,
-email:email.value,
-
-password:password.value,
-
 department:department.value,
 
 specialties:
@@ -202,24 +197,22 @@ specialties.value
 :
 specialties.value.split(","),
 
-
-
 qualifications:qualifications.value,
-
 
 experience:Number(experience.value),
 
-
 contactInformation:contactInformation.value,
 
-
 availability:availability.value
-
 
 };
 
 
-
+// sirf new doctor ke liye password
+if(!editMode.value){
+    data.email = email.value;
+    data.password = password.value;
+}
 
 
 if(editMode.value){
@@ -290,27 +283,34 @@ editMode.value=true;
 doctorId.value=doctor._id;
 
 
-name.value=doctor.name;
+name.value = doctor.name || "";
 
-department.value=doctor.department,
+department.value = doctor.department || "";
+
 specialties.value =
-doctor.specialties?.join(", ");
+doctor.specialties?.join(", ") || "";
 
 qualifications.value =
-doctor.qualifications;
-
+doctor.qualifications || "";
 
 experience.value =
-doctor.experience;
-
+doctor.experience || "";
 
 contactInformation.value =
-doctor.contactInformation;
+doctor.contactInformation || "";
+
+
+// email load
+email.value =
+doctor.user?.email || doctor.email || "";
+
+
+// password empty rakho
+password.value = "";
 
 
 availability.value =
 doctor.availability || [];
-
 
 
 };

@@ -1,525 +1,408 @@
 <script setup>
-
-import { ref, computed, onMounted } from "vue";
-import api from "../api/axios";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import api from "../api/axios";
 import socket from "../socket";
-
 
 const router = useRouter();
 
-
-const role = computed(()=>localStorage.getItem("role"));
-
+const role = computed(() => localStorage.getItem("role"));
 
 const user = ref({});
 
-
 const notifications = ref([]);
 
+const showDropdown = ref(false);
 
+// =========================
+// PROFILE
+// =========================
 
-// latest user profile
+const getProfile = async () => {
+  try {
+    const res = await api.get("/auth/profile");
 
-const getProfile = async()=>{
+    user.value = res.data;
 
-try{
+    localStorage.setItem(
+      "user",
+      JSON.stringify(res.data)
+    );
 
-const res = await api.get("/auth/profile");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
+// =========================
+// NOTIFICATIONS
+// =========================
 
-user.value = res.data;
+const getNotifications = async () => {
+  try {
 
+    const res = await api.get("/notifications");
 
-localStorage.setItem(
-    "user",
-    JSON.stringify(res.data)
-);
+    notifications.value = res.data;
 
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-}
-catch(error){
+const unreadCount = computed(() => {
+  return notifications.value.filter(
+    n => !n.isRead
+  ).length;
+});
 
-console.log(error);
+const badgeText = computed(() => {
+  return unreadCount.value > 9
+    ? "9+"
+    : unreadCount.value;
+});
 
-}
+const toggleDropdown = () => {
+
+  showDropdown.value =
+    !showDropdown.value;
 
 };
 
+const openNotificationPage = () => {
 
+  showDropdown.value = false;
 
-
-// get notification count
-
-const getNotifications = async()=>{
-
-try{
-
-
-const res = await api.get("/notifications");
-
-
-notifications.value = res.data;
-
-
-}
-catch(error){
-
-console.log(error);
-
-}
-
+  router.push("/notifications");
 
 };
 
+const openNotification = async (notification) => {
 
+  try {
 
+    if (!notification.isRead && notification._id) {
 
+      await api.patch(
+        `/notifications/${notification._id}/read`
+      );
 
-onMounted(()=>{
+      notification.isRead = true;
 
+    }
 
-getProfile();
+    showDropdown.value = false;
 
+    if (notification.redirectUrl) {
 
-getNotifications();
+      router.push(notification.redirectUrl);
 
+    } else {
 
+      router.push("/notifications");
 
-// realtime notification
+    }
 
-socket.on(
-"notification",
-(data)=>{
+  } catch (error) {
 
+    console.log(error);
 
-notifications.value.unshift({
-
-...data,
-
-isRead:false
-
-});
-    
-
-});
-
-
-});
-
-
-
-
-
-const notificationCount = computed(()=>{
-
-
-return notifications.value.filter(
-n=>!n.isRead
-).length;
-
-
-});
-
-
-
-
-
-const openNotifications = ()=>{
-
-
-router.push("/notifications");
-
+  }
 
 };
 
+// =========================
+// USER INFO
+// =========================
 
+const name = computed(() => user.value.name || "");
 
+const title = computed(() => {
 
+  if (role.value === "admin")
+    return "Admin Panel";
 
+  if (role.value === "doctor")
+    return "Doctor Panel";
 
+  if (role.value === "patient")
+    return "Patient Panel";
 
-const name = computed(()=>{
-
-return user.value.name || "";
-
-});
-
-
-
-
-
-const userRole = computed(()=>{
-
-
-const currentRole = role.value;
-
-
-if(currentRole==="admin")
-return "Admin";
-
-
-if(currentRole==="doctor")
-return "Doctor";
-
-
-if(currentRole==="patient")
-return "Patient";
-
-
-return "";
-
+  return "Hospital";
 
 });
 
+const userRole = computed(() => {
 
+  if (role.value === "admin")
+    return "Admin";
 
+  if (role.value === "doctor")
+    return "Doctor";
 
+  if (role.value === "patient")
+    return "Patient";
 
-const title = computed(()=>{
-
-
-const currentRole = role.value;
-
-
-if(currentRole==="admin")
-return "Admin Panel";
-
-
-if(currentRole==="doctor")
-return "Doctor Panel";
-
-
-if(currentRole==="patient")
-return "Patient Panel";
-
-
-return "Hospital";
-
+  return "";
 
 });
 
+// =========================
+// SOCKET
+// =========================
 
+onMounted(() => {
 
+  getProfile();
+
+  getNotifications();
+
+  socket.on(
+    "notification",
+    (data) => {
+
+      console.log(
+        "Realtime Notification:",
+        data
+      );
+
+      notifications.value.unshift({
+
+        ...data,
+
+        createdAt: new Date(),
+
+        isRead: false
+
+      });
+
+    }
+
+  );
+
+});
+
+onUnmounted(() => {
+
+  socket.off("notification");
+
+});
 </script>
 
 <template>
 
 <nav class="navbar">
 
+<div class="brand-section">
 
-    <div class="brand-section">
+<div class="logo">
+🏥
+</div>
 
-        <div class="logo">
-            🏥
-        </div>
+<div>
 
+<h2>{{ title }}</h2>
 
-        <div>
-            <h2>
-                {{title}}
-            </h2>
-
-            <p>
-                Hospital Management System
-            </p>
-        </div>
-
-    </div>
-
-<div 
-class="notification-icon"
-@click="openNotifications"
->
-
-
-🔔
-
-
-<span 
-v-if="notificationCount > 0"
-class="notification-badge"
->
-
-{{notificationCount}}
-
-</span>
-
+<p>
+Hospital Management System
+</p>
 
 </div>
 
-    <div class="user-section">
+</div>
 
+<!-- Notification -->
 
-        <div class="user-icon">
-            👤
-        </div>
+<div class="notification-wrapper">
 
+<div
+class="notification-icon"
+@click="toggleDropdown"
+>
 
-        <div class="user-info">
+🔔
 
-            <span class="welcome">
-                Welcome
-            </span>
+<span
+v-if="unreadCount"
+class="notification-badge"
+>
 
-            <span class="role">
-                    <span class="role-badge">{{ userRole }}</span>
-               <h4>{{ name }}</h4>
+{{ badgeText }}
 
-            </span>
+</span>
 
-        </div>
+</div>
 
+<div
+v-if="showDropdown"
+class="notification-dropdown"
+>
 
-    </div>
+<h3>
+Notifications
+</h3>
 
+<div
+v-if="notifications.length===0"
+class="empty"
+>
+
+No Notifications
+
+</div>
+
+<div
+
+v-for="item in notifications.slice(0,5)"
+
+:key="item._id"
+
+class="notification-item"
+
+:class="{
+unread:!item.isRead
+}"
+
+@click="openNotification(item)"
+
+>
+
+<h4>
+
+{{ item.title }}
+
+</h4>
+
+<p>
+
+{{ item.message }}
+
+</p>
+
+<small>
+
+{{ new Date(item.createdAt).toLocaleString() }}
+
+</small>
+
+</div>
+
+<button
+class="view-btn"
+@click="openNotificationPage"
+>
+
+View All Notifications
+
+</button>
+
+</div>
+
+</div>
+
+<!-- User -->
+
+<div class="user-section">
+
+<div class="user-icon">
+
+👤
+
+</div>
+
+<div class="user-info">
+
+<span class="welcome">
+
+Welcome
+
+</span>
+
+<div class="role">
+
+<span class="role-badge">
+
+{{ userRole }}
+
+</span>
+
+<h4>
+
+{{ name }}
+
+</h4>
+
+</div>
+
+</div>
+
+</div>
 
 </nav>
 
-
 </template>
-
-
 
 <style scoped>
 
-
 .navbar{
 
+height:80px;
 
-    height:80px;
+display:flex;
 
-    background:var(--white);
+justify-content:space-between;
 
-    display:flex;
+align-items:center;
 
-    justify-content:space-between;
+padding:0 30px;
 
-    align-items:center;
+background:white;
 
-    padding:0 35px;
+border-bottom:1px solid #eee;
 
-    box-shadow:var(--shadow);
-
-    border-bottom:1px solid var(--border);
-
+box-shadow:0 4px 20px rgba(0,0,0,.05);
 
 }
-
-
-
-/* Brand */
-
 
 .brand-section{
 
-    display:flex;
+display:flex;
 
-    align-items:center;
+align-items:center;
 
-    gap:15px;
+gap:15px;
 
 }
-
-
 
 .logo{
 
-    width:50px;
+width:52px;
 
-    height:50px;
+height:52px;
 
-    border-radius:14px;
+border-radius:15px;
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    align-items:center;
+align-items:center;
 
-    font-size:25px;
+font-size:24px;
 
+background:#14B8A6;
 
-    background:
-
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+color:white;
 
 }
 
+.notification-wrapper{
 
-
-.brand-section h2{
-
-
-    color:var(--text);
-
-    font-size:22px;
-
-    font-weight:700;
-
-    margin:0;
-
+position:relative;
 
 }
 
-
-
-.brand-section p{
-
-
-    color:var(--muted);
-
-    font-size:13px;
-
-    margin-top:3px;
-
-
-}
-
-
-
-
-/* User */
-
-
-.user-section{
-
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    padding:10px 18px;
-
-    border-radius:14px;
-
-    background:var(--bg);
-
-
-}
-
-
-
-.user-icon{
-
-
-    width:42px;
-
-    height:42px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    background:white;
-
-    font-size:20px;
-
-
-}
-
-
-
-.user-info{
-
-
-    display:flex;
-
-    flex-direction:column;
-
-}
-
-
-
-.welcome{
-
-
-    font-size:13px;
-
-    color:var(--muted);
-
-}
-
-
-
-.role{
-
-
-    font-size:15px;
-
-    font-weight:700;
-
-    color:var(--primary);
-
-    text-transform:capitalize;
-
-
-}
-
-
-
-
-@media(max-width:600px){
-
-
-.navbar{
-
-    padding:0 15px;
-
-}
-
-
-.brand-section p{
-
-    display:none;
-
-}
-
-
-.brand-section h2{
-
-    font-size:18px;
-
-}
-
-
-
-.user-section{
-
-    padding:8px;
-
-}
-
-
-.user-info{
-
-    display:none;
-
-}
-
-
-}
-
-
-.role-badge{
-    font-size:12px;
-    padding:3px 10px;
-    border-radius:20px;
-    background:#14B8A6;
-    color:white;
-}
 .notification-icon{
-
 
 position:relative;
 
@@ -527,48 +410,194 @@ font-size:28px;
 
 cursor:pointer;
 
-margin-right:25px;
-
 }
-
-
 
 .notification-badge{
 
-
 position:absolute;
 
-top:-8px;
+top:-6px;
 
-right:-10px;
-
-
-background:red;
-
-color:white;
-
+right:-8px;
 
 width:20px;
 
 height:20px;
 
+background:red;
+
+color:white;
 
 border-radius:50%;
 
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:11px;
+
+font-weight:bold;
+
+}
+
+.notification-dropdown{
+
+position:absolute;
+
+top:45px;
+
+right:0;
+
+width:360px;
+
+background:white;
+
+border-radius:15px;
+
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+overflow:hidden;
+
+z-index:999;
+
+}
+
+.notification-dropdown h3{
+
+padding:15px;
+
+border-bottom:1px solid #eee;
+
+}
+
+.notification-item{
+
+padding:15px;
+
+cursor:pointer;
+
+border-bottom:1px solid #f3f3f3;
+
+transition:.3s;
+
+}
+
+.notification-item:hover{
+
+background:#f8fafc;
+
+}
+
+.notification-item.unread{
+
+background:#ecfeff;
+
+border-left:4px solid #14B8A6;
+
+}
+
+.notification-item h4{
+
+margin-bottom:5px;
+
+}
+
+.notification-item p{
+
+font-size:14px;
+
+color:#666;
+
+}
+
+.notification-item small{
+
+font-size:12px;
+
+color:#999;
+
+}
+
+.view-btn{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+background:#14B8A6;
+
+color:white;
+
+cursor:pointer;
+
+font-weight:bold;
+
+}
+
+.user-section{
 
 display:flex;
 
 align-items:center;
 
+gap:12px;
+
+}
+
+.user-icon{
+
+width:42px;
+
+height:42px;
+
+border-radius:50%;
+
+display:flex;
+
 justify-content:center;
 
+align-items:center;
+
+background:#f1f5f9;
+
+}
+
+.role{
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+.role-badge{
+
+padding:4px 10px;
+
+border-radius:20px;
+
+background:#14B8A6;
+
+color:white;
 
 font-size:12px;
 
-font-weight:bold;
+}
 
+.empty{
+
+padding:25px;
+
+text-align:center;
+
+color:#777;
 
 }
+
 </style>
-
-

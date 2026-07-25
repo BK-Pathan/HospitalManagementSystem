@@ -8,8 +8,8 @@ import Services from "../../components/public/Services.vue"
 import DoctorsSection from "../../components/public/DoctorsSection.vue"
 import Testimonials from "../../components/public/Testimonials.vue";
 import EmergencyBanner from "../../components/public/EmergencyBanner.vue";
-// import Contact from "../../components/public/Contact.vue"
-// import Footer from "../../components/public/Footer.vue"
+import Contact from "../../components/public/Contact.vue"
+import Footer from "../../components/public/Footer.vue"
 </script>
 
 <template>
@@ -22,8 +22,8 @@ import EmergencyBanner from "../../components/public/EmergencyBanner.vue";
   <DoctorsSection/>
   <EmergencyBanner/>
     <Testimonials/>
-  <!-- <Contact/>
-  <Footer/> -->
+ <Contact/>
+  <Footer/> 
 </template>
 
 <style scoped>

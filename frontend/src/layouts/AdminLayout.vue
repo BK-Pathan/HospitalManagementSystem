@@ -6,34 +6,39 @@ import Navbar from "../components/Navbar.vue";
 </script>
 
 
-
 <template>
-
 
 <div class="layout">
 
 
-    <Sidebar/>
+    <!-- Sidebar -->
 
+    <Sidebar />
+
+
+    <!-- Main Area -->
 
     <div class="main">
 
 
-        <Navbar/>
+        <!-- Navbar -->
+
+        <Navbar />
 
 
-        <div class="content">
+        <!-- Page Content -->
 
-            <router-view/>
+        <main class="content">
 
-        </div>
+            <router-view />
+
+        </main>
 
 
     </div>
 
 
 </div>
-
 
 </template>
 
@@ -46,10 +51,17 @@ import Navbar from "../components/Navbar.vue";
 
     min-height:100vh;
 
+    display:flex;
+
+    background:#f8fafc;
+
 }
 
 
-/* Sidebar ke liye space */
+/* =====================
+MAIN
+===================== */
+
 
 .main{
 
@@ -59,15 +71,15 @@ import Navbar from "../components/Navbar.vue";
 
     min-height:100vh;
 
-    background:var(--bg);
+    transition:.3s;
 
 }
 
 
 
-/* Navbar top par */
-
-
+/* =====================
+CONTENT
+===================== */
 
 
 .content{
@@ -76,13 +88,19 @@ import Navbar from "../components/Navbar.vue";
 
     min-height:calc(100vh - 80px);
 
+    background:#f8fafc;
+
 }
 
 
 
 
+/* =====================
+TABLET
+===================== */
 
-@media(max-width:900px){
+
+@media(max-width:1000px){
 
 
 .main{
@@ -90,6 +108,42 @@ import Navbar from "../components/Navbar.vue";
     margin-left:220px;
 
     width:calc(100% - 220px);
+
+}
+
+
+.content{
+
+    padding:20px;
+
+}
+
+
+}
+
+
+
+/* =====================
+MOBILE
+===================== */
+
+
+@media(max-width:700px){
+
+
+.main{
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+
+
+.content{
+
+    padding:15px;
 
 }
 
