@@ -92,24 +92,6 @@ const loopedDepartments = computed(() => [...departments, ...departments])
 <style scoped>
 .carousel {
   /* ---- Same theme tokens as the hero / doctors carousel ---- */
-  --color-primary: #6f9caa;
-  --color-primary-dark: #4f7d8c;
-  --color-primary-darker: #2f5b68;
-  --color-accent: #7fb0bd;
-  --color-bg: #eef4f4;
-  --color-bg-soft: #f6faf9;
-  --color-surface: #ffffff;
-  --color-text: #1c2b2e;
-  --color-text-muted: #5a6e72;
-  --color-text-on-primary: #ffffff;
-  --color-border: #d9e5e6;
-  --radius-pill: 999px;
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --shadow-soft: 0 20px 40px -20px rgba(47, 91, 104, 0.35);
-  --font-display: 'Poppins', 'Segoe UI', sans-serif;
-  --font-body: 'Inter', 'Segoe UI', sans-serif;
-
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);

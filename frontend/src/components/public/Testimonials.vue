@@ -1,248 +1,558 @@
+<template>
+  <section class="feedback">
+
+    <div class="feedback__bg" aria-hidden="true">
+      <span class="blob blob--one"></span>
+      <span class="blob blob--two"></span>
+    </div>
+
+    <div class="feedback__header" ref="headerRef" :class="{ 'is-visible': headerVisible }">
+      <p class="feedback__eyebrow">
+        <span class="eyebrow-line"></span>
+        TESTIMONIALS
+        <span class="eyebrow-line"></span>
+      </p>
+      <h2 class="feedback__title">Trusted by Thousands of Patients</h2>
+      <p class="feedback__subtitle">
+        Real stories from people we've had the privilege of caring for.
+      </p>
+
+      <div class="feedback__summary">
+        <div class="summary-item">
+          <span class="summary-value">4.9<span class="summary-star">★</span></span>
+          <span class="summary-label">Average rating</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-value">2,400+</span>
+          <span class="summary-label">Patient reviews</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-value">98%</span>
+          <span class="summary-label">Would recommend</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- carousel -->
+    <div
+      class="carousel"
+      ref="carouselRef"
+      :class="{ 'is-visible': carouselVisible }"
+      @mouseenter="pause = true"
+      @mouseleave="pause = false"
+    >
+      <button class="carousel__nav carousel__nav--prev" @click="prevSlide" aria-label="Previous testimonial">‹</button>
+
+      <div class="carousel__track">
+        <div
+          class="carousel__page"
+          :style="{ transform: `translateX(-${activeIndex * 100}%)` }"
+        >
+          <div v-for="group in groupedTestimonials" :key="group[0].name" class="carousel__group">
+            <article
+              v-for="t in group"
+              :key="t.name"
+              class="testimonial"
+            >
+              <span class="testimonial__quote-mark">“</span>
+              <div class="testimonial__stars">
+                <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= t.rating }">★</span>
+              </div>
+              <p class="testimonial__text">{{ t.quote }}</p>
+              <div class="testimonial__person">
+                <img :src="t.photo" :alt="t.name" class="testimonial__avatar" loading="lazy" />
+                <div>
+                  <h4 class="testimonial__name">{{ t.name }}</h4>
+                  <p class="testimonial__role">{{ t.role }}</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel__nav carousel__nav--next" @click="nextSlide" aria-label="Next testimonial">›</button>
+    </div>
+
+    <div class="carousel__dots">
+      <button
+        v-for="(group, i) in groupedTestimonials"
+        :key="i"
+        class="dot"
+        :class="{ active: i === activeIndex }"
+        @click="goTo(i)"
+        :aria-label="`Go to slide ${i + 1}`"
+      ></button>
+    </div>
+
+  </section>
+</template>
+
 <script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const testimonials = [
   {
-    id: 1,
-    name: "Ali Hassan",
-    role: "Cardiology Patient",
-    image: new URL("@/assets/images/patient1.jpg", import.meta.url).href,
-    review:
-      "The doctors were extremely professional and caring. The entire staff made my treatment smooth and stress-free."
+    name: 'Amara Bishop',
+    role: 'Cardiology patient',
+    rating: 5,
+    quote: 'From the ER to my follow-up visits, every single person treated me like family. I finally found a hospital I trust completely.',
+    photo: 'https://randomuser.me/api/portraits/women/68.jpg'
   },
   {
-    id: 2,
-    name: "Fatima Khan",
-    role: "Dental Patient",
-    image: new URL("@/assets/images/patient2.jpg", import.meta.url).href,
-    review:
-      "Excellent healthcare services with modern facilities. I highly recommend this hospital to everyone."
+    name: 'Farhan Qureshi',
+    role: 'Orthopedic surgery',
+    rating: 5,
+    quote: 'My knee surgery went smoothly and the recovery team checked on me daily. Genuinely the best care I have ever received.',
+    photo: 'https://randomuser.me/api/portraits/men/54.jpg'
   },
   {
-    id: 3,
-    name: "Ahmed Raza",
-    role: "Neurology Patient",
-    image: new URL("@/assets/images/patient3.jpg", import.meta.url).href,
-    review:
-      "From consultation to recovery, everything was handled professionally. Thank you for the outstanding care."
+    name: 'Priya Nair',
+    role: 'Maternity care',
+    rating: 5,
+    quote: 'The nurses were patient, kind, and always available. I felt safe through every step of my pregnancy.',
+    photo: 'https://randomuser.me/api/portraits/women/21.jpg'
+  },
+  {
+    name: 'Daniel Osei',
+    role: 'Emergency care',
+    rating: 4,
+    quote: 'Fast, calm, and organized during a stressful night. The ambulance team had me stabilized before we even reached the hospital.',
+    photo: 'https://randomuser.me/api/portraits/men/22.jpg'
+  },
+  {
+    name: 'Layla Haddad',
+    role: 'Dental care',
+    rating: 5,
+    quote: 'Painless, transparent pricing, and a dentist who actually explained what she was doing. I switched my whole family here.',
+    photo: 'https://randomuser.me/api/portraits/women/45.jpg'
+  },
+  {
+    name: 'Marcus Webb',
+    role: 'Ophthalmology',
+    rating: 5,
+    quote: 'My cataract surgery took twenty minutes and the follow-up care has been outstanding. Highly recommend this team.',
+    photo: 'https://randomuser.me/api/portraits/men/78.jpg'
   }
-];
+]
 
+function chunk(arr, size) {
+  const out = []
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+  return out
+}
+
+const perSlide = ref(typeof window !== 'undefined' && window.innerWidth < 900 ? 1 : 3)
+const groupedTestimonials = computed(() => chunk(testimonials, perSlide.value))
+const activeIndex = ref(0)
+const pause = ref(false)
+
+function nextSlide() {
+  activeIndex.value = (activeIndex.value + 1) % groupedTestimonials.value.length
+}
+function prevSlide() {
+  activeIndex.value =
+    (activeIndex.value - 1 + groupedTestimonials.value.length) % groupedTestimonials.value.length
+}
+function goTo(i) {
+  activeIndex.value = i
+}
+
+let autoplay
+let resizeHandler
+
+onMounted(() => {
+  autoplay = setInterval(() => {
+    if (!pause.value) nextSlide()
+  }, 5000)
+
+  resizeHandler = () => {
+    perSlide.value = window.innerWidth < 900 ? 1 : 3
+    activeIndex.value = 0
+  }
+  window.addEventListener('resize', resizeHandler)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(autoplay)
+  if (resizeHandler) window.removeEventListener('resize', resizeHandler)
+})
+
+const headerRef = ref(null)
+const carouselRef = ref(null)
+const headerVisible = ref(false)
+const carouselVisible = ref(false)
+let observer
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        if (entry.target === headerRef.value) headerVisible.value = true
+        if (entry.target === carouselRef.value) carouselVisible.value = true
+        observer.unobserve(entry.target)
+      })
+    },
+    { threshold: 0.15 }
+  )
+  if (headerRef.value) observer.observe(headerRef.value)
+  if (carouselRef.value) observer.observe(carouselRef.value)
+})
+
+onBeforeUnmount(() => {
+  if (observer) observer.disconnect()
+})
 </script>
-
-<template>
-
-<section class="testimonials">
-
-    <div class="section-title">
-
-        <span>TESTIMONIALS</span>
-
-        <h2>
-            What Our
-            <span>Patients Say</span>
-        </h2>
-
-        <p>
-            Trusted by thousands of patients for quality healthcare and compassionate treatment.
-        </p>
-
-    </div>
-
-    <div class="testimonial-grid">
-
-        <div
-            class="testimonial-card"
-            v-for="item in testimonials"
-            :key="item.id"
-        >
-
-            <div class="stars">
-                ⭐⭐⭐⭐⭐
-            </div>
-
-            <p class="review">
-                "{{ item.review }}"
-            </p>
-
-            <div class="patient">
-
-                <img
-                    :src="item.image"
-                    :alt="item.name"
-                >
-
-                <div>
-
-                    <h4>{{ item.name }}</h4>
-
-                    <span>{{ item.role }}</span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-</template>
 
 <style scoped>
 
-.testimonials{
-
-padding:100px 8%;
-
-background:white;
-
+.feedback {
+  position: relative;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 100px 32px 110px;
+  background: var(--color-bg);
+  font-family: var(--font-body);
+  color: var(--color-text);
+  overflow: hidden;
 }
 
-.section-title{
-
-max-width:700px;
-
-margin:auto;
-
-text-align:center;
-
-margin-bottom:60px;
-
+/* ---------- Ambient background ---------- */
+.feedback__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
 
-.section-title span{
-
-color:#2563eb;
-
-font-weight:700;
-
-letter-spacing:2px;
-
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.3;
+  animation: float 12s ease-in-out infinite;
 }
 
-.section-title h2{
-
-font-size:42px;
-
-margin:18px 0;
-
-color:#222;
-
+.blob--one {
+  width: 320px;
+  height: 320px;
+  background: var(--color-accent);
+  top: -60px;
+  left: -100px;
 }
 
-.section-title h2 span{
-
-color:#2563eb;
-
+.blob--two {
+  width: 280px;
+  height: 280px;
+  background: var(--color-primary);
+  bottom: -80px;
+  right: -80px;
+  animation-delay: -6s;
 }
 
-.section-title p{
-
-color:#666;
-
-line-height:1.8;
-
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(24px, -20px) scale(1.05); }
 }
 
-.testimonial-grid{
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
-
-gap:30px;
-
-max-width:1300px;
-
-margin:auto;
-
+/* ---------- Header ---------- */
+.feedback__header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 44px;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-.testimonial-card{
-
-background:#fff;
-
-padding:35px;
-
-border-radius:20px;
-
-box-shadow:0 15px 35px rgba(0,0,0,.08);
-
-transition:.3s;
-
+.feedback__header.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.testimonial-card:hover{
-
-transform:translateY(-10px);
-
+.feedback__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--color-primary-dark);
+  margin: 0 0 10px;
 }
 
-.stars{
-
-font-size:20px;
-
-margin-bottom:20px;
-
+.eyebrow-line {
+  width: 18px;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 2px;
 }
 
-.review{
-
-color:#666;
-
-line-height:1.8;
-
-margin-bottom:30px;
-
-font-style:italic;
-
+.feedback__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(28px, 4vw, 40px);
+  color: var(--color-primary-darker);
+  margin: 0 0 14px;
 }
 
-.patient{
-
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
+.feedback__subtitle {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  margin: 0 0 32px;
 }
 
-.patient img{
-
-width:65px;
-
-height:65px;
-
-border-radius:50%;
-
-object-fit:cover;
-
+.feedback__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 26px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 14px 32px;
+  box-shadow: 0 10px 30px -18px rgba(47, 91, 104, 0.25);
 }
 
-.patient h4{
-
-margin-bottom:4px;
-
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.patient span{
-
-color:#777;
-
-font-size:14px;
-
+.summary-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--color-primary-darker);
 }
 
-@media(max-width:768px){
-
-.section-title h2{
-
-font-size:34px;
-
+.summary-star {
+  color: #e0a94a;
+  font-size: 16px;
+  margin-left: 2px;
 }
 
+.summary-label {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
 }
 
+.summary-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--color-border);
+}
+
+/* ---------- Carousel ---------- */
+.carousel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.carousel.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.carousel__track {
+  flex: 1;
+  overflow: hidden;
+}
+
+.carousel__page {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.carousel__group {
+  flex: 0 0 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.carousel__nav {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -12px rgba(47, 91, 104, 0.3);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.carousel__nav:hover {
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  transform: scale(1.06);
+}
+
+/* ---------- Testimonial card ---------- */
+.testimonial {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px 26px 26px;
+  box-shadow: 0 10px 30px -18px rgba(47, 91, 104, 0.22);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.testimonial:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-soft);
+}
+
+.testimonial__quote-mark {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-family: var(--font-display);
+  font-size: 56px;
+  color: var(--color-bg-soft);
+  line-height: 1;
+  z-index: 0;
+}
+
+.testimonial__stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.star {
+  color: var(--color-border);
+  font-size: 15px;
+}
+
+.star.filled {
+  color: #e0a94a;
+}
+
+.testimonial__text {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-text);
+  margin: 0 0 22px;
+  flex: 1;
+}
+
+.testimonial__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-bg-soft);
+}
+
+.testimonial__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.testimonial__role {
+  font-size: 12px;
+  color: var(--color-primary-dark);
+  margin: 2px 0 0;
+}
+
+/* ---------- Dots ---------- */
+.carousel__dots {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-border);
+  cursor: pointer;
+  transition: background 0.25s ease, width 0.25s ease;
+}
+
+.dot.active {
+  background: var(--color-primary);
+  width: 22px;
+  border-radius: var(--radius-pill);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .carousel__group {
+    grid-template-columns: 1fr;
+  }
+  .feedback__summary {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px 22px;
+  }
+  .summary-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .carousel {
+    gap: 8px;
+  }
+  .carousel__nav {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none;
+  }
+  .feedback__header,
+  .carousel,
+  .carousel__page {
+    transition: none;
+  }
+}
 </style>
