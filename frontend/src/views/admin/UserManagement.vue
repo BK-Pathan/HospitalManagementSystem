@@ -97,10 +97,17 @@ onMounted(()=>{
 <div class="page">
 
 
+    <!-- Header -->
+
     <div class="header">
 
 
         <div>
+
+            <span class="eyebrow">
+                Hospital Admin
+            </span>
+
 
             <h2>
                 👥 User Management
@@ -108,7 +115,7 @@ onMounted(()=>{
 
 
             <p>
-                Manage hospital users and their access roles
+                Manage hospital users and access permissions
             </p>
 
 
@@ -130,171 +137,213 @@ onMounted(()=>{
     <div class="card">
 
 
-        <div class="table-wrapper">
+        <div class="card-head">
 
 
-        <table>
+            <div>
 
+                <h3>
+                    All Users
+                </h3>
 
-        <thead>
+                <p>
+                    Update roles and manage system access
+                </p>
 
-
-        <tr>
-
-
-        <th>
-            Name
-        </th>
-
-
-        <th>
-            Email
-        </th>
-
-
-        <th>
-            Current Role
-        </th>
-
-
-        <th>
-            Change Role
-        </th>
-
-
-        <th>
-            Action
-        </th>
-
-
-        </tr>
-
-
-        </thead>
-
-
-
-
-
-
-        <tbody>
-
-
-        <tr
-        v-for="user in users"
-        :key="user._id"
-        >
-
-
-
-
-        <td>
-
-
-        <div class="user">
-
-
-            <div class="avatar">
-                👤
             </div>
 
 
-            <span>
-                {{user.name}}
+            <span class="count">
+                {{users.length}} Users
             </span>
 
 
         </div>
 
 
-        </td>
+
+
+
+
+        <div class="table-wrapper">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        User
+                    </th>
+
+
+                    <th>
+                        Email
+                    </th>
+
+
+                    <th>
+                        Current Role
+                    </th>
+
+
+                    <th>
+                        Change Role
+                    </th>
+
+
+                    <th>
+                        Action
+                    </th>
+
+
+                </tr>
+
+
+            </thead>
 
 
 
 
 
-        <td>
-            {{user.email}}
-        </td>
+            <tbody>
+
+
+            <tr
+            v-for="user in users"
+            :key="user._id"
+            >
 
 
 
+                <td>
+
+                    <div class="user">
 
 
-        <td>
+                        <div class="avatar">
 
+                            {{user.name?.charAt(0)}}
 
-        <span 
-        class="role"
-        >
-
-            {{user.role}}
-
-        </span>
-
-
-        </td>
+                        </div>
 
 
 
+                        <div>
+
+                            <strong>
+                                {{user.name}}
+                            </strong>
 
 
-
-        <td>
-
-
-        <select 
-        v-model="selectedRoles[user._id]"
-        >
+                            <small>
+                                Registered User
+                            </small>
 
 
-        <option value="admin">
-            Admin
-        </option>
+                        </div>
 
 
-        <option value="doctor">
-            Doctor
-        </option>
+                    </div>
 
 
-        <option value="patient">
-            Patient
-        </option>
-
-
-        </select>
-
-
-        </td>
+                </td>
 
 
 
 
 
 
-        <td>
+                <td>
 
+                    {{user.email}}
 
-        <button
-        class="update-btn"
-        @click="changeRole(user._id)"
-        >
-
-            Update
-
-        </button>
-
-
-        </td>
+                </td>
 
 
 
 
-        </tr>
 
 
-        </tbody>
+                <td>
+
+                    <span
+                    class="role"
+                    :class="user.role"
+                    >
+
+                        {{user.role}}
+
+                    </span>
+
+
+                </td>
+
+
+
+
+
+
+
+                <td>
+
+
+                    <select
+                    v-model="selectedRoles[user._id]"
+                    >
+
+
+                        <option value="admin">
+                            Admin
+                        </option>
+
+
+                        <option value="doctor">
+                            Doctor
+                        </option>
+
+
+                        <option value="patient">
+                            Patient
+                        </option>
+
+
+                    </select>
+
+
+                </td>
+
+
+
+
+
+
+                <td>
+
+
+                    <button
+                    class="update-btn"
+                    @click="changeRole(user._id)"
+                    >
+
+                        Save Changes
+
+                    </button>
+
+
+                </td>
+
+
+
+
+            </tr>
+
+
+
+            </tbody>
 
 
 
@@ -304,7 +353,9 @@ onMounted(()=>{
         </div>
 
 
+
     </div>
+
 
 
 
@@ -318,49 +369,62 @@ onMounted(()=>{
 
 .page{
 
-    min-height:100%;
+min-height:100%;
 
 }
 
+
+
+
+
+/* HEADER */
 
 
 .header{
 
+display:flex;
 
-    display:flex;
+justify-content:space-between;
 
-    justify-content:space-between;
+align-items:center;
 
-    align-items:center;
-
-    margin-bottom:30px;
-
+margin-bottom:30px;
 
 }
 
+
+
+.eyebrow{
+
+font-size:12px;
+
+font-weight:800;
+
+letter-spacing:1px;
+
+color:var(--secondary);
+
+text-transform:uppercase;
+
+}
 
 
 
 .header h2{
 
+font-size:30px;
 
-    color:var(--text);
+margin:8px 0;
 
-    font-size:30px;
-
+color:var(--text);
 
 }
 
 
 
-
 .header p{
 
-
-    color:var(--muted);
-
-    margin-top:8px;
-
+color:var(--muted);
 
 }
 
@@ -369,45 +433,97 @@ onMounted(()=>{
 
 .badge{
 
+background:var(--gradient-primary);
 
-    background:
+color:white;
 
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+padding:14px 24px;
 
+border-radius:var(--radius-pill);
 
-    color:white;
+font-weight:700;
 
-    padding:12px 20px;
-
-    border-radius:30px;
-
-    font-weight:600;
-
+box-shadow:var(--shadow-lg);
 
 }
 
 
 
 
+
+/* CARD */
 
 
 .card{
 
 
-    background:var(--white);
+background:var(--surface);
 
-    border-radius:20px;
+backdrop-filter:blur(15px);
 
-    padding:30px;
+border:1px solid var(--border);
 
-    box-shadow:var(--shadow);
+border-radius:var(--radius-xl);
 
-    border:1px solid var(--border);
+padding:30px;
 
+box-shadow:var(--shadow);
+
+
+}
+
+
+
+
+.card-head{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:25px;
+
+}
+
+
+
+.card-head h3{
+
+margin:0;
+
+font-size:20px;
+
+color:var(--text);
+
+}
+
+
+
+.card-head p{
+
+color:var(--muted);
+
+font-size:13px;
+
+}
+
+
+
+.count{
+
+background:var(--surface-solid);
+
+padding:8px 16px;
+
+border-radius:var(--radius-pill);
+
+color:var(--primary);
+
+font-size:13px;
+
+font-weight:700;
 
 }
 
@@ -416,11 +532,13 @@ onMounted(()=>{
 
 
 
+
+/* TABLE */
+
+
 .table-wrapper{
 
-
-    overflow-x:auto;
-
+overflow-x:auto;
 
 }
 
@@ -428,11 +546,11 @@ onMounted(()=>{
 
 table{
 
+width:100%;
 
-    width:100%;
+border-collapse:separate;
 
-    border-collapse:collapse;
-
+border-spacing:0 12px;
 
 }
 
@@ -441,79 +559,131 @@ table{
 thead th{
 
 
-    padding:16px;
+background:var(--gradient-primary);
 
-    text-align:left;
+color:white;
 
-    color:white;
+padding:16px;
 
+font-size:12px;
 
-    background:
+text-transform:uppercase;
 
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--primary-dark)
-    );
-
+letter-spacing:.6px;
 
 }
 
 
 
+thead th:first-child{
 
-tbody td{
-
-
-    padding:16px;
-
-    border-bottom:1px solid var(--border);
-
-    color:var(--text);
-
+border-radius:14px 0 0 14px;
 
 }
+
+
+
+thead th:last-child{
+
+border-radius:0 14px 14px 0;
+
+}
+
 
 
 
 
 tbody tr{
 
+background:white;
 
-    transition:.3s;
+box-shadow:var(--shadow);
 
+transition:.3s;
 
 }
-
 
 
 
 tbody tr:hover{
 
+transform:translateY(-4px);
 
-    background:#f8fafc;
+box-shadow:var(--shadow-lg);
 
+}
+
+
+
+tbody td{
+
+padding:18px 16px;
+
+border-top:1px solid var(--border);
+
+border-bottom:1px solid var(--border);
+
+color:var(--text-soft);
+
+}
+
+
+
+tbody td:first-child{
+
+border-left:1px solid var(--border);
+
+border-radius:14px 0 0 14px;
+
+}
+
+
+
+tbody td:last-child{
+
+border-right:1px solid var(--border);
+
+border-radius:0 14px 14px 0;
 
 }
 
 
 
 
+
+/* USER */
 
 
 .user{
 
+display:flex;
 
-    display:flex;
+align-items:center;
 
-    align-items:center;
-
-    gap:12px;
-
-    font-weight:600;
-
+gap:14px;
 
 }
+
+
+
+.user strong{
+
+display:block;
+
+color:var(--text);
+
+}
+
+
+
+.user small{
+
+font-size:12px;
+
+color:var(--muted);
+
+}
+
 
 
 
@@ -521,24 +691,25 @@ tbody tr:hover{
 .avatar{
 
 
-    width:42px;
+width:48px;
 
-    height:42px;
+height:48px;
 
-    border-radius:50%;
+border-radius:16px;
 
+background:var(--gradient-primary);
 
-    display:flex;
+color:white;
 
-    align-items:center;
+display:flex;
 
-    justify-content:center;
+align-items:center;
 
+justify-content:center;
 
-    background:
+font-size:18px;
 
-    rgba(20,184,166,.15);
-
+font-weight:800;
 
 }
 
@@ -546,29 +717,53 @@ tbody tr:hover{
 
 
 
+/* ROLE */
 
 
 .role{
 
 
-    padding:8px 15px;
+padding:7px 16px;
 
-    border-radius:20px;
+border-radius:var(--radius-pill);
+
+font-size:12px;
+
+font-weight:800;
+
+text-transform:capitalize;
+
+display:inline-flex;
+
+}
 
 
-    background:
 
-    rgba(15,118,110,.12);
+.role.admin{
+
+background:var(--purple-bg);
+
+color:var(--purple);
+
+}
 
 
-    color:var(--primary);
 
-    font-weight:700;
+.role.doctor{
 
-    font-size:13px;
+background:var(--info-bg);
 
-    text-transform:capitalize;
+color:var(--info);
 
+}
+
+
+
+.role.patient{
+
+background:var(--success-bg);
+
+color:var(--success);
 
 }
 
@@ -576,24 +771,25 @@ tbody tr:hover{
 
 
 
+/* SELECT */
+
 
 select{
 
 
-    padding:12px 15px;
+padding:12px 16px;
 
+border-radius:var(--radius-md);
 
-    border-radius:10px;
+border:1px solid var(--border);
 
-    border:1px solid var(--border);
+background:white;
 
-    outline:none;
+outline:none;
 
+font-weight:600;
 
-    color:var(--text);
-
-    background:white;
-
+color:var(--text);
 
 }
 
@@ -601,62 +797,50 @@ select{
 
 select:focus{
 
+border-color:var(--secondary);
 
-    border-color:var(--secondary);
+box-shadow:
 
-
-    box-shadow:
-
-    0 0 0 4px rgba(20,184,166,.15);
-
+0 0 0 4px rgba(20,184,166,.15);
 
 }
 
 
 
+
+
+/* BUTTON */
 
 
 .update-btn{
 
 
-    padding:12px 20px;
+padding:12px 20px;
 
+border:none;
 
-    border:none;
+border-radius:var(--radius-pill);
 
-    border-radius:10px;
+background:var(--gradient-primary);
 
+color:white;
 
-    background:
+font-weight:700;
 
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+cursor:pointer;
 
-
-    color:white;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-
-    transition:.3s;
-
+transition:.3s;
 
 }
-
 
 
 
 .update-btn:hover{
 
 
-    transform:translateY(-2px);
+transform:translateY(-3px);
 
-    box-shadow:0 10px 20px rgba(15,118,110,.25);
+box-shadow:var(--shadow-lg);
 
 
 }
@@ -665,31 +849,37 @@ select:focus{
 
 
 
-
-
-@media(max-width:700px){
+@media(max-width:800px){
 
 
 .header{
 
-    flex-direction:column;
+flex-direction:column;
 
-    align-items:flex-start;
+align-items:flex-start;
 
-    gap:15px;
+gap:15px;
 
 }
+
 
 
 .card{
 
-    padding:15px;
+padding:18px;
+
+}
+
+
+
+table{
+
+min-width:900px;
 
 }
 
 
 }
-
 
 
 </style>

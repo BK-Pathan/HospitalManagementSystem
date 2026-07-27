@@ -195,9 +195,9 @@ onUnmounted(() => {
 
 <div class="brand-section">
 
-<div class="logo">
+<!-- <div class="logo">
 🏥
-</div>
+</div> -->
 
 <div>
 
@@ -306,7 +306,15 @@ View All Notifications
 
 <div class="user-icon">
 
+<img
+v-if="user.profileImage"
+:src="user.profileImage"
+alt="Profile"
+/>
+
+<span v-else>
 👤
+</span>
 
 </div>
 
@@ -344,9 +352,13 @@ Welcome
 
 <style scoped>
 
+/* =========================
+        NAVBAR
+========================= */
+
 .navbar{
 
-height:80px;
+height:82px;
 
 display:flex;
 
@@ -354,15 +366,45 @@ justify-content:space-between;
 
 align-items:center;
 
-padding:0 30px;
+padding:0 32px;
 
-background:white;
+position:relative;
 
-border-bottom:1px solid #eee;
+z-index:50;
 
-box-shadow:0 4px 20px rgba(0,0,0,.05);
+
+background:
+
+rgba(255,255,255,.75);
+
+
+backdrop-filter:
+
+blur(20px);
+
+
+-webkit-backdrop-filter:
+
+blur(20px);
+
+
+border-bottom:
+
+1px solid rgba(226,232,240,.8);
+
+
+box-shadow:
+
+0 10px 35px rgba(15,23,42,.08);
 
 }
+
+
+
+/* =========================
+        BRAND
+========================= */
+
 
 .brand-section{
 
@@ -374,13 +416,18 @@ gap:15px;
 
 }
 
+
+
 .logo{
 
-width:52px;
 
-height:52px;
+width:54px;
 
-border-radius:15px;
+height:54px;
+
+
+border-radius:16px;
+
 
 display:flex;
 
@@ -388,173 +435,160 @@ justify-content:center;
 
 align-items:center;
 
-font-size:24px;
 
-background:#14B8A6;
+font-size:26px;
+
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#2563eb,
+
+#06b6d4
+
+);
+
 
 color:white;
 
+
+box-shadow:
+
+0 15px 30px rgba(37,99,235,.35);
+
+
 }
+
+
+
+
+.brand-section h2{
+
+
+font-size:20px;
+
+color:#0f172a;
+
+font-weight:700;
+
+
+}
+
+
+
+.brand-section p{
+
+
+font-size:13px;
+
+color:#64748b;
+
+
+margin-top:3px;
+
+
+}
+
+
+
+
+/* =========================
+        NOTIFICATION
+========================= */
+
 
 .notification-wrapper{
 
 position:relative;
 
+margin-left:auto;
+
+margin-right:30px;
+
 }
+
+
 
 .notification-icon{
 
-position:relative;
 
-font-size:28px;
+width:45px;
 
-cursor:pointer;
+height:45px;
 
-}
-
-.notification-badge{
-
-position:absolute;
-
-top:-6px;
-
-right:-8px;
-
-width:20px;
-
-height:20px;
-
-background:red;
-
-color:white;
 
 border-radius:50%;
 
-display:flex;
 
-justify-content:center;
+display:flex;
 
 align-items:center;
 
-font-size:11px;
+justify-content:center;
 
-font-weight:bold;
 
-}
+font-size:24px;
 
-.notification-dropdown{
-
-position:absolute;
-
-top:45px;
-
-right:0;
-
-width:360px;
-
-background:white;
-
-border-radius:15px;
-
-box-shadow:0 10px 30px rgba(0,0,0,.15);
-
-overflow:hidden;
-
-z-index:999;
-
-}
-
-.notification-dropdown h3{
-
-padding:15px;
-
-border-bottom:1px solid #eee;
-
-}
-
-.notification-item{
-
-padding:15px;
 
 cursor:pointer;
 
-border-bottom:1px solid #f3f3f3;
+
+background:
+
+#f8fafc;
+
 
 transition:.3s;
 
-}
 
-.notification-item:hover{
+border:
 
-background:#f8fafc;
+1px solid #e2e8f0;
 
-}
-
-.notification-item.unread{
-
-background:#ecfeff;
-
-border-left:4px solid #14B8A6;
 
 }
 
-.notification-item h4{
 
-margin-bottom:5px;
 
-}
+.notification-icon:hover{
 
-.notification-item p{
 
-font-size:14px;
+background:#eff6ff;
 
-color:#666;
 
-}
+transform:
 
-.notification-item small{
+translateY(-3px);
 
-font-size:12px;
-
-color:#999;
 
 }
 
-.view-btn{
 
-width:100%;
 
-padding:14px;
+/* BADGE */
 
-border:none;
 
-background:#14B8A6;
+.notification-badge{
 
-color:white;
 
-cursor:pointer;
+position:absolute;
 
-font-weight:bold;
 
-}
+top:-5px;
 
-.user-section{
+right:-5px;
 
-display:flex;
 
-align-items:center;
+min-width:21px;
 
-gap:12px;
+height:21px;
 
-}
 
-.user-icon{
+padding:0 5px;
 
-width:42px;
-
-height:42px;
-
-border-radius:50%;
 
 display:flex;
 
@@ -562,42 +596,530 @@ justify-content:center;
 
 align-items:center;
 
-background:#f1f5f9;
 
-}
+border-radius:50%;
 
-.role{
 
-display:flex;
+background:
 
-align-items:center;
+linear-gradient(
 
-gap:10px;
+135deg,
 
-}
+#ef4444,
 
-.role-badge{
+#dc2626
 
-padding:4px 10px;
+);
 
-border-radius:20px;
-
-background:#14B8A6;
 
 color:white;
 
-font-size:12px;
+
+font-size:11px;
+
+
+font-weight:700;
+
+
+box-shadow:
+
+0 5px 15px rgba(239,68,68,.35);
+
 
 }
+
+
+
+
+/* =========================
+        DROPDOWN
+========================= */
+
+
+.notification-dropdown{
+
+
+position:absolute;
+
+
+top:58px;
+
+
+right:0;
+
+
+width:380px;
+
+
+background:
+
+rgba(255,255,255,.9);
+
+
+backdrop-filter:
+
+blur(20px);
+
+
+-webkit-backdrop-filter:
+
+blur(20px);
+
+
+border-radius:20px;
+
+
+overflow:hidden;
+
+
+border:
+
+1px solid rgba(226,232,240,.8);
+
+
+
+box-shadow:
+
+0 25px 70px rgba(15,23,42,.18);
+
+
+}
+
+
+
+.notification-dropdown h3{
+
+
+padding:18px;
+
+
+font-size:18px;
+
+
+color:#0f172a;
+
+
+border-bottom:
+
+1px solid #e2e8f0;
+
+
+}
+
+
+
+
+/* =========================
+        ITEMS
+========================= */
+
+
+.notification-item{
+
+
+padding:16px;
+
+
+cursor:pointer;
+
+
+border-bottom:
+
+1px solid #f1f5f9;
+
+
+transition:.3s;
+
+
+}
+
+
+
+.notification-item:hover{
+
+
+background:#f8fafc;
+
+
+transform:
+
+translateX(4px);
+
+
+}
+
+
+
+.notification-item.unread{
+
+
+background:
+
+linear-gradient(
+
+90deg,
+
+#eff6ff,
+
+white
+
+);
+
+
+border-left:
+
+4px solid #2563eb;
+
+
+}
+
+
+
+.notification-item h4{
+
+
+font-size:15px;
+
+
+color:#0f172a;
+
+
+margin-bottom:6px;
+
+
+}
+
+
+
+.notification-item p{
+
+
+font-size:13px;
+
+
+color:#64748b;
+
+
+line-height:1.5;
+
+
+}
+
+
+
+.notification-item small{
+
+
+display:block;
+
+
+margin-top:8px;
+
+
+font-size:11px;
+
+
+color:#94a3b8;
+
+
+}
+
+
+
+/* =========================
+        VIEW BUTTON
+========================= */
+
+
+.view-btn{
+
+
+width:100%;
+
+
+padding:15px;
+
+
+border:none;
+
+
+cursor:pointer;
+
+
+font-weight:700;
+
+
+color:white;
+
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#2563eb,
+
+#06b6d4
+
+);
+
+
+transition:.3s;
+
+
+}
+
+
+
+.view-btn:hover{
+
+
+filter:
+
+brightness(1.1);
+
+
+}
+
+
+
+
+/* =========================
+        USER
+========================= */
+
+
+.user-section{
+
+
+display:flex;
+
+
+align-items:center;
+
+
+gap:14px;
+
+
+}
+
+
+
+.user-icon{
+
+width:46px;
+height:46px;
+
+border-radius:50%;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+overflow:hidden;
+
+font-size:22px;
+
+background:
+linear-gradient(
+135deg,
+#eff6ff,
+#dbeafe
+);
+
+border:
+1px solid #bfdbfe;
+
+}
+
+
+.user-icon img{
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+
+border-radius:50%;
+
+}
+
+
+
+.welcome{
+
+
+font-size:12px;
+
+
+color:#94a3b8;
+
+
+}
+
+
+
+.role{
+
+
+display:flex;
+
+
+align-items:center;
+
+
+gap:10px;
+
+
+}
+
+
+
+.role h4{
+
+
+font-size:15px;
+
+
+color:#0f172a;
+
+
+}
+
+
+
+.role-badge{
+
+
+padding:5px 12px;
+
+
+border-radius:30px;
+
+
+font-size:11px;
+
+
+font-weight:700;
+
+
+color:white;
+
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#2563eb,
+
+#06b6d4
+
+);
+
+
+box-shadow:
+
+0 5px 15px rgba(37,99,235,.25);
+
+
+}
+
+
+
+
+/* =========================
+        EMPTY
+========================= */
+
 
 .empty{
 
-padding:25px;
+
+padding:30px;
+
 
 text-align:center;
 
-color:#777;
+
+color:#64748b;
+
 
 }
+
+
+
+/* =========================
+        RESPONSIVE
+========================= */
+
+
+@media(max-width:768px){
+
+
+.navbar{
+
+
+padding:0 15px;
+
+
+}
+
+
+.brand-section p{
+
+
+display:none;
+
+
+}
+
+
+.brand-section h2{
+
+
+font-size:16px;
+
+
+}
+
+
+
+.notification-wrapper{
+
+
+margin-right:10px;
+
+
+}
+
+
+
+.notification-dropdown{
+
+
+width:300px;
+
+
+}
+
+
+
+.user-info{
+
+
+display:none;
+
+
+}
+
+
+}
+
 
 </style>

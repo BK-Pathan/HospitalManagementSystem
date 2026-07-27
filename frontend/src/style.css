@@ -1,37 +1,166 @@
-:root{
-  /* ---- Theme tokens (from reference image) ---- */
-  --color-primary: #6f9caa;
-  --color-primary-dark: #4f7d8c;
-  --color-primary-darker: #2f5b68;
-  --color-accent: #7fb0bd;
-  /* --color-bg: #eef4f4; */
-  --color-bg-soft: #f6faf9;
-  --color-surface: #ffffff;
-  --color-text: #1c2b2e;
-  --color-text-muted: #5a6e72;
-  --color-text-on-primary: #ffffff;
-  --color-border: #d9e5e6;
-  --radius-pill: 999px;
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --shadow-soft: 0 20px 40px -20px rgba(47, 91, 104, 0.35);
-  --font-display: 'Poppins', 'Segoe UI', sans-serif;
-  --font-body: 'Inter', 'Segoe UI', sans-serif;
+/* ============================================================
+   GLOBAL THEME — Hospital Admin Panel
+   Import this once in main.js / App.vue:
+   import "./assets/theme.css";
+   All components (AdminDashboard, DoctorsManagement, etc.)
+   read colors from these variables — change them here once
+   and the whole app updates.
+   ============================================================ */
 
+:root{
+
+    /* ===== Brand Colors ===== */
+    --primary:#2563eb;        /* main blue - headers, buttons, links   */
+    --primary-dark:#1d4ed8;   /* hover / active state for primary      */
+    --secondary:#14b8a6;      /* teal accent - gradients, focus rings  */
+    --secondary-dark:#0d9488;
+
+    /* ===== Status Colors ===== */
+    --success:#16a34a;
+    --success-bg:#dcfce7;
+    --warning:#f59e0b;
+    --warning-bg:#fef3c7;
+    --danger:#dc2626;
+    --danger-bg:#fee2e2;
+    --info:#0891b2;
+    --info-bg:#cffafe;
+    --purple:#7c3aed;
+    --purple-bg:#ede9fe;
+
+    /* ===== Text ===== */
+    --text:#0f172a;           /* headings, primary text   */
+    --text-soft:#334155;      /* body / table text        */
+    --muted:#64748b;          /* secondary / helper text  */
+    --placeholder:#94a3b8;
+
+    /* ===== Surfaces ===== */
+    --white:#ffffff;
+    --background:#f1f5f9;     /* page background          */
+    --surface:rgba(255,255,255,.85);   /* glass cards       */
+    --surface-solid:#f8fafc;           /* table rows, inputs */
+    --border:#e2e8f0;
+
+    /* ===== Shadow ===== */
+    --shadow:0 15px 40px rgba(15,23,42,.06);
+    --shadow-lg:0 25px 60px rgba(37,99,235,.14);
+    --shadow-hover:0 12px 30px rgba(0,0,0,.06);
+
+    /* ===== Radius ===== */
+    --radius-sm:10px;
+    --radius-md:16px;
+    --radius-lg:20px;
+    --radius-xl:24px;
+    --radius-pill:30px;
+
+    /* ===== Gradients ===== */
+    --gradient-primary:linear-gradient(135deg,var(--primary),var(--secondary));
+    --gradient-blue:linear-gradient(135deg,#dbeafe,#bfdbfe);
+    --gradient-purple:linear-gradient(135deg,#ede9fe,#ddd6fe);
+    --gradient-teal:linear-gradient(135deg,#cffafe,#a5f3fc);
+    --gradient-green:linear-gradient(135deg,#dcfce7,#bbf7d0);
+
+    /* ===== Typography ===== */
+    --font-base:"Inter","Segoe UI",system-ui,sans-serif;
 }
 
+/* ============================================================
+   BASE RESET (optional — safe to keep if app has no reset yet)
+   ============================================================ */
 
 *{
-    margin:0;
-    padding:0;
     box-sizing:border-box;
-    font-family:Inter,Arial,sans-serif;
+}
+
+body{
+    margin:0;
+    font-family:var(--font-base);
+    background:var(--background);
+    color:var(--text);
+}
+
+/* ============================================================
+   GLOBAL PREMIUM SCROLLBAR
+   Applies to complete website
+   ============================================================ */
+
+
+::-webkit-scrollbar{
+
+    width:10px;      /* Vertical scrollbar */
+    height:10px;     /* Horizontal scrollbar */
+
 }
 
 
-body{
 
-    background:var(--bg);
-    color:var(--text);
+/* Scrollbar Background */
+
+::-webkit-scrollbar-track{
+
+    background:
+
+    linear-gradient(
+        180deg,
+        #ffffff,
+        #f1f5f9
+    );
+
+    border-radius:20px;
+
+}
+
+
+
+/* Scrollbar Thumb */
+
+::-webkit-scrollbar-thumb{
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        #ffffff
+    );
+
+    border-radius:20px;
+
+    border:2px solid #ffffff;
+
+    box-shadow:
+
+    0 4px 12px rgba(37,99,235,.25);
+
+}
+
+
+
+/* Hover Effect */
+
+::-webkit-scrollbar-thumb:hover{
+
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--secondary)
+    );
+
+
+}
+
+
+
+/* Firefox Support */
+
+*{
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+    var(--primary)
+    #ffffff;
 
 }

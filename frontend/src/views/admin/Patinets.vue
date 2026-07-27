@@ -146,120 +146,214 @@ const exportPDF = ()=>{
 
 <div class="patients-container">
 
-    <div class="header">
+
+    <div class="page-header">
+
         <div>
-            <h2>Patients Management</h2>
-            <p>Manage and monitor registered patients</p>
+            <span class="eyebrow">
+                Hospital Admin
+            </span>
+
+            <h2>
+                👥 Patients Management
+            </h2>
+
+            <p>
+                Manage and monitor registered patients
+            </p>
+
         </div>
 
-        <div class="total-card">
-            Total Patients
-            <strong>{{ patients.length }}</strong>
+
+        <div class="header-actions">
+
+
+            <div class="total-card">
+
+                <span>
+                    Total Patients
+                </span>
+
+                <strong>
+                    {{patients.length}}
+                </strong>
+
+            </div>
+
+
+
+            <button 
+            class="export csv"
+            @click="exportCSV"
+            >
+                ⬇ CSV
+            </button>
+
+
+            <button 
+            class="export pdf"
+            @click="exportPDF"
+            >
+                📄 PDF
+            </button>
+
+
         </div>
-        <div class="export-buttons">
-
-<button @click="exportCSV">
-Export CSV
-</button>
 
 
-<button @click="exportPDF">
-Export PDF
-</button>
-
-</div>
     </div>
 
-    <input
-v-model="search"
-placeholder="Search Patient"
-@input="searchPatients"
-/>
-
-    <div class="table-card">
-
-        <table>
-
-            <thead>
-                <tr>
-
-                    <th>Name</th>
-
-                    <th>Email</th>
-
-                    <th>Role</th>
-
-                    <th>Visit Reason</th>
-
-                    <th>Profile Completed</th>
-
-                    <th>Created At</th>
-
-                </tr>
-            </thead>
 
 
-            <tbody>
+    <div class="search-box">
 
-                <tr
-                v-for="patient in patients"
-                :key="patient._id"
-                >
+        🔍
 
-                    <td>
-                        <div class="patient-name">
-                            <div class="avatar">
-                                {{ patient.user.name.charAt(0) }}
-                            </div>
+        <input
+        v-model="search"
+        placeholder="Search patient..."
+        @input="searchPatients"
+        />
 
-                            {{patient.user.name}}
-                        </div>
-                    </td>
+    </div>
 
 
-                    <td>
+
+
+    <div class="patients-grid">
+
+
+        <div
+        class="patient-card"
+        v-for="patient in patients"
+        :key="patient._id"
+        >
+
+
+
+            <div class="patient-top">
+
+
+                <div class="avatar">
+                    {{patient.user.name.charAt(0)}}
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        {{patient.user.name}}
+                    </h3>
+
+                    <p>
                         {{patient.user.email}}
-                    </td>
+                    </p>
+
+                </div>
 
 
-                    <td>
-                        <span class="role">
-                            {{patient.user.role}}
-                        </span>
-                    </td>
+            </div>
 
 
-                    <td>
-                        {{patient.DescribeYourProblem}}
-                    </td>
 
 
-                    <td>
-
-                        <span 
-                        :class="patient.profilecompleted ? 'completed' : 'pending'"
-                        >
-                            {{ patient.profilecompleted ? "Completed" : "Incomplete" }}
-                        </span>
-
-                    </td>
+            <div class="patient-info">
 
 
-                    <td>
-                        {{new Date(patient.createdAt).toLocaleDateString()}}
-                    </td>
+                <div>
+
+                    <span>
+                        Role
+                    </span>
+
+                    <strong class="role">
+                        {{patient.user.role}}
+                    </strong>
+
+                </div>
 
 
-                </tr>
+
+                <div>
+
+                    <span>
+                        Visit Reason
+                    </span>
+
+                    <strong>
+                        {{patient.DescribeYourProblem || "N/A"}}
+                    </strong>
+
+                </div>
 
 
-            </tbody>
 
 
-        </table>
+                <div>
+
+                    <span>
+                        Profile Status
+                    </span>
+
+
+                    <strong
+                    :class="
+                    patient.profilecompleted
+                    ? 'completed'
+                    :'pending'
+                    "
+                    >
+
+                    {{
+                    patient.profilecompleted
+                    ?
+                    "Completed"
+                    :
+                    "Incomplete"
+                    }}
+
+                    </strong>
+
+                </div>
+
+
+
+
+                <div>
+
+                    <span>
+                        Registered
+                    </span>
+
+
+                    <strong>
+                        {{new Date(patient.createdAt)
+                        .toLocaleDateString()}}
+                    </strong>
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+        <p 
+        v-if="!patients.length"
+        class="empty"
+        >
+            No patients found.
+        </p>
+
 
 
     </div>
+
 
 
 </div>
@@ -270,71 +364,109 @@ placeholder="Search Patient"
 
 <style scoped>
 
-:root{
-    --primary:#0F766E;
-    --primary-dark:#115E59;
-    --secondary:#14B8A6;
-    --bg:#5984a5;
-    --white:#fff;
-    --text:#1E293B;
-    --muted:#64748B;
-    --border:#DCE7EF;
-    --shadow:0 20px 50px rgba(0,0,0,.12);
-}
-
-
 
 .patients-container{
 
-    padding:30px;
-    background:var(--bg);
-    min-height:100vh;
-    color:var(--text);
+padding:30px;
+
+min-height:100%;
 
 }
 
 
 
-.header{
+.page-header{
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:25px;
+display:flex;
 
-}
+justify-content:space-between;
 
+align-items:center;
 
-
-.header h2{
-
-    font-size:28px;
-    color:var(--text);
-    margin:0;
+margin-bottom:25px;
 
 }
 
 
 
-.header p{
+.eyebrow{
 
-    color:var(--text);
-    margin-top:8px;
+font-size:12px;
+
+font-weight:700;
+
+letter-spacing:1px;
+
+color:var(--secondary);
+
+text-transform:uppercase;
 
 }
+
+
+
+.page-header h2{
+
+margin:6px 0;
+
+font-size:28px;
+
+color:var(--text);
+
+}
+
+
+
+.page-header p{
+
+margin:0;
+
+color:var(--muted);
+
+}
+
+
+
+.header-actions{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
 
 
 
 .total-card{
 
-    background:var(--white);
-    padding:18px 25px;
-    border-radius:15px;
-    box-shadow:var(--shadow);
-    color:var(--muted);
-    display:flex;
-    flex-direction:column;
-    text-align:center;
+background:var(--white);
+
+padding:14px 25px;
+
+border-radius:var(--radius-lg);
+
+box-shadow:var(--shadow);
+
+display:flex;
+
+flex-direction:column;
+
+text-align:center;
+
+}
+
+
+
+.total-card span{
+
+font-size:12px;
+
+color:var(--muted);
+
+font-weight:600;
 
 }
 
@@ -342,101 +474,249 @@ placeholder="Search Patient"
 
 .total-card strong{
 
-    color:var(--primary);
-    font-size:28px;
+font-size:28px;
+
+color:var(--primary);
 
 }
 
 
 
-.table-card{
 
-    background:var(--white);
-    border-radius:18px;
-    padding:20px;
-    box-shadow:var(--shadow);
-    overflow:hidden;
+.export{
 
-}
+border:none;
 
+padding:12px 18px;
 
+border-radius:var(--radius-md);
 
-table{
+font-weight:600;
 
-    width:100%;
-    border-collapse:collapse;
+cursor:pointer;
+
+color:white;
 
 }
 
 
 
-thead{
+.csv{
 
-    background:var(--primary);
-
-}
-
-
-
-th{
-
-    color:var(--white);
-    padding:15px;
-    text-align:left;
-    font-size:14px;
+background:var(--success);
 
 }
 
 
 
-td{
+.pdf{
 
-    padding:15px;
-    border-bottom:1px solid var(--border);
-    color:var(--text);
+background:var(--danger);
 
 }
 
 
 
-tbody tr{
 
-    transition:.3s;
+
+.search-box{
+
+background:var(--white);
+
+border:1px solid var(--border);
+
+padding:12px 18px;
+
+border-radius:var(--radius-lg);
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+margin-bottom:25px;
+
+box-shadow:var(--shadow);
 
 }
 
 
 
-tbody tr:hover{
+.search-box input{
 
-    background:#f0fdfa;
+border:none;
+
+outline:none;
+
+flex:1;
+
+font-size:14px;
+
+}
+
+
+
+
+.patients-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fill,minmax(320px,1fr));
+
+gap:22px;
 
 }
 
 
 
-.patient-name{
 
-    display:flex;
-    align-items:center;
-    gap:12px;
-    font-weight:600;
+.patient-card{
+
+background:var(--surface);
+
+backdrop-filter:blur(10px);
+
+border:1px solid var(--border);
+
+border-radius:var(--radius-xl);
+
+padding:22px;
+
+box-shadow:var(--shadow);
+
+transition:.3s;
 
 }
+
+
+
+.patient-card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:var(--shadow-lg);
+
+}
+
+
+
+
+.patient-top{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding-bottom:18px;
+
+border-bottom:1px solid var(--border);
+
+}
+
 
 
 
 .avatar{
 
-    width:38px;
-    height:38px;
-    border-radius:50%;
-    background:var(--secondary);
-    color:var(--white);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:bold;
+width:55px;
+
+height:55px;
+
+border-radius:18px;
+
+background:var(--gradient-primary);
+
+color:white;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:22px;
+
+font-weight:700;
+
+}
+
+
+
+
+.patient-top h3{
+
+margin:0;
+
+font-size:18px;
+
+color:var(--text);
+
+}
+
+
+
+.patient-top p{
+
+margin:5px 0 0;
+
+font-size:13px;
+
+color:var(--muted);
+
+}
+
+
+
+
+.patient-info{
+
+margin-top:18px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:14px;
+
+}
+
+
+
+.patient-info div{
+
+display:flex;
+
+flex-direction:column;
+
+gap:5px;
+
+}
+
+
+
+.patient-info span{
+
+font-size:11px;
+
+font-weight:700;
+
+color:var(--muted);
+
+text-transform:uppercase;
+
+}
+
+
+
+.patient-info strong{
+
+font-size:14px;
+
+color:var(--text-soft);
 
 }
 
@@ -444,33 +724,36 @@ tbody tr:hover{
 
 .role{
 
-    background:#ccfbf1;
-    color:var(--primary-dark);
-    padding:5px 12px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:600;
+background:var(--info-bg);
+
+color:var(--info);
+
+padding:5px 12px;
+
+border-radius:var(--radius-pill);
+
+width:max-content;
+
+font-size:12px!important;
 
 }
 
-
-
-.completed,
-.pending{
-
-    padding:6px 14px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:600;
-
-}
 
 
 
 .completed{
 
-    background:#dcfce7;
-    color:#166534;
+background:var(--success-bg);
+
+color:var(--success)!important;
+
+padding:5px 12px;
+
+border-radius:var(--radius-pill);
+
+width:max-content;
+
+font-size:12px!important;
 
 }
 
@@ -478,10 +761,65 @@ tbody tr:hover{
 
 .pending{
 
-    background:#fee2e2;
-    color:#991b1b;
+background:var(--danger-bg);
+
+color:var(--danger)!important;
+
+padding:5px 12px;
+
+border-radius:var(--radius-pill);
+
+width:max-content;
+
+font-size:12px!important;
 
 }
+
+
+
+.empty{
+
+text-align:center;
+
+color:var(--muted);
+
+padding:40px;
+
+}
+
+
+
+@media(max-width:800px){
+
+
+.page-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:20px;
+
+}
+
+
+.header-actions{
+
+flex-wrap:wrap;
+
+}
+
+
+.patients-grid{
+
+grid-template-columns:1fr;
+
+}
+
+
+
+}
+
 
 
 </style>

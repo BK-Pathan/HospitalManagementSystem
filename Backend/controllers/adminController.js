@@ -661,13 +661,32 @@ exports.getAllPatients = async (req, res) => {
 exports.getAllAppointments = async (req, res) => {
   try {
 
+
     const status = req.query.status;
+
+
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+
 
     let filter = {};
 
+
     if (status) {
+
       filter.status = status;
+
     }
+
+
+
+    const totalAppointments = await Appointment.countDocuments(filter);
+
 
 
     const appointments = await Appointment.find(filter)
@@ -683,21 +702,46 @@ exports.getAllAppointments = async (req, res) => {
           path: "user",
           select: "name email"
         }
+      })
+
+      .skip(skip)
+
+      .limit(limit)
+
+      .sort({
+        createdAt: -1
       });
 
 
-    res.json(appointments);
+
+    res.json({
+
+      appointments,
+
+      currentPage: page,
+
+      totalPages: Math.ceil(
+        totalAppointments / limit
+      ),
+
+      totalAppointments
+
+    });
+
 
 
   } catch (error) {
 
+
     res.status(500).json({
+
       message: error.message
+
     });
+
 
   }
 };
-
 //change role
 exports.changeRole = async(req,res)=>{
 

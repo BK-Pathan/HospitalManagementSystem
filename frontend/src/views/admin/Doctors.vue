@@ -432,370 +432,315 @@ getDoctors();
     <div class="header">
 
         <div>
-            <h2>
-                👨‍⚕️ Doctors Management
-            </h2>
-
-            <p>
-                Manage doctors profiles, qualifications and availability
-            </p>
+            <span class="eyebrow">Hospital Admin</span>
+            <h2>👨‍⚕️ Doctors Management</h2>
+            <p>Manage doctors profiles, qualifications and availability</p>
         </div>
 
 
         <div class="badge">
-            Hospital Admin
+            {{ doctors.length }} on this page
         </div>
 
     </div>
 
-<input
-v-model="search"
-placeholder="Search Doctor..."
-@input="searchDoctors"
-/>
+
+    <div class="search-bar">
+
+        <span class="search-icon">🔍</span>
+
+        <input
+        v-model="search"
+        placeholder="Search doctor by name, department or speciality..."
+        @input="searchDoctors"
+        />
+
+    </div>
 
 
     <div class="doctor-form card">
 
-
-        <h3>
-            {{editMode ? "Update Doctor" : "Add Doctor"}}
-        </h3>
-
-
-
-        <div class="form-grid">
+        <div class="form-head">
+            <h3>{{editMode ? "Update Doctor" : "Add New Doctor"}}</h3>
+            <span v-if="editMode" class="edit-pill">Editing existing profile</span>
+        </div>
 
 
-            <input 
-            v-model="name"
-            placeholder="Doctor Name"
-            />
+        <div class="field-group">
 
-            <input 
-            v-model="department"
-            placeholder="Department Name"
-            />
+            <span class="group-label">Basic Information</span>
 
-            <input 
-            v-model="specialties"
-            placeholder="Speciality"
-            />
+            <div class="form-grid">
 
+                <label class="field">
+                    <span>Doctor Name</span>
+                    <input v-model="name" placeholder="e.g. Dr. Ayesha Khan" />
+                </label>
 
-            <input 
-            v-model="qualifications"
-            placeholder="Qualification"
-            />
+                <label class="field">
+                    <span>Department</span>
+                    <input v-model="department" placeholder="e.g. Cardiology" />
+                </label>
 
+                <label class="field">
+                    <span>Speciality</span>
+                    <input v-model="specialties" placeholder="Comma separated e.g. Heart, ECG" />
+                </label>
 
-            <input 
-            v-model="experience"
-            placeholder="Experience"
-            />
+                <label class="field">
+                    <span>Qualification</span>
+                    <input v-model="qualifications" placeholder="e.g. MBBS, FCPS" />
+                </label>
 
+                <label class="field">
+                    <span>Experience (years)</span>
+                    <input v-model="experience" placeholder="e.g. 5" />
+                </label>
 
-            <input 
-            v-model="contactInformation"
-            placeholder="Contact"
-            />
-<input
-v-model="email"
-placeholder="Doctor Email"
-/>
+                <label class="field">
+                    <span>Contact</span>
+                    <input v-model="contactInformation" placeholder="Phone number" />
+                </label>
 
-
-<input
-v-model="password"
-placeholder="Doctor Password"
-type="password"
-/>
+            </div>
 
         </div>
 
 
+        <div class="field-group">
+
+            <span class="group-label">Login Credentials</span>
+
+            <div class="form-grid">
+
+                <label class="field">
+                    <span>Doctor Email</span>
+                    <input v-model="email" placeholder="doctor@hospital.com" />
+                </label>
+
+                <label class="field">
+                    <span>Doctor Password</span>
+                    <input v-model="password" placeholder="••••••••" type="password" />
+                </label>
+
+            </div>
+
+        </div>
 
 
-        <h4>
-            Doctor Availability
-        </h4>
+        <div class="field-group">
+
+            <span class="group-label">Availability</span>
+
+            <div class="availability-box">
+
+                <select v-model="day">
+                    <option value="">Select Day</option>
+                    <option>Mon</option>
+                    <option>Tue</option>
+                    <option>Wed</option>
+                    <option>Thu</option>
+                    <option>Fri</option>
+                    <option>Sat</option>
+                    <option>Sun</option>
+                </select>
+
+                <input type="time" v-model="startTime" />
+
+                <input type="time" v-model="endTime" />
+
+                <button class="primary-btn" @click="addAvailability">
+                    + Add Time
+                </button>
+
+            </div>
+
+            <div class="availability-list" v-if="availability.length">
+
+                <span v-for="(item,index) in availability" :key="index">
+                    {{item.day}} · {{item.startTime}} - {{item.endTime}}
+                    <button class="chip-remove" @click="removeAvailability(index)">✕</button>
+                </span>
+
+            </div>
+
+            <p class="empty-hint" v-else>No availability slots added yet.</p>
+
+        </div>
 
 
+        <div class="form-actions">
 
-        <div class="availability-box">
-
-
-            <select v-model="day">
-
-                <option value="">
-                    Select Day
-                </option>
-
-                <option>
-                    Mon
-                </option>
-
-                <option>
-                    Tue
-                </option>
-
-                <option>
-                    Wed
-                </option>
-
-                <option>
-                    Thu
-                </option>
-
-                <option>
-                    Fri
-                </option>
-
-                <option>
-                    Sat
-                </option>
-
-                <option>
-                    Sun
-                </option>
-
-            </select>
-
-
-
-
-            <input
-            type="time"
-            v-model="startTime"
-            />
-
-
-            <input
-            type="time"
-            v-model="endTime"
-            />
-
-
-
-            <button 
-            class="primary-btn"
-            @click="addAvailability"
-            >
-
-                Add Time
-
+            <button class="save-btn" @click="saveDoctor">
+                {{editMode ? "Update Doctor" : "Add Doctor"}}
             </button>
 
+            <button v-if="editMode" class="cancel-btn" @click="clearForm">
+                Cancel
+            </button>
 
         </div>
-
-
-
-
-
-        <div class="availability-list">
-
-
-            <span
-            v-for="(item,index) in availability"
-            :key="index"
-            >
-
-                {{item.day}}
-                {{item.startTime}}
-                -
-                {{item.endTime}}
-
-            </span>
-
-
-        </div>
-
-
-
-
-
-        <button 
-        class="save-btn"
-        @click="saveDoctor"
-        >
-
-            {{editMode ? "Update Doctor" : "Add Doctor"}}
-
-        </button>
-
-
-
-
-        <button 
-        v-if="editMode"
-        class="cancel-btn"
-        @click="clearForm"
-        >
-
-            Cancel
-
-        </button>
-
 
 
     </div>
 
 
+<div class="card table-card">
 
+    <div class="form-head">
+        <h3>Doctor List</h3>
+    </div>
 
+    <div class="doctor-grid">
 
-
-
-    <div class="card table-card">
-
-
-        <h3>
-            Doctor List
-        </h3>
-
-
-
-        <div class="table-wrapper">
-
-
-        <table>
-
-
-        <tr>
-
-        <th>Name</th>
-        <th>Email</th>
-        <th>Department</th>
-        <th>Speciality</th>
-        <th>Qualification</th>
-        <th>Experience</th>
-        <th>Availability</th>
-        <th>Action</th>
-
-        </tr>
-
-
-
-        <tr 
-        v-for="doctor in doctors" 
+        <div 
+        class="doctor-card"
+        v-for="doctor in doctors"
         :key="doctor._id"
         >
 
+            <div class="doctor-top">
 
-        <td>
-        {{doctor.name}}
-        </td>
+                <div class="doctor-avatar">
+                    {{ doctor.name?.charAt(0) }}
+                </div>
 
-<td>
-{{doctor.user?.email}}
-</td>
-<td>
-    {{ doctor.department }}
-</td>
-<td>
-{{doctor.specialties?.join(", ")}}
-</td>
+                <div>
+                    <h4>{{doctor.name}}</h4>
+                    <p>{{doctor.department}}</p>
+                </div>
+
+            </div>
 
 
-        <td>
-        {{doctor.qualifications}}
-        </td>
+            <div class="doctor-info">
+
+                <div>
+                    <span>Email</span>
+                    <strong>{{doctor.user?.email}}</strong>
+                </div>
 
 
-        <td>
-        {{doctor.experience}}
-        </td>
+                <div>
+                    <span>Speciality</span>
+                    <strong>
+                        {{doctor.specialties?.join(", ")}}
+                    </strong>
+                </div>
+
+
+                <div>
+                    <span>Qualification</span>
+                    <strong>
+                        {{doctor.qualifications}}
+                    </strong>
+                </div>
+
+
+                <div>
+                    <span>Experience</span>
+                    <strong>
+                        {{doctor.experience}} Years
+                    </strong>
+                </div>
+
+            </div>
 
 
 
+            <div class="availability-card">
 
-        <td>
+                <span class="label">
+                    Availability
+                </span>
 
 
-        <div class="times">
+                <div 
+                class="slot"
+                v-for="(item,index) in doctor.availability"
+                :key="index"
+                >
+
+                    <span>{{item.day}}</span>
+
+                    <small>
+                        {{item.startTime}} - {{item.endTime}}
+                    </small>
+
+                </div>
 
 
-        <span
-        v-for="(item,index) in doctor.availability"
-        :key="index"
-        >
+                <p v-if="!doctor.availability?.length">
+                    No slots available
+                </p>
 
-        {{item.day}}
 
-        {{item.startTime}}
+            </div>
 
-        -
 
-        {{item.endTime}}
 
-        </span>
+            <div class="doctor-actions">
+
+                <button 
+                class="edit"
+                @click="editDoctor(doctor)"
+                >
+                    ✏ Edit
+                </button>
+
+
+                <button 
+                class="delete"
+                @click="deleteDoctor(doctor._id)"
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
 
 
         </div>
 
 
-        </td>
 
-
-
-
-        <td>
-
-
-        <button 
-        class="edit"
-        @click="editDoctor(doctor)"
+        <p 
+        v-if="!doctors.length"
+        class="empty-hint table-empty"
         >
-
-            Edit
-
-        </button>
-
-
-
-        <button 
-        class="delete"
-        @click="deleteDoctor(doctor._id)"
-        >
-
-            Delete
-
-        </button>
-
-
-        </td>
-
-
-        </tr>
-
-
-
-        </table>
-<button 
-@click="previousPage"
-:disabled="page===1"
->
-Previous
-</button>
-
-
-<span>
-{{page}} / {{totalPages}}
-</span>
-
-
-<button
-@click="nextPage"
-:disabled="page===totalPages"
->
-Next
-</button>
-        </div>
-
+            No doctors found.
+        </p>
 
 
     </div>
+
+
+
+    <div class="pagination">
+
+        <button 
+        @click="previousPage" 
+        :disabled="page===1"
+        >
+            ← Previous
+        </button>
+
+
+        <span class="page-info">
+            Page {{page}} of {{totalPages}}
+        </span>
+
+
+        <button 
+        @click="nextPage" 
+        :disabled="page===totalPages"
+        >
+            Next →
+        </button>
+
+    </div>
+
+
+</div>
 
 
 </div>
@@ -806,309 +751,637 @@ Next
 
 
 .page{
-
     min-height:100%;
-
 }
-
 
 
 .header{
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
-    margin-bottom:30px;
-
+    margin-bottom:24px;
 }
 
-
+.eyebrow{
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--secondary,#14b8a6);
+}
 
 .header h2{
-
     color:var(--text);
-
-    font-size:30px;
-
+    font-size:28px;
+    margin-top:6px;
 }
-
-
 
 .header p{
-
     color:var(--muted);
-
-    margin-top:8px;
-
+    margin-top:6px;
+    font-size:14px;
 }
-
-
 
 .badge{
-
-    background:
-
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
-
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
     color:white;
-
     padding:12px 20px;
-
     border-radius:30px;
-
     font-weight:600;
-
+    font-size:13px;
+    white-space:nowrap;
 }
 
 
+.search-bar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:4px 16px;
+    margin-bottom:24px;
+    box-shadow:var(--shadow);
+}
 
+.search-icon{
+    font-size:15px;
+    opacity:.6;
+}
+
+.search-bar input{
+    border:none;
+    padding:12px 0;
+    flex:1;
+}
+
+.search-bar input:focus{
+    box-shadow:none;
+}
 
 
 .card{
-
     background:var(--white);
-
     border-radius:20px;
-
     padding:30px;
-
     box-shadow:var(--shadow);
-
     border:1px solid var(--border);
-
     margin-bottom:30px;
-
 }
 
-
+.form-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+}
 
 .card h3{
-
     color:var(--text);
+}
 
-    margin-bottom:25px;
-
+.edit-pill{
+    background:#fef3c7;
+    color:#b45309;
+    font-size:12px;
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:20px;
 }
 
 
+.field-group{
+    margin-bottom:26px;
+    padding-bottom:26px;
+    border-bottom:1px dashed var(--border);
+}
 
+.field-group:last-of-type{
+    border-bottom:none;
+    padding-bottom:0;
+    margin-bottom:0;
+}
+
+.group-label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--muted);
+    margin-bottom:14px;
+}
 
 
 .form-grid{
-
     display:grid;
-
     grid-template-columns:repeat(2,1fr);
-
-    gap:20px;
-
+    gap:18px;
 }
 
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.field span{
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+}
 
 
 input,
 select{
-
-
-    padding:14px;
-
+    padding:13px 14px;
     border-radius:12px;
-
     border:1px solid var(--border);
-
     outline:none;
-
-    font-size:15px;
-
+    font-size:14px;
     background:#fff;
-
+    width:100%;
 }
-
-
 
 input:focus,
 select:focus{
-
     border-color:var(--secondary);
-
     box-shadow:0 0 0 4px rgba(20,184,166,.15);
-
 }
-
-
-
 
 
 .availability-box{
-
     display:flex;
-
-    gap:15px;
-
-    margin-top:15px;
-
+    gap:14px;
+    flex-wrap:wrap;
 }
 
-
-
+.availability-box select,
+.availability-box input{
+    flex:1;
+    min-width:130px;
+}
 
 
 button{
-
     border:none;
-
     cursor:pointer;
-
     border-radius:10px;
-
     padding:12px 18px;
-
     font-weight:600;
-
+    font-size:14px;
 }
 
-
+button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
 
 .primary-btn,
 .save-btn{
-
-    background:
-
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
-
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
     color:white;
-
+    white-space:nowrap;
 }
 
-
+.form-actions{
+    display:flex;
+    align-items:center;
+    margin-top:26px;
+}
 
 .save-btn{
-
-    margin-top:25px;
-
-    width:220px;
-
+    min-width:200px;
 }
-
-
 
 .cancel-btn{
-
     background:#e2e8f0;
-
     margin-left:10px;
-
 }
-
-
-
 
 
 .availability-list{
-
     display:flex;
-
     gap:10px;
-
     flex-wrap:wrap;
-
-    margin-top:20px;
-
+    margin-top:16px;
 }
 
-
-
-.availability-list span,
-.times span{
-
+.availability-list span{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
     background:rgba(20,184,166,.15);
-
     color:var(--primary);
-
-    padding:8px 12px;
-
+    padding:8px 8px 8px 14px;
     border-radius:20px;
-
     font-size:13px;
-
+    font-weight:600;
 }
 
+.chip-remove{
+    background:rgba(255,255,255,.6);
+    color:inherit;
+    padding:2px 7px;
+    border-radius:50%;
+    font-size:11px;
+    line-height:1;
+}
 
+.empty-hint{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:14px;
+}
 
+.table-empty{
+    text-align:center;
+    padding:30px 0;
+}
 
 
 .table-wrapper{
-
     overflow-x:auto;
-
 }
-
-
 
 table{
-
     width:100%;
-
     border-collapse:collapse;
-
 }
-
-
 
 th{
-
     background:var(--primary);
-
     color:white;
-
-    padding:15px;
-
+    padding:14px 15px;
     text-align:left;
-
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
 }
 
-
+th:first-child{ border-radius:10px 0 0 10px; }
+th:last-child{ border-radius:0 10px 10px 0; }
 
 td{
-
     padding:15px;
-
     border-bottom:1px solid var(--border);
-
     color:var(--text);
-
+    font-size:14px;
 }
 
-
-
-tr:hover{
-
+tr:hover td{
     background:#f8fafc;
+}
+
+.doctor-name-cell{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+}
+
+.avatar{
+    width:32px;
+    height:32px;
+    flex-shrink:0;
+    border-radius:10px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    font-weight:700;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+
+.edit{
+    background:#dbeafe;
+    color:#1d4ed8;
+    margin-right:8px;
+}
+
+.delete{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+
+.times{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.no-slots{
+    color:var(--muted);
+}
+
+
+.pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    margin-top:22px;
+}
+
+.pagination button{
+    background:#f1f5f9;
+    color:var(--text);
+}
+
+.page-info{
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+}
+
+
+@media(max-width:800px){
+
+.form-grid{
+    grid-template-columns:1fr;
+}
+
+.header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.availability-box{
+    flex-direction:column;
+}
+
+}
+
+.doctor-grid{
+
+display:grid;
+grid-template-columns:
+repeat(auto-fill,minmax(320px,1fr));
+
+gap:22px;
 
 }
 
 
+
+.doctor-card{
+
+background:linear-gradient(
+145deg,
+#ffffff,
+#f8fafc
+);
+
+border:1px solid var(--border);
+
+border-radius:22px;
+
+padding:22px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+transition:.3s;
+
+}
+
+
+.doctor-card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:
+0 20px 35px rgba(0,0,0,.10);
+
+}
+
+
+
+
+.doctor-top{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding-bottom:18px;
+
+border-bottom:1px solid var(--border);
+
+}
+
+
+
+.doctor-avatar{
+
+height:55px;
+
+width:55px;
+
+border-radius:18px;
+
+background:
+linear-gradient(
+135deg,
+var(--primary),
+var(--secondary)
+);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:22px;
+
+font-weight:700;
+
+color:white;
+
+}
+
+
+
+.doctor-top h4{
+
+margin:0;
+
+font-size:18px;
+
+color:var(--text);
+
+}
+
+
+
+.doctor-top p{
+
+margin-top:5px;
+
+font-size:13px;
+
+color:var(--secondary);
+
+font-weight:600;
+
+}
+
+
+
+
+.doctor-info{
+
+display:grid;
+
+grid-template-columns:1fr;
+
+gap:12px;
+
+margin-top:18px;
+
+}
+
+
+
+.doctor-info div{
+
+display:flex;
+
+flex-direction:column;
+
+gap:4px;
+
+}
+
+
+
+.doctor-info span,
+.label{
+
+font-size:11px;
+
+text-transform:uppercase;
+
+letter-spacing:.7px;
+
+font-weight:700;
+
+color:var(--muted);
+
+}
+
+
+
+.doctor-info strong{
+
+font-size:14px;
+
+color:var(--text);
+
+}
+
+
+
+
+.availability-card{
+
+margin-top:20px;
+
+background:#f1f5f9;
+
+padding:15px;
+
+border-radius:15px;
+
+}
+
+
+
+.slot{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+background:white;
+
+padding:8px 12px;
+
+border-radius:10px;
+
+margin-top:8px;
+
+font-size:13px;
+
+}
+
+
+
+.slot span{
+
+font-weight:700;
+
+color:var(--primary);
+
+}
+
+
+.slot small{
+
+color:var(--muted);
+
+}
+
+
+
+
+.availability-card p{
+
+font-size:13px;
+
+color:var(--muted);
+
+margin:10px 0 0;
+
+}
+
+
+
+
+.doctor-actions{
+
+display:flex;
+
+gap:10px;
+
+margin-top:20px;
+
+}
+
+
+
+.doctor-actions button{
+
+flex:1;
+
+}
 
 
 
 .edit{
 
-    background:#dbeafe;
+background:#dbeafe;
 
-    color:#1d4ed8;
-
-    margin-right:8px;
+color:#2563eb;
 
 }
 
@@ -1116,60 +1389,21 @@ tr:hover{
 
 .delete{
 
-    background:#fee2e2;
+background:#fee2e2;
 
-    color:#dc2626;
-
-}
-
-
-
-
-
-.times{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:5px;
+color:#dc2626;
 
 }
 
 
 
+@media(max-width:600px){
 
+.doctor-grid{
 
-@media(max-width:800px){
-
-
-.form-grid{
-
-    grid-template-columns:1fr;
+grid-template-columns:1fr;
 
 }
 
-
-.header{
-
-    flex-direction:column;
-
-    align-items:flex-start;
-
-    gap:15px;
-
 }
-
-
-.availability-box{
-
-    flex-direction:column;
-
-}
-
-
-}
-
-
-
 </style>

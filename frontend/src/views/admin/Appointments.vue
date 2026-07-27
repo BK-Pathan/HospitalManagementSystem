@@ -1,7 +1,9 @@
 <script setup>
 
-import {ref,onMounted} from "vue";
+import { ref, onMounted } from "vue";
 import api from "../../api/axios";
+
+
 const formatDateTime = (date)=>{
 
 return new Date(date).toLocaleString(
@@ -18,7 +20,20 @@ return new Date(date).toLocaleString(
 );
 
 };
+
+
+
 const appointments = ref([]);
+
+const currentPage = ref(1);
+
+const totalPages = ref(1);
+
+const limit = 10;
+
+const status = ref("");
+
+
 
 
 
@@ -27,10 +42,21 @@ const getAppointments = async()=>{
 try{
 
 
-const res = await api.get("/admin/appointments");
+const res = await api.get("/admin/appointments",{
+
+params:{
+    page:currentPage.value,
+    limit,
+    status:status.value
+}
+
+});
 
 
-appointments.value = res.data;
+appointments.value = res.data.appointments;
+
+totalPages.value = res.data.totalPages;
+
 
 
 }
@@ -41,7 +67,11 @@ console.log(error);
 }
 
 
-}
+};
+
+
+
+
 
 
 
@@ -51,21 +81,48 @@ getAppointments();
 
 });
 
-const status = ref("");
 
-const sortAppointments = async()=>{
 
-const res = await api.get("/admin/appointments",{
 
-params:{
-status:status.value
+
+
+const sortAppointments = ()=>{
+
+currentPage.value = 1;
+
+getAppointments();
+
+};
+
+
+
+
+
+
+
+const changePage = (page)=>{
+
+
+if(page < 1 || page > totalPages.value){
+
+return;
+
 }
 
-});
 
-appointments.value = res.data;
+currentPage.value = page;
 
-}
+getAppointments();
+
+
+};
+
+
+
+
+
+
+
 
 const cancelAppointment = async(id)=>{
 
@@ -84,6 +141,8 @@ return;
 
 
 
+
+
 try{
 
 
@@ -96,6 +155,7 @@ reason
 }
 
 );
+
 
 
 alert("Appointment cancelled");
@@ -114,7 +174,10 @@ console.log(error);
 }
 
 
+
 };
+
+
 </script>
 
 
@@ -124,224 +187,193 @@ console.log(error);
 <div class="page">
 
 
-    <div class="header">
+<div class="header">
 
-        <div>
+    <div>
 
-            <h2>
-                📅 Appointments Management
-            </h2>
-
-            <p>
-                Monitor and manage all hospital appointments
-            </p>
-
-        </div>
+        <h2>
+            📅 Appointments Management
+        </h2>
 
 
-        <div class="badge">
-            Hospital Admin
-        </div>
+        <p>
+            Monitor and manage all hospital appointments
+        </p>
+
 
     </div>
 
 
 
-    <!-- Filter -->
-
-    <select
-    v-model="status"
-    @change="sortAppointments"
-    >
-
-        <option value="">
-            All
-        </option>
-
-        <option value="pending">
-            Pending
-        </option>
-
-        <option value="confirmed">
-            Confirmed
-        </option>
-
-        <option value="completed">
-            Completed
-        </option>
-
-        <option value="cancelled">
-            Cancelled
-        </option>
+    <div class="badge">
+        Hospital Admin
+    </div>
 
 
-    </select>
+</div>
 
 
 
 
-    <div class="card">
+
+<select
+v-model="status"
+@change="sortAppointments"
+>
 
 
-        <div class="table-wrapper">
+<option value="">
+    All
+</option>
 
 
-        <table>
+<option value="pending">
+    Pending
+</option>
 
 
-        <thead>
+<option value="confirmed">
+    Confirmed
+</option>
 
-        <tr>
 
-            <th>
-                Doctor
-            </th>
+<option value="completed">
+    Completed
+</option>
 
-            <th>
-    Department
+
+<option value="cancelled">
+    Cancelled
+</option>
+
+
+</select>
+
+
+
+
+
+
+<div class="card">
+
+
+<div class="table-wrapper">
+
+
+<table>
+
+
+<thead>
+
+
+<tr>
+
+
+<th>#</th>
+
+
+<th>
+Doctor
 </th>
 
-            <th>
-                Speciality
-            </th>
+
+<th>
+Department
+</th>
 
 
-            <th>
-                Patient
-            </th>
+<th>
+Speciality
+</th>
 
 
-            <th>
-                Appointment Date
-            </th>
+<th>
+Patient
+</th>
 
 
-            <th>
-                Status
-            </th>
+<th>
+Appointment Date
+</th>
 
 
-            <th>
-                Action
-            </th>
+<th>
+Status
+</th>
 
 
-            <th>
-                Cancel Reason
-            </th>
+<th>
+Action
+</th>
 
 
-        </tr>
-
-        </thead>
-
-
-
-
-
-        <tbody>
+<th>
+Cancel Reason
+</th>
 
 
 
-        <tr
-        v-for="appointment in appointments"
-        :key="appointment._id"
-        >
+</tr>
 
 
-
-
-            <!-- Doctor -->
-
-            <td>
-
-                <div class="doctor">
-
-
-                    <div class="avatar">
-                        👨‍⚕️
-                    </div>
-
-
-
-                    <span>
-
-                        {{
-                        appointment.doctor?.name 
-                        || 
-                        "N/A"
-                        }}
-
-                    </span>
-
-
-
-                </div>
-
-
-            </td>
+</thead>
 
 
 
 
 
+<tbody>
 
 
-            <!-- Speciality -->
 
-<!-- Department -->
+
+<tr
+v-for="(appointment,index) in appointments"
+:key="appointment._id"
+>
+
+
 
 <td>
 
-    <span class="department">
-
-        {{
-        appointment.doctor?.department
-        ||
-        "N/A"
-        }}
-
-    </span>
+{{
+(currentPage - 1) * limit + index + 1
+}}
 
 </td>
-            <td>
 
 
-                <span class="speciality">
 
 
-                {{
-                appointment.doctor?.specialties?.join(", ")
-                ||
-                "N/A"
-                }}
 
 
-                </span>
+<td>
 
 
-            </td>
+<div class="doctor">
 
 
+<div class="avatar">
 
+👨‍⚕️
 
+</div>
 
 
 
-            <!-- Patient -->
+<span>
 
+{{
+appointment.doctor?.name || "N/A"
+}}
 
-            <td>
+</span>
 
 
-                {{
-                appointment.patient?.user?.name
-                ||
-                "Not Booked"
-                }}
+</div>
 
 
-            </td>
+</td>
 
 
 
@@ -349,22 +381,21 @@ console.log(error);
 
 
 
+<td>
 
-            <!-- Date -->
 
+<span class="department">
 
-            <td>
 
+{{
+appointment.doctor?.department || "N/A"
+}}
 
-                {{
-                formatDateTime(
-                appointment.appointmentDateTime
-                )
-                }}
 
+</span>
 
-            </td>
 
+</td>
 
 
 
@@ -372,148 +403,255 @@ console.log(error);
 
 
 
-            <!-- Status -->
+<td>
 
 
-            <td>
+<span class="speciality">
 
 
-                <span
-                class="status"
-                :class="appointment.status"
-                >
+{{
+appointment.doctor?.specialties?.join(", ")
+||
+"N/A"
+}}
 
-                    {{
-                    appointment.status
-                    }}
 
+</span>
 
-                </span>
 
+</td>
 
-            </td>
 
 
 
 
 
 
+<td>
 
-            <!-- Action -->
 
+{{
+appointment.patient?.user?.name
+||
+"Not Booked"
+}}
 
-            <td>
 
+</td>
 
 
-                <button
 
-                v-if="
-                appointment.status !== 'cancelled'
-                "
 
-                @click="
-                cancelAppointment(appointment._id)
-                "
 
-                >
 
-                    Cancel
 
+<td>
 
-                </button>
 
+{{
+formatDateTime(
+appointment.appointmentDateTime
+)
+}}
 
 
-                <span v-else>
+</td>
 
-                    -
 
-                </span>
 
 
 
-            </td>
 
 
+<td>
 
 
+<span
+class="status"
+:class="appointment.status"
+>
 
 
+{{appointment.status}}
 
 
-            <!-- Cancel Reason -->
+</span>
 
 
-            <td>
+</td>
 
 
-                {{
 
-                appointment.cancelReason
 
-                ||
 
-                "-"
 
-                }}
 
 
-            </td>
+<td>
 
 
 
+<button
 
+v-if="appointment.status !== 'cancelled'"
 
-        </tr>
+@click="cancelAppointment(appointment._id)"
 
+>
 
+Cancel
 
+</button>
 
 
 
+<span v-else>
 
+Already Cancelled
 
+</span>
 
-        <!-- Empty -->
 
 
-        <tr
-        v-if="appointments.length===0"
-        >
+</td>
 
 
-            <td 
-            colspan="7"
-            class="empty"
-            >
 
 
-                No Appointments Found
 
 
-            </td>
 
 
-        </tr>
 
+<td>
 
 
+{{
+appointment.cancelReason
+||
+"No cancellation"
+}}
 
 
+</td>
 
-        </tbody>
 
 
-        </table>
 
 
-        </div>
+</tr>
 
 
 
-    </div>
 
+
+
+
+
+<tr v-if="appointments.length===0">
+
+
+<td
+colspan="9"
+class="empty"
+>
+
+
+No Appointments Found
+
+
+</td>
+
+
+</tr>
+
+
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- Pagination -->
+
+
+<div
+class="pagination"
+v-if="totalPages > 1"
+>
+
+
+
+<button
+
+@click="changePage(currentPage-1)"
+
+:disabled="currentPage===1"
+
+>
+
+←
+
+</button>
+
+
+
+
+
+<button
+
+v-for="page in totalPages"
+
+:key="page"
+
+@click="changePage(page)"
+
+:class="{active:currentPage===page}"
+
+>
+
+{{page}}
+
+</button>
+
+
+
+
+
+<button
+
+@click="changePage(currentPage+1)"
+
+:disabled="currentPage===totalPages"
+
+>
+
+→
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
 
 
 
@@ -524,135 +662,220 @@ console.log(error);
 
 <style scoped>
 
+/* ================= PAGE ================= */
 
 .page{
 
+    width:100%;
+    max-width:100%;
     min-height:100%;
+    overflow:hidden;
 
 }
 
 
-
+/* ================= HEADER ================= */
 
 .header{
 
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
 
-    margin-bottom:30px;
+    margin-bottom:28px;
 
+    gap:20px;
 
 }
-
 
 
 .header h2{
 
+    margin:0;
 
-    font-size:30px;
+    font-size:28px;
+
+    font-weight:800;
 
     color:var(--text);
 
-}
+    letter-spacing:-.5px;
 
+}
 
 
 .header p{
 
-
-    margin-top:8px;
+    margin:8px 0 0;
 
     color:var(--muted);
 
+    font-size:14px;
 
 }
-
-
 
 
 .badge{
 
-
-    padding:12px 20px;
-
-    border-radius:30px;
+    background:var(--gradient-primary);
 
     color:white;
 
+    padding:12px 24px;
 
-    background:
+    border-radius:var(--radius-pill);
 
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+    font-size:14px;
 
+    font-weight:700;
 
-    font-weight:600;
+    box-shadow:var(--shadow-lg);
 
+    white-space:nowrap;
 
 }
 
 
+/* ================= FILTER ================= */
+
+
+select{
+
+    appearance:none;
+
+    background:var(--white);
+
+    border:1px solid var(--border);
+
+    padding:13px 18px;
+
+    border-radius:var(--radius-md);
+
+    color:var(--text);
+
+    font-weight:600;
+
+    outline:none;
+
+    margin-bottom:22px;
+
+    cursor:pointer;
+
+    box-shadow:var(--shadow);
+
+    transition:.3s;
+
+}
+
+
+
+select:hover{
+
+    border-color:var(--primary);
+
+}
+
+
+
+select:focus{
+
+    border-color:var(--secondary);
+
+    box-shadow:
+    0 0 0 4px rgba(20,184,166,.15);
+
+}
+
+
+
+/* ================= CARD ================= */
 
 
 .card{
 
+    width:100%;
 
-    background:var(--white);
+    max-width:100%;
 
-    padding:30px;
+    overflow:hidden;
 
-    border-radius:20px;
+    background:var(--surface);
 
-    box-shadow:var(--shadow);
+    backdrop-filter:blur(14px);
 
     border:1px solid var(--border);
 
+    border-radius:var(--radius-xl);
+
+    padding:25px;
+
+    box-shadow:var(--shadow);
 
 }
 
 
+
+/* ================= TABLE WRAPPER ================= */
 
 
 .table-wrapper{
 
+    width:100%;
+
+    max-width:100%;
 
     overflow-x:auto;
 
+    overflow-y:hidden;
+
+    border-radius:18px;
 
 }
 
+
+
+/* Scrollbar */
+
+.table-wrapper::-webkit-scrollbar{
+
+    height:8px;
+
+}
+
+
+.table-wrapper::-webkit-scrollbar-thumb{
+
+    background:var(--primary);
+
+    border-radius:20px;
+
+}
+
+
+
+/* ================= TABLE ================= */
 
 
 table{
 
-
     width:100%;
 
-    border-collapse:collapse;
+    min-width:1100px;
 
+    border-collapse:separate;
+
+    border-spacing:0 12px;
 
 }
 
 
 
+/* ================= TABLE HEADER ================= */
+
+
 thead th{
 
-
-    background:
-
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--primary-dark)
-    );
-
+    background:var(--gradient-primary);
 
     color:white;
 
@@ -660,52 +883,98 @@ thead th{
 
     text-align:left;
 
-    font-size:15px;
+    font-size:12px;
 
+    text-transform:uppercase;
+
+    letter-spacing:.6px;
+
+    white-space:nowrap;
+
+}
+
+
+thead th:first-child{
+
+    border-radius:14px 0 0 14px;
+
+}
+
+
+thead th:last-child{
+
+    border-radius:0 14px 14px 0;
 
 }
 
 
 
-
-tbody td{
-
-
-    padding:16px;
-
-    border-bottom:1px solid var(--border);
-
-    color:var(--text);
-
-
-}
-
-
+/* ================= TABLE BODY ================= */
 
 
 tbody tr{
 
+    background:var(--white);
+
+    box-shadow:var(--shadow);
 
     transition:.3s;
 
-
 }
-
 
 
 
 tbody tr:hover{
 
+    transform:translateY(-4px);
 
-    background:#f8fafc;
+    box-shadow:var(--shadow-hover);
 
 }
 
 
 
+tbody td{
+
+    padding:16px;
+
+    color:var(--text-soft);
+
+    font-size:14px;
+
+    white-space:nowrap;
+
+    border-top:1px solid var(--border);
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+
+tbody td:first-child{
+
+    border-left:1px solid var(--border);
+
+    border-radius:14px 0 0 14px;
+
+}
+
+
+tbody td:last-child{
+
+    border-right:1px solid var(--border);
+
+    border-radius:0 14px 14px 0;
+
+}
+
+
+
+/* ================= DOCTOR ================= */
+
 
 .doctor{
-
 
     display:flex;
 
@@ -713,8 +982,7 @@ tbody tr:hover{
 
     gap:12px;
 
-    font-weight:600;
-
+    font-weight:700;
 
 }
 
@@ -722,142 +990,186 @@ tbody tr:hover{
 
 .avatar{
 
+    width:44px;
 
-    width:40px;
+    height:44px;
 
-    height:40px;
+    flex-shrink:0;
 
-    border-radius:50%;
+    border-radius:14px;
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
 
+    align-items:center;
 
-    background:rgba(20,184,166,.15);
+    background:var(--gradient-teal);
 
+    font-size:21px;
 
 }
 
+
+
+/* ================= TAGS ================= */
+
+
+.department,
+.speciality{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    padding:7px 15px;
+
+    border-radius:var(--radius-pill);
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+
+.department{
+
+    background:var(--gradient-blue);
+
+    color:var(--primary);
+
+}
 
 
 
 .speciality{
 
+    background:var(--gradient-purple);
 
-    padding:7px 14px;
-
-    border-radius:20px;
-
-
-    background:rgba(15,118,110,.12);
-
-    color:var(--primary);
-
-    font-size:13px;
-
-    font-weight:600;
-
+    color:var(--purple);
 
 }
 
 
 
+/* ================= STATUS ================= */
 
 
 .status{
 
+    display:inline-flex;
 
-    padding:8px 15px;
+    padding:7px 16px;
 
-    border-radius:20px;
+    border-radius:var(--radius-pill);
 
-    font-size:13px;
+    font-size:12px;
 
-    font-weight:700;
+    font-weight:800;
 
     text-transform:capitalize;
 
-
 }
-
 
 
 
 .status.pending{
 
+    background:var(--warning-bg);
 
-    background:#fef3c7;
-
-    color:#92400e;
-
+    color:#b45309;
 
 }
-
-
 
 
 .status.confirmed{
 
+    background:var(--success-bg);
 
-    background:#dcfce7;
-
-    color:#166534;
-
+    color:var(--success);
 
 }
-
-
 
 
 .status.completed{
 
+    background:var(--info-bg);
 
-    background:#dbeafe;
-
-    color:#1d4ed8;
-
+    color:var(--info);
 
 }
-
-
 
 
 .status.cancelled{
 
+    background:var(--danger-bg);
 
-    background:#fee2e2;
-
-    color:#dc2626;
-
+    color:var(--danger);
 
 }
 
 
 
+/* ================= BUTTON ================= */
+
+
+button{
+
+    border:none;
+
+    padding:9px 18px;
+
+    border-radius:var(--radius-pill);
+
+    background:var(--danger-bg);
+
+    color:var(--danger);
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+
+button:hover{
+
+    background:var(--danger);
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+
+/* ================= EMPTY ================= */
 
 
 .empty{
 
-
     text-align:center;
 
-    padding:40px;
+    padding:50px;
 
     color:var(--muted);
 
-    font-size:16px;
-
+    font-size:15px;
 
 }
 
 
 
+/* ================= RESPONSIVE ================= */
 
 
-@media(max-width:700px){
+@media(max-width:900px){
 
 
 .header{
@@ -866,7 +1178,13 @@ tbody tr:hover{
 
     align-items:flex-start;
 
-    gap:15px;
+}
+
+
+
+.header h2{
+
+    font-size:24px;
 
 }
 
@@ -878,24 +1196,185 @@ tbody tr:hover{
 }
 
 
+
+.badge{
+
+    width:max-content;
+
 }
 
 
-.department{
 
-padding:7px 14px;
+}
 
-border-radius:20px;
 
-background:rgba(37,99,235,.12);
+@media(max-width:600px){
 
-color:#2563eb;
 
-font-size:13px;
+select{
 
-font-weight:600;
+    width:100%;
+
+}
+
+
+
+table{
+
+    min-width:1000px;
+
+}
+
+
+}
+/* ================= PAGINATION ================= */
+
+
+.pagination{
+
+    margin-top:28px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+/* Pagination Buttons */
+
+.pagination button{
+
+    min-width:42px;
+
+    height:42px;
+
+    padding:0 14px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    background:var(--white);
+
+    color:var(--text);
+
+    font-size:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+
+
+.pagination button:hover{
+
+    background:var(--gradient-primary);
+
+    color:white;
+
+    border-color:transparent;
+
+    transform:translateY(-3px);
+
+}
+
+
+
+
+
+/* Active Page */
+
+.pagination button.active{
+
+    background:var(--gradient-primary);
+
+    color:white;
+
+    border:none;
+
+    box-shadow:var(--shadow-lg);
+
+}
+
+
+
+
+
+/* Disabled */
+
+.pagination button:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+    background:var(--surface-solid);
+
+}
+
+
+
+
+
+/* Arrow Buttons */
+
+.pagination button:first-child,
+.pagination button:last-child{
+
+    font-size:18px;
+
+    font-weight:800;
+
+}
+
+
+
+
+
+/* Mobile */
+
+@media(max-width:600px){
+
+
+.pagination{
+
+    gap:6px;
+
+}
+
+
+
+.pagination button{
+
+    min-width:36px;
+
+    height:36px;
+
+    padding:0 10px;
+
+    font-size:13px;
+
+}
+
 
 }
 </style>
-
 
