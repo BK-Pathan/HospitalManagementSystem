@@ -4,6 +4,7 @@ const Doctor = require("../models/doctor");
 const Notification = require("../models/notification");
 const Patient = require("../models/patient");
 
+
 exports.getMyAppointments = async(req,res)=>{
 
 try{

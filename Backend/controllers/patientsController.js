@@ -4,6 +4,7 @@ const Doctor = require("../models/doctor");
 const Prescription = require("../models/prescription");
 const Feedback = require("../models/feedback");
 const Notification = require("../models/notification");
+const notifyAdmins = require("../helpers/notifyAdmins");
 const { createAdminNotification } = require("../utils/sendNotification");
 
 
@@ -442,7 +443,7 @@ appointment:appointment._id
 if(doctorData.user){
 
 
-await Notification.create({
+await notifyAdmins({
 
 user:doctorData.user,
 

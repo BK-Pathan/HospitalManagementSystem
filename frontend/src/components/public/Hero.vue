@@ -37,7 +37,7 @@
         <div class="hero__blob" aria-hidden="true"></div>
         <img
           class="hero__doctor-img"
-            src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=900&auto=format&fit=crop"
+            src="https://i.pinimg.com/736x/37/25/1e/37251eab10cb27e8b11515a3c78ce64d.jpg?q=80&w=900&auto=format&fit=crop"
           alt="Doctor smiling with arms crossed"
         />
 
@@ -80,8 +80,6 @@ const stats = [
 
 <style scoped>
 .hero {
-
-
   font-family: var(--font-body);
   background: var(--color-bg);
   color: var(--color-text);
@@ -168,7 +166,21 @@ const stats = [
 .hero__nav-cta:hover {
   transform: translateY(-1px);
 } */
+.glass{
 
+background:rgba(255,255,255,.55);
+
+backdrop-filter:blur(24px);
+
+-webkit-backdrop-filter:blur(24px);
+
+border:1px solid rgba(255,255,255,.45);
+
+box-shadow:
+
+0 10px 40px rgba(15,23,42,.08);
+
+}
 /* ---------- Hero body ---------- */
 .hero__body {
   position: relative;
@@ -179,6 +191,7 @@ const stats = [
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 2rem;
+  margin-top:80px;
 }
 
 .hero__hex-bg {

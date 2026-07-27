@@ -2,236 +2,355 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vitalis — Smart Hospital Management System</title>
+<title>HMS Hero Section</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
 <style>
-.hero-image{
-    --cut-size:120px;
+  :root{
+    /* ---- HMS design tokens (reuse across all sections) ---- */
+    --hms-navy:#0A2540;
+    --hms-navy-deep:#061627;
+    --hms-teal:#0F6D66;
+    --hms-teal-light:#17A398;
+    --hms-teal-pale:#E7F5F3;
+    --hms-gold:#E3A93F;
+    --hms-gold-soft:#F4D89A;
+    --hms-ink:#0B1B22;
+    --hms-paper:#FFFFFF;
+    --hms-mist:#F5F9F8;
+    --hms-line: rgba(255,255,255,0.22);
+    --hms-line-soft: rgba(10,37,64,0.10);
+    --hms-shadow-lg: 0 30px 70px -25px rgba(6,22,39,0.55);
+    --hms-shadow-sm: 0 10px 25px -12px rgba(6,22,39,0.35);
+    --hms-radius-lg: 22px;
+    --hms-radius-md: 14px;
+    --hms-radius-sm: 8px;
+    --font-display:'Newsreader', Georgia, serif;
+    --font-body:'Inter', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--hms-mist);font-family:var(--font-body);color:var(--hms-ink);}
+  a{color:inherit;}
 
+  .hero{
     position:relative;
-    width:500px;
-    border-radius:32px;
-    overflow:visible;
-}
+    min-height:96vh;
+    display:flex;
+    align-items:stretch;
+    overflow:hidden;
+    background:var(--hms-navy-deep);
+  }
+  .hero__bg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    object-position:center 30%;
+    transform:scale(1.04);
+  }
+  .hero__scrim{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(100deg, rgba(6,16,27,0.94) 0%, rgba(6,16,27,0.82) 24%, rgba(6,16,27,0.42) 52%, rgba(6,16,27,0.15) 72%, rgba(6,16,27,0.35) 100%),
+      linear-gradient(180deg, rgba(6,16,27,0.15) 0%, rgba(6,16,27,0) 30%, rgba(6,16,27,0.55) 100%);
+  }
 
-.hero-image img{
-    display:block;
-    width:100%;
-    border-radius:32px;
-}
-
-/* Concave Cut */
-.hero-image::before{
-    content:"";
-    position:absolute;
-
-    width:var(--cut-size);
-    height:var(--cut-size);
-
-    border-radius:50%;
-    background:#fff;        /* page background */
-
-    top:0;
-    right:0;
-
-    transform:translate(50%,-50%);
+  .hero__inner{
+    position:relative;
     z-index:2;
-}
-
-/* Circular Card */
-.stats-card{
-
-    width:var(--cut-size);
-    height:var(--cut-size);
-
-    position:absolute;
-
-    top:0;
-    right:0;
-    bottom:-13;
-
-    transform:translate(50%,-50%);
-
-    border-radius:50%;
-
-    background:#00b894;
-
+    width:100%;
+    max-width:1280px;
+    margin:0 auto;
+    padding: 7.5vh clamp(20px,4vw,64px) 0;
     display:flex;
     flex-direction:column;
     justify-content:center;
+    flex:1;
+  }
+
+  .hero__eyebrow{
+    display:inline-flex;
     align-items:center;
+    gap:10px;
+    width:fit-content;
+    font-family:var(--font-body);
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--hms-gold-soft);
+    border:1px solid rgba(227,169,63,0.4);
+    background:rgba(227,169,63,0.08);
+    padding:8px 16px 8px 12px;
+    border-radius:999px;
+    margin-bottom:26px;
+    opacity:0; transform:translateY(10px);
+    animation: hmsRise .7s ease forwards;
+  }
+  .hero__eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--hms-gold);box-shadow:0 0 0 4px rgba(227,169,63,0.18);}
 
+  .hero__title{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size: clamp(2.6rem, 5.4vw, 4.6rem);
+    line-height:1.04;
+    letter-spacing:-0.01em;
     color:#fff;
+    max-width:15ch;
+    margin:0 0 22px;
+    opacity:0; transform:translateY(16px);
+    animation: hmsRise .8s .1s ease forwards;
+  }
+  .hero__title em{
+    font-style:italic;
+    color:var(--hms-teal-light);
+  }
 
+  .hero__subtitle{
+    font-size:clamp(1rem, 1.25vw, 1.15rem);
+    line-height:1.65;
+    color:rgba(255,255,255,0.82);
+    max-width:46ch;
+    margin:0 0 36px;
+    opacity:0; transform:translateY(16px);
+    animation: hmsRise .8s .2s ease forwards;
+  }
+
+  .hero__ctas{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:56px;
+    opacity:0; transform:translateY(16px);
+    animation: hmsRise .8s .3s ease forwards;
+  }
+  .btn{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:15px;
+    border-radius:999px;
+    padding:16px 28px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .btn:focus-visible{outline:3px solid var(--hms-teal-light); outline-offset:3px;}
+  .btn--primary{
+    background:var(--hms-teal-light);
+    color:#04231f;
+    box-shadow:0 14px 30px -12px rgba(23,163,152,0.65);
+  }
+  .btn--primary:hover{transform:translateY(-2px); box-shadow:0 18px 36px -12px rgba(23,163,152,0.8);}
+  .btn--ghost{
+    background:rgba(255,255,255,0.06);
+    color:#fff;
+    border-color:var(--hms-line);
+    backdrop-filter:blur(6px);
+  }
+  .btn--ghost:hover{background:rgba(255,255,255,0.14); transform:translateY(-2px);}
+  .btn svg{flex-shrink:0;}
+
+  /* ---- signature element: live trust ticker ---- */
+  .ticker{
+    position:relative;
+    z-index:2;
+    width:100%;
+    border-top:1px solid var(--hms-line);
+    background:rgba(6,16,27,0.55);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+  }
+  .ticker__inner{
+    max-width:1280px;
+    margin:0 auto;
+    padding:22px clamp(20px,4vw,64px);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+  }
+  .ticker__item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#fff;
+    opacity:0; transform:translateY(10px);
+    animation: hmsRise .7s ease forwards;
+  }
+  .ticker__item:nth-child(1){animation-delay:.35s}
+  .ticker__item:nth-child(2){animation-delay:.42s}
+  .ticker__item:nth-child(3){animation-delay:.49s}
+  .ticker__item:nth-child(4){animation-delay:.56s}
+  .ticker__icon{
+    width:38px;height:38px;flex-shrink:0;
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(23,163,152,0.16);
+    color:var(--hms-teal-light);
+  }
+  .ticker__live .ticker__icon{background:rgba(227,169,63,0.16); color:var(--hms-gold);}
+  .ticker__num{font-family:var(--font-display); font-size:1.5rem; font-weight:600; line-height:1;}
+  .ticker__label{font-size:12.5px; color:rgba(255,255,255,0.68); margin-top:3px;}
+  .pulse{
+    display:inline-block; width:7px;height:7px;border-radius:50%;
+    background:#3ee6a8; margin-right:6px; position:relative; top:-1px;
+  }
+  .pulse::after{
+    content:'';position:absolute;inset:-4px;border-radius:50%;
+    border:1px solid #3ee6a8; animation:hmsPulse 1.8s ease-out infinite;
+  }
+
+  /* ---- floating quick-appointment card ---- */
+  .apptcard{
+    position:absolute;
     z-index:3;
+    right:clamp(20px,4vw,64px);
+    top:50%;
+    transform:translateY(-58%);
+    width:330px;
+    background:var(--hms-paper);
+    border-radius:var(--hms-radius-lg);
+    box-shadow:var(--hms-shadow-lg);
+    padding:26px;
+    opacity:0;
+    animation: hmsCardIn .8s .5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .apptcard__head{display:flex; align-items:center; gap:10px; margin-bottom:4px;}
+  .apptcard__head .dot2{width:8px;height:8px;border-radius:50%;background:var(--hms-teal-light);}
+  .apptcard__title{font-family:var(--font-display); font-size:1.3rem; font-weight:600; color:var(--hms-navy); margin:2px 0 6px;}
+  .apptcard__sub{font-size:13px; color:#5b7079; margin-bottom:18px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:#7c8e94; margin-bottom:7px;}
+  .field select, .field input{
+    width:100%; font-family:var(--font-body); font-size:14.5px; color:var(--hms-ink);
+    padding:12px 14px; border-radius:var(--hms-radius-sm); border:1px solid var(--hms-line-soft);
+    background:var(--hms-mist); appearance:none;
+  }
+  .field select:focus, .field input:focus{outline:2px solid var(--hms-teal-light); outline-offset:1px; background:#fff;}
+  .apptcard .btn--primary{width:100%; justify-content:center; margin-top:6px; padding:15px 20px;}
+  .apptcard__note{font-size:11.5px; color:#8a9aa0; text-align:center; margin-top:12px;}
+  .apptcard__confirm{
+    font-size:13.5px; color:var(--hms-teal); background:var(--hms-teal-pale);
+    border-radius:var(--hms-radius-sm); padding:12px 14px; margin-top:6px; text-align:center; font-weight:600;
+  }
 
-    box-shadow:0 20px 50px rgba(0,0,0,.18);
-   
-    backdrop-filter: blur(16px);
-    background: rgba(14,165,165,.95);
-    border:6px solid white;
-    box-shadow:
-        0 25px 60px rgba(0,0,0,.18),
-        inset 0 1px 1px rgba(255,255,255,.4);
-}
+  @keyframes hmsRise{to{opacity:1; transform:translateY(0);}}
+  @keyframes hmsCardIn{from{opacity:0; transform:translateY(-50%) translateX(14px);} to{opacity:1; transform:translateY(-58%) translateX(0);}}
+  @keyframes hmsPulse{to{transform:scale(2.1); opacity:0;}}
+
+  @media (max-width:1080px){
+    .apptcard{position:static; transform:none; width:100%; max-width:420px; margin:0 auto; animation:hmsCardIn2 .8s .5s ease forwards;}
+    @keyframes hmsCardIn2{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
+    .hero{min-height:auto;}
+    .hero__inner{padding-top:14vh; padding-bottom:40px;}
+    .hero__title{max-width:none;}
+  }
+  @media (max-width:640px){
+    .ticker__inner{grid-template-columns:repeat(2,1fr); row-gap:20px;}
+    .hero__ctas{flex-direction:column; align-items:stretch;}
+    .btn{justify-content:center;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero__eyebrow,.hero__title,.hero__subtitle,.hero__ctas,.ticker__item,.apptcard{
+      animation:none !important; opacity:1 !important; transform:none !important;
+    }
+    .pulse::after{animation:none;}
+  }
 </style>
 </head>
 <body>
-<!-- <div class="image-card">
-
-    <img src="https://i.pinimg.com/736x/50/01/6a/50016a8c9ef67cd3dbf61f9097cbf942.jpg" alt="Doctor">
-
-    <div class="doctor-card">
-        <h3>22</h3>
-        <span>Doctors</span>
-    </div>
-
-</div> -->
-
-<div class="hero-image">
-
-      <img src="https://i.pinimg.com/736x/50/01/6a/50016a8c9ef67cd3dbf61f9097cbf942.jpg" alt="Doctor">
-
-    <div class="stats-card">
-        <h3>22</h3>
-        <p>Doctors</p>
-    </div>
-
-</div>
-
+<div id="app"></div>
 <script>
-const { createApp, ref, reactive, onMounted, onBeforeUnmount } = Vue;
+const { createApp } = Vue;
 
 createApp({
-  setup(){
-    const scrolled = ref(false);
-    const menuOpen = ref(false);
-    const heartRate = ref(72);
-
-    const stats = reactive({ hospitals: 500, patients: 2, uptime: 99.9 });
-
-    const patients = [
-      { name:'Ethan Cole', room:'Room 214 · Cardiology', status:'Stable', initials:'EC', color:'linear-gradient(135deg,#4c8dff,#22d3ee)' },
-      { name:'Maria Alonso', room:'Room 108 · Ortho', status:'Review', initials:'MA', color:'linear-gradient(135deg,#ffb37c,#ff7a90)' },
-      { name:'Kenji Watanabe', room:'ICU 3 · Post-op', status:'Stable', initials:'KW', color:'linear-gradient(135deg,#79e8fb,#2e6ff2)' },
-    ];
-
-    const bars = [45, 62, 38, 80, 55, 70, 48];
-
-    const refs = {
-      rotor: ref(null), blobA: ref(null), blobB: ref(null), blobC: ref(null),
-      iconField: ref(null), stage: ref(null), mainPanel: ref(null),
-      fcDoctor: ref(null), fcNotif: ref(null), fcHeart: ref(null),
-    };
-
-    let mouseX = 0, mouseY = 0, curX = 0, curY = 0, scrollY = 0, rafId = null;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function onScroll(){
-      scrolled.value = window.scrollY > 12;
-      scrollY = window.scrollY;
+  data(){
+    return {
+      departments:['Cardiology','Neurology','Orthopedics','Pediatrics','Dermatology','General Medicine'],
+      form:{ department:'', date:'' },
+      submitted:false,
+      stats:[
+        { icon:'shield', num:'24+', label:'Years of trusted care', live:false },
+        { icon:'users', num:'180+', label:'Specialist doctors', live:false },
+        { icon:'bed', num:'92%', label:'Bed availability today', live:true },
+        { icon:'clock', num:'11 min', label:'Avg. ER wait time', live:true },
+      ]
     }
-    function onMouseMove(e){
-      mouseX = (e.clientX / window.innerWidth) - 0.5;
-      mouseY = (e.clientY / window.innerHeight) - 0.5;
+  },
+  methods:{
+    bookNow(){
+      this.submitted = true;
     }
+  },
+  template:`
+    <section class="hero">
+      <img class="hero__bg" src="hero-banner.png" alt="Doctors and medical staff standing outside CityCare Medical Center at sunrise" />
+      <div class="hero__scrim"></div>
 
-    function tick(){
-      curX += (mouseX - curX) * 0.06;
-      curY += (mouseY - curY) * 0.06;
+      <div class="hero__inner">
+        <span class="hero__eyebrow"><span class="dot"></span> Accredited Multi-Specialty Care</span>
+        <h1 class="hero__title">Healthcare that shows up <em>the moment you need it</em></h1>
+        <p class="hero__subtitle">
+          One platform to find the right specialist, check real-time bed and doctor availability,
+          and book your visit in under a minute — no phone queues, no guesswork.
+        </p>
+        <div class="hero__ctas">
+          <button class="btn btn--primary" @click="bookNow">
+            Book an Appointment
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="btn btn--ghost">Explore Departments</button>
+        </div>
+      </div>
 
-      if (refs.rotor.value) refs.rotor.value.style.transform = `translate3d(0,0,0) rotate(${scrollY * 0.03 + curX * 6}deg)`;
-      if (refs.blobA.value) refs.blobA.value.style.transform = `translate3d(${curX*30 - scrollY*0.04}px, ${curY*24 + scrollY*0.08}px,0)`;
-      if (refs.blobB.value) refs.blobB.value.style.transform = `translate3d(${curX*-26 + scrollY*0.03}px, ${curY*20 + scrollY*0.05}px,0)`;
-      if (refs.blobC.value) refs.blobC.value.style.transform = `translate3d(${curX*20}px, ${curY*-18 - scrollY*0.06}px,0)`;
+      <div class="apptcard">
+        <div class="apptcard__head"><span class="dot2"></span><span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#7c8e94;">Quick Booking</span></div>
+        <h3 class="apptcard__title">Find your next visit</h3>
+        <p class="apptcard__sub">Get matched with an available specialist today.</p>
 
-      if (refs.stage.value) {
-        const rx = (curY * -10);
-        const ry = (curX * 14);
-        refs.stage.value.style.transform = `translateY(${scrollY*0.12}px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-      }
-      if (refs.mainPanel.value) refs.mainPanel.value.style.transform = `translate3d(${curX*8}px, ${curY*8 - scrollY*0.02}px, 40px)`;
-      if (refs.fcDoctor.value) refs.fcDoctor.value.style.transform = `translate3d(${curX*22}px, ${curY*16 - scrollY*0.16}px, 90px)`;
-      if (refs.fcNotif.value) refs.fcNotif.value.style.transform = `translate3d(${curX*-18}px, ${curY*-14 + scrollY*0.1}px, 70px)`;
-      if (refs.fcHeart.value) refs.fcHeart.value.style.transform = `translate3d(${curX*16}px, ${curY*-10 - scrollY*0.14}px, 100px)`;
+        <template v-if="!submitted">
+          <div class="field">
+            <label for="dept">Department</label>
+            <select id="dept" v-model="form.department">
+              <option value="" disabled selected>Select a department</option>
+              <option v-for="d in departments" :key="d" :value="d">{{ d }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="date">Preferred date</label>
+            <input id="date" type="date" v-model="form.date" />
+          </div>
+          <button class="btn btn--primary" @click="bookNow">Check Availability</button>
+          <p class="apptcard__note">Free · No account required</p>
+        </template>
+        <template v-else>
+          <div class="apptcard__confirm">✓ Great — we're finding the earliest slot in {{ form.department || 'your chosen department' }} for you.</div>
+          <p class="apptcard__note" style="margin-top:14px;">A care coordinator will confirm shortly.</p>
+        </template>
+      </div>
 
-      if (refs.iconField.value) {
-        refs.iconField.value.style.transform = `translate3d(${curX*-10}px, ${curY*-8 + scrollY*0.15}px,0)`;
-      }
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    let hrInterval = null;
-
-    onMounted(() => {
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive:true });
-      if (!reduceMotion){
-        window.addEventListener('mousemove', onMouseMove);
-        rafId = requestAnimationFrame(tick);
-        hrInterval = setInterval(() => { heartRate.value = 68 + Math.round(Math.random()*8); }, 1800);
-      }
-      initParticles(refs);
-    });
-
-    onBeforeUnmount(() => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('mousemove', onMouseMove);
-      if (rafId) cancelAnimationFrame(rafId);
-      if (hrInterval) clearInterval(hrInterval);
-    });
-
-    return { scrolled, menuOpen, heartRate, stats, patients, bars, ...refs };
-  }
+      <div class="ticker">
+        <div class="ticker__inner">
+          <div class="ticker__item" :class="{ 'ticker__live': s.live }" v-for="s in stats" :key="s.label">
+            <div class="ticker__icon">
+              <svg v-if="s.icon==='shield'" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              <svg v-if="s.icon==='users'" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="9" r="2.6" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 14.2c2.6.3 4.5 2.5 4.5 5.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <svg v-if="s.icon==='bed'" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 19v-9a2 2 0 0 1 2-2h4v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 15h18v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 15V9a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg v-if="s.icon==='clock'" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="ticker__num"><span v-if="s.live" class="pulse"></span>{{ s.num }}</div>
+              <div class="ticker__label">{{ s.label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `
 }).mount('#app');
-
-/* ---------- lightweight particle field (canvas, no libraries) ---------- */
-function initParticles(refs){
-  const canvas = document.getElementById('particles');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let w, h, particles = [];
-
-  function resize(){
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight * 1.2;
-  }
-  function makeParticles(){
-    const count = Math.min(70, Math.floor(w / 22));
-    particles = Array.from({length: count}, () => ({
-      x: Math.random()*w,
-      y: Math.random()*h,
-      r: Math.random()*1.6 + 0.4,
-      vy: Math.random()*0.25 + 0.05,
-      a: Math.random()*0.5 + 0.15,
-      hue: Math.random() > 0.5 ? '34,211,238' : '76,141,255'
-    }));
-  }
-  resize(); makeParticles();
-  window.addEventListener('resize', () => { resize(); makeParticles(); });
-
-  function draw(){
-    ctx.clearRect(0,0,w,h);
-    for (const p of particles){
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(${p.hue},${p.a})`;
-      ctx.fill();
-      if (!reduceMotion){
-        p.y -= p.vy;
-        if (p.y < -10) p.y = h + 10;
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
 </script>
 </body>
 </html>

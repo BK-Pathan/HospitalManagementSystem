@@ -136,7 +136,7 @@ alert(error.response.data.message);
         <p class="login-text">
           Already have an account?
 
-          <RouterLink to="/">
+          <RouterLink to="/login">
             Login
           </RouterLink>
         </p>
@@ -155,201 +155,525 @@ alert(error.response.data.message);
     font-family:Inter,sans-serif;
 }
 
+
+/* =========================
+      PAGE
+========================= */
+
 .signup-page{
+
     min-height:100vh;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
-    background:
-    linear-gradient(rgba(137, 179, 182, 0.85),rgba(20,184,166,.85)),
-    url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=80");
-    background-size:cover;
-    background-position:center;
+
     padding:40px;
+
+    position:relative;
+
+    background:transparent;
+
 }
+
+
+/* =========================
+      CARD
+========================= */
+
 
 .signup-card{
 
     width:100%;
+
     max-width:1050px;
+
     display:grid;
+
     grid-template-columns:1fr 1fr;
-    background:var(--white);
-    border-radius:22px;
+
+    background:
+
+    rgba(255,255,255,.55);
+
+    backdrop-filter:blur(25px);
+
+    -webkit-backdrop-filter:blur(25px);
+
+
+    border:
+
+    1px solid rgba(255,255,255,.5);
+
+
+    border-radius:28px;
+
+
     overflow:hidden;
-    box-shadow:var(--shadow);
+
+
+    box-shadow:
+
+    0 30px 80px rgba(15,23,42,.12);
+
 
 }
+
+
+
+/* =========================
+      LEFT
+========================= */
+
 
 .left-section{
 
-    background:linear-gradient(135deg,var(--primary),var(--secondary));
-    color:var(--white);
+
     padding:60px;
+
+
     display:flex;
+
     flex-direction:column;
+
     justify-content:center;
 
+
+    color:white;
+
+
+    background:
+
+
+    linear-gradient(
+
+    135deg,
+
+    rgba(37,99,235,.9),
+
+    rgba(6,182,212,.85)
+
+    );
+
+
 }
+
+
 
 .logo-circle{
 
-    width:80px;
-    height:80px;
+
+    width:85px;
+
+    height:85px;
+
+
     border-radius:50%;
-    background:rgba(255,255,255,.2);
+
+
     display:flex;
-    justify-content:center;
+
     align-items:center;
-    font-size:34px;
+
+    justify-content:center;
+
+
+    font-size:38px;
+
+
+    background:
+
+    rgba(255,255,255,.2);
+
+
+    backdrop-filter:blur(10px);
+
+
     margin-bottom:25px;
 
+
+    box-shadow:
+
+    0 15px 40px rgba(0,0,0,.15);
+
+
 }
+
+
 
 .left-section h1{
 
+
     font-size:38px;
+
     margin-bottom:15px;
 
+
 }
+
+
 
 .left-section p{
 
-    opacity:.9;
+
     line-height:1.8;
+
+    opacity:.9;
+
     margin-bottom:35px;
 
+
 }
+
+
 
 .feature{
 
-    margin-bottom:15px;
+
+    margin-bottom:18px;
+
     font-size:15px;
 
+
 }
+
+
+
+
+/* =========================
+      RIGHT FORM
+========================= */
+
 
 .right-section{
 
+
     padding:55px;
 
+
+    background:
+
+    rgba(255,255,255,.45);
+
+
 }
+
+
 
 .right-section h2{
 
-    color:var(--text);
+
     font-size:34px;
 
+    color:#0f172a;
+
+
 }
+
+
 
 .subtitle{
 
-    color:var(--muted);
-    margin:10px 0 35px;
+
+    color:#64748b;
+
+    margin:
+
+    10px 0 35px;
+
 
 }
+
+
 
 .input-group{
 
+
     margin-bottom:20px;
 
+
 }
+
+
 
 label{
 
+
     display:block;
+
+
     margin-bottom:8px;
+
+
     font-weight:600;
-    color:var(--text);
+
+
+    color:#0f172a;
+
 
 }
+
+
 
 input,
 select{
 
+
     width:100%;
+
+
     padding:15px;
-    border:1px solid var(--border);
-    border-radius:10px;
+
+
+    border-radius:14px;
+
+
+    border:
+
+    1px solid rgba(148,163,184,.35);
+
+
     outline:none;
-    transition:.3s;
+
+
+    background:
+
+    rgba(255,255,255,.7);
+
+
     font-size:15px;
-    background:#FAFCFD;
+
+
+    transition:.3s;
+
 
 }
+
+
 
 input:focus,
 select:focus{
 
-    border-color:var(--secondary);
-    box-shadow:0 0 0 4px rgba(20,184,166,.15);
+
+    border-color:#2563eb;
+
+
+    box-shadow:
+
+
+    0 0 0 4px rgba(37,99,235,.15);
+
 
 }
+
+
+
+
+
+/* =========================
+      BUTTON
+========================= */
+
 
 .signup-btn{
 
+
     width:100%;
+
+
     margin-top:10px;
-    padding:15px;
+
+
+    padding:16px;
+
+
     border:none;
-    border-radius:10px;
-    background:linear-gradient(135deg,var(--primary),var(--secondary));
-    color:white;
-    font-size:16px;
-    font-weight:600;
+
+
+    border-radius:14px;
+
+
     cursor:pointer;
-    transition:.3s;
+
+
+    color:white;
+
+
+    font-size:16px;
+
+
+    font-weight:700;
+
+
+
+    background:
+
+
+    linear-gradient(
+
+    135deg,
+
+    #2563eb,
+
+    #06b6d4
+
+    );
+
+
+    transition:.35s;
+
 
 }
+
+
 
 .signup-btn:hover{
 
-    transform:translateY(-2px);
-    box-shadow:0 12px 25px rgba(20,184,166,.35);
+
+    transform:
+
+    translateY(-3px);
+
+
+    box-shadow:
+
+
+    0 20px 40px rgba(37,99,235,.35);
+
 
 }
+
+
+
+
+/* =========================
+      LOGIN LINK
+========================= */
+
 
 .login-text{
 
-    margin-top:25px;
+
     text-align:center;
-    color:var(--muted);
+
+
+    margin-top:25px;
+
+
+    color:#64748b;
+
 
 }
+
+
 
 .login-text a{
 
-    color:var(--primary);
+
+    color:#2563eb;
+
+
     text-decoration:none;
+
+
     font-weight:700;
 
-}
-
-.login-text a:hover{
-
-    text-decoration:underline;
 
 }
+
+
+
+/* =========================
+      GLASS SHINE
+========================= */
+
+
+.signup-card::before{
+
+
+content:"";
+
+
+position:absolute;
+
+
+width:300px;
+
+
+height:300px;
+
+
+background:
+
+
+radial-gradient(
+
+circle,
+
+rgba(255,255,255,.5),
+
+transparent 70%
+
+);
+
+
+top:-100px;
+
+
+right:-100px;
+
+
+pointer-events:none;
+
+
+}
+
+
+
+
+/* =========================
+      RESPONSIVE
+========================= */
+
 
 @media(max-width:850px){
 
+
 .signup-card{
+
 
 grid-template-columns:1fr;
 
+
 }
+
+
 
 .left-section{
 
+
 padding:40px;
+
 text-align:center;
 
+
 }
+
+
 
 .right-section{
 
+
 padding:35px;
 
-}
 
 }
+
+
+}
+
+
+
 </style>

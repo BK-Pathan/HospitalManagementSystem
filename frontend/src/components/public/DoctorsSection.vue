@@ -1,5 +1,5 @@
 <template>
-  <section class="experts">
+  <section class="experts" id="doctor">
 
     <!-- ambient floating shapes -->
     <div class="experts__bg" aria-hidden="true">

@@ -7,7 +7,7 @@ import Signup from "../views/Signup.vue";
 // Layouts
 import AdminLayout from "../layouts/AdminLayout.vue";
 import PatientLayout from "../layouts/PatientLayout.vue";
-
+import PublicLayout from "../layouts/PublicLayout.vue";
 
 // Admin Pages
 import AdminDashboard from "../views/admin/AdminDashboard.vue";
@@ -40,24 +40,35 @@ import Doctor from "../views/public/Doctors.vue";
 const routes = [
 
 {
-    path: "/",
-    name: "Home",
-    component: Home,
-},
-{
-     path:"/doctors",
- component:Doctor
-},
-{
-    path:"/login",
-    component:Login
+    path:"/",
+    component:PublicLayout,
+
+    children:[
+
+        {
+            path:"",
+            name:"Home",
+            component:Home
+        },
+
+        {
+            path:"doctors",
+            component:Doctor
+        },
+
+        {
+            path:"login",
+            component:Login
+        },
+
+        {
+            path:"signup",
+            component:Signup
+        }
+
+    ]
 },
 
-
-{
-    path:"/signup",
-    component:Signup
-},
 {
  path:"/notifications",
  component:()=>import("../views/Notification.vue")

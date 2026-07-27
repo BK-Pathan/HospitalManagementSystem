@@ -1,5 +1,5 @@
 <template>
-  <section class="services">
+  <section class="services" id="services">
 
     <div class="services__header">
       <p class="services__eyebrow">SERVICE</p>

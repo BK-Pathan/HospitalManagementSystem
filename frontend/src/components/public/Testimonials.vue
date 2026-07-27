@@ -1,5 +1,5 @@
 <template>
-  <section class="feedback">
+  <section class="feedback" id="reviews">
 
     <div class="feedback__bg" aria-hidden="true">
       <span class="blob blob--one"></span>

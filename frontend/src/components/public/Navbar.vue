@@ -105,9 +105,11 @@ const scrolled = ref(false)
 
 const navLinks = [
   { label: 'Home', href: '/', type: 'route' },
-  { label: 'Doctors', href: '/#doctors', type: 'hash', hash: '#doctors' },
-  { label: 'Services', href: '/#services', type: 'hash', hash: '#services' },
+  { label: 'Departments', href: '/#departments', type: 'hash', hash: '#departments' },
   { label: 'About', href: '/#about', type: 'hash', hash: '#about' },
+  { label: 'Services', href: '/#services', type: 'hash', hash: '#services' },
+    { label: 'Team', href: '/#doctor', type: 'hash', hash: '#doctor' },
+    { label: 'Reviews', href: '/#reviews', type: 'hash', hash: '#reviews' },
   { label: 'Contact', href: '/#contact', type: 'hash', hash: '#contact' },
 ]
 
@@ -171,19 +173,76 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 <style scoped>
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(15, 118, 128, 0.08);
-  transition: box-shadow 0.25s ease, background 0.25s ease;
-}
 
-.navbar--scrolled {
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 24px -12px rgba(13, 95, 105, 0.25);
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+  /* top:16px; */
+  z-index:50;
+
+  width:calc(100% - 40px);
+  max-width:1200px;
+
+  margin:0 auto;
+
+  background:
+  rgba(255,255,255,0.55);
+
+  backdrop-filter:
+  blur(24px);
+
+  -webkit-backdrop-filter:
+  blur(24px);
+
+  border:
+  1px solid rgba(255,255,255,.65);
+
+  border-radius:24px;
+
+  box-shadow:
+
+  0 20px 60px rgba(15,23,42,.08),
+
+  inset 0 1px 1px rgba(255,255,255,.8);
+
+  transition:
+  all .35s ease;
+
+}
+.navbar::before{
+
+content:"";
+
+position:absolute;
+
+inset:0;
+
+border-radius:24px;
+
+background:
+
+linear-gradient(
+120deg,
+rgba(255,255,255,.45),
+transparent 40%
+);
+
+pointer-events:none;
+
+}
+.navbar--scrolled{
+
+background:
+
+rgba(255,255,255,.65);
+
+box-shadow:
+
+0 25px 70px rgba(15,23,42,.12),
+
+inset 0 1px 1px rgba(255,255,255,.9);
+
 }
 
 .navbar__inner {
@@ -205,16 +264,20 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   flex-shrink: 0;
 }
 
-.navbar__logo-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #38b6c4, #0f7680);
-  box-shadow: 0 4px 10px -3px rgba(15, 118, 128, 0.55);
+.navbar__logo-icon{
+
+background:
+
+linear-gradient(
+135deg,
+#2563eb,
+#60a5fa
+);
+
+box-shadow:
+
+0 10px 25px rgba(37,99,235,.35);
+
 }
 
 .navbar__logo-text {
@@ -296,7 +359,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   flex-shrink: 0;
 }
 
-.navbar__login {
+/* .navbar__login {
   font-size: 0.9rem;
   font-weight: 600;
   color: #33555a;
@@ -306,21 +369,42 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 .navbar__login:hover {
   color: #0f7680;
-}
+} */
 
-.navbar__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.6rem 1.35rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #2bb4c2, #0f7680);
-  color: #ffffff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 8px 18px -8px rgba(15, 118, 128, 0.65);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.navbar__cta,
+.navbar__login
+{
+
+display:inline-flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:.65rem 1.5rem;
+
+border-radius:999px;
+
+background:
+
+linear-gradient(
+135deg,
+#2563eb,
+#60a5fa
+);
+
+color:white;
+
+font-size:.9rem;
+
+font-weight:600;
+
+box-shadow:
+
+0 15px 35px rgba(37,99,235,.35);
+
+transition:.3s ease;
+
 }
 
 .navbar__cta:hover {
@@ -365,8 +449,28 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 }
 
 /* Mobile menu panel */
-.navbar__mobile {
-  display: none;
+.navbar__mobile{
+
+background:
+
+rgba(255,255,255,.65);
+
+backdrop-filter:
+
+blur(25px);
+
+-webkit-backdrop-filter:
+
+blur(25px);
+
+border-radius:
+
+0 0 24px 24px;
+
+border:
+
+1px solid rgba(255,255,255,.5);
+
 }
 
 .navbar-slide-enter-active,

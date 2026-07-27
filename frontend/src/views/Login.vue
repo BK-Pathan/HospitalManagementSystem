@@ -324,135 +324,337 @@ alert(
 </template>
 
 <style>
-
 .login-page{
 
     min-height:100vh;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
-
-    background:
-
-    linear-gradient(
-        rgba(15,118,110,.85),
-        rgba(20,184,166,.85)
-    ),
-
-    var(--bg);
 
     padding:40px;
 
-}
-
-
-
-.login-card{
-
-    width:100%;
-    max-width:1000px;
-
-    display:grid;
-    grid-template-columns:1fr 1fr;
-
-    background:var(--white);
-
-    border-radius:25px;
+    position:relative;
 
     overflow:hidden;
-
-    box-shadow:var(--shadow);
-
-}
-
-
-
-
-/* Left Section */
-
-
-.welcome-section{
 
 
     background:
 
     linear-gradient(
         135deg,
-        var(--primary),
-        var(--secondary)
+        #eff6ff,
+        #ffffff,
+        #eef2ff
     );
 
-    color:white;
+}
 
-    padding:60px;
 
-    display:flex;
+/* soft water glow */
 
-    flex-direction:column;
+.login-page::before{
 
-    justify-content:center;
+content:"";
+
+position:absolute;
+
+width:600px;
+
+height:600px;
+
+left:-200px;
+
+top:-200px;
+
+
+background:
+
+radial-gradient(
+circle,
+rgba(59,130,246,.35),
+transparent 70%
+);
+
+
+filter:blur(80px);
+
+
+animation:
+
+moveGlow 12s ease-in-out infinite alternate;
 
 
 }
+
+
+.login-page::after{
+
+content:"";
+
+position:absolute;
+
+width:600px;
+
+height:600px;
+
+right:-200px;
+
+bottom:-200px;
+
+
+background:
+
+radial-gradient(
+circle,
+rgba(96,165,250,.3),
+transparent 70%
+);
+
+
+filter:blur(100px);
+
+
+animation:
+
+moveGlow2 15s ease-in-out infinite alternate;
+
+
+}
+
+
+
+@keyframes moveGlow{
+
+
+from{
+
+transform:translate(0,0);
+
+}
+
+to{
+
+transform:translate(120px,80px);
+
+}
+
+}
+
+
+@keyframes moveGlow2{
+
+
+from{
+
+transform:translate(0,0);
+
+}
+
+to{
+
+transform:translate(-120px,-80px);
+
+}
+
+}
+
+
+
+
+
+.login-card{
+
+
+position:relative;
+
+z-index:5;
+
+
+width:100%;
+
+max-width:1050px;
+
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+
+
+background:
+
+rgba(255,255,255,.55);
+
+
+
+backdrop-filter:
+
+blur(25px);
+
+
+-webkit-backdrop-filter:
+
+blur(25px);
+
+
+
+border:
+
+1px solid rgba(255,255,255,.6);
+
+
+
+border-radius:30px;
+
+
+
+overflow:hidden;
+
+
+
+box-shadow:
+
+
+0 30px 90px rgba(37,99,235,.15);
+
+
+
+}
+
+
+
+
+/* LEFT */
+
+
+.welcome-section{
+
+
+padding:60px;
+
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+rgba(37,99,235,.95),
+
+rgba(96,165,250,.85)
+
+);
+
+
+
+color:white;
+
+
+}
+
+
 
 
 
 .logo{
 
 
-    width:85px;
+width:90px;
 
-    height:85px;
+height:90px;
 
-    border-radius:50%;
 
-    display:flex;
+border-radius:50%;
 
-    align-items:center;
 
-    justify-content:center;
+display:flex;
 
-    font-size:38px;
+justify-content:center;
 
-    background:rgba(255,255,255,.2);
+align-items:center;
 
-    margin-bottom:25px;
+
+font-size:40px;
+
+
+background:
+
+rgba(255,255,255,.2);
+
+
+backdrop-filter:
+
+blur(15px);
+
+
+
+box-shadow:
+
+
+0 20px 40px rgba(0,0,0,.15);
+
+
+margin-bottom:30px;
 
 
 }
+
 
 
 
 .welcome-section h1{
 
-    font-size:38px;
 
-    margin-bottom:15px;
+font-size:38px;
+
+
+line-height:1.2;
+
+
+margin-bottom:20px;
+
 
 }
+
 
 
 
 .welcome-section p{
 
 
-    line-height:1.8;
+font-size:16px;
 
-    opacity:.9;
 
-    margin-bottom:35px;
+line-height:1.8;
+
+
+color:rgba(255,255,255,.85);
 
 
 }
+
 
 
 
 .features div{
 
 
-    margin-bottom:18px;
+margin-top:18px;
 
-    font-size:15px;
+
+font-size:15px;
 
 
 }
@@ -460,14 +662,18 @@ alert(
 
 
 
-
-/* Form Section */
+/* RIGHT FORM */
 
 
 .form-section{
 
 
-    padding:60px;
+padding:60px;
+
+
+background:
+
+rgba(255,255,255,.45);
 
 
 }
@@ -477,9 +683,11 @@ alert(
 .form-section h2{
 
 
-    font-size:34px;
+font-size:36px;
 
-    color:var(--text);
+
+color:#0f172a;
+
 
 }
 
@@ -488,9 +696,9 @@ alert(
 .subtitle{
 
 
-    color:var(--muted);
+color:#64748b;
 
-    margin:10px 0 35px;
+margin:10px 0 35px;
 
 
 }
@@ -501,7 +709,7 @@ alert(
 .input-group{
 
 
-    margin-bottom:22px;
+margin-bottom:22px;
 
 
 }
@@ -511,13 +719,15 @@ alert(
 label{
 
 
-    display:block;
+display:block;
 
-    margin-bottom:8px;
+margin-bottom:8px;
 
-    font-weight:600;
 
-    color:var(--text);
+font-weight:600;
+
+
+color:#334155;
 
 
 }
@@ -528,21 +738,34 @@ input,
 select{
 
 
-    width:100%;
+width:100%;
 
-    padding:15px;
 
-    border-radius:12px;
+padding:15px 18px;
 
-    border:1px solid var(--border);
 
-    background:#f8fafc;
+border-radius:14px;
 
-    font-size:15px;
 
-    outline:none;
+border:
 
-    transition:.3s;
+1px solid rgba(148,163,184,.3);
+
+
+
+background:
+
+rgba(255,255,255,.7);
+
+
+
+font-size:15px;
+
+
+outline:none;
+
+
+transition:.3s;
 
 
 }
@@ -553,11 +776,14 @@ input:focus,
 select:focus{
 
 
-    border-color:var(--secondary);
+border-color:#2563eb;
 
-    box-shadow:
 
-    0 0 0 4px rgba(20,184,166,.15);
+
+box-shadow:
+
+
+0 0 0 5px rgba(37,99,235,.12);
 
 
 }
@@ -568,33 +794,54 @@ select:focus{
 .login-btn{
 
 
-    width:100%;
-
-    padding:16px;
-
-    border:none;
-
-    border-radius:12px;
+width:100%;
 
 
-    background:
-
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+padding:16px;
 
 
-    color:white;
+border:none;
 
-    font-size:17px;
 
-    font-weight:700;
+border-radius:15px;
 
-    cursor:pointer;
 
-    transition:.3s;
+
+background:
+
+
+linear-gradient(
+
+135deg,
+
+#2563eb,
+
+#60a5fa
+
+);
+
+
+
+color:white;
+
+
+font-size:17px;
+
+
+font-weight:700;
+
+
+cursor:pointer;
+
+
+box-shadow:
+
+
+0 15px 35px rgba(37,99,235,.25);
+
+
+
+transition:.35s;
 
 
 }
@@ -604,9 +851,15 @@ select:focus{
 .login-btn:hover{
 
 
-    transform:translateY(-2px);
+transform:
 
-    box-shadow:0 12px 25px rgba(15,118,110,.35);
+translateY(-4px);
+
+
+box-shadow:
+
+
+0 25px 50px rgba(37,99,235,.35);
 
 
 }
@@ -617,11 +870,13 @@ select:focus{
 .signup-text{
 
 
-    text-align:center;
+text-align:center;
 
-    margin-top:25px;
 
-    color:var(--muted);
+margin-top:25px;
+
+
+color:#64748b;
 
 
 }
@@ -631,20 +886,11 @@ select:focus{
 .signup-text a{
 
 
-    color:var(--primary);
-
-    font-weight:700;
-
-    text-decoration:none;
+color:#2563eb;
 
 
-}
+font-weight:700;
 
-
-
-.signup-text a:hover{
-
-    text-decoration:underline;
 
 }
 
@@ -656,29 +902,35 @@ select:focus{
 
 .login-card{
 
-    grid-template-columns:1fr;
+
+grid-template-columns:1fr;
+
 
 }
+
 
 
 .welcome-section{
 
-    padding:40px;
 
-    text-align:center;
+padding:40px;
+
+text-align:center;
+
 
 }
+
 
 
 .form-section{
 
-    padding:35px;
+
+padding:35px;
+
 
 }
 
 
+
 }
-
-
-
 </style>
