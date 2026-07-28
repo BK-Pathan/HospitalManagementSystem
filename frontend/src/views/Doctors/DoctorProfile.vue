@@ -398,308 +398,322 @@ getProfile();
 <template>
 
 <div class="profile-page">
-<div class="doctor-avatar">
 
-
-<img
-v-if="profileImage"
-:src="profileImage"
-/>
-
-
-<span v-else>
-  {{
-    name
-    ?.replace(/^Dr\.?\s*/i, "")
-    ?.charAt(0)
-    ?.toUpperCase()
-  }}
-</span>
-
-
+<div class="page-header">
+  <p class="eyebrow">Account</p>
+  <h2 class="page-title">Doctor Profile</h2>
 </div>
-
-
-
-<input
-type="file"
-accept="image/*"
-@change="handleImage"
-/>
-
-
-<button
-class="primary-btn"
-@click="uploadImage"
->
-Upload Image
-</button>
-
-
-<button
-v-if="profileImage"
-class="remove-btn"
-@click="removeImage"
->
-Remove Image
-</button>
-
-<h2 class="page-title">
-Doctor Profile
-</h2>
-
-
 
 
 <div class="profile-card">
 
+  <!-- =====================
+  IDENTITY / AVATAR
+  ===================== -->
+
+  <div class="identity-section">
+
+    <div class="doctor-avatar">
+
+      <img
+      v-if="profileImage"
+      :src="profileImage"
+      />
+
+      <span v-else>
+        {{
+          name
+          ?.replace(/^Dr\.?\s*/i, "")
+          ?.charAt(0)
+          ?.toUpperCase() || "D"
+        }}
+      </span>
+
+    </div>
+
+    <div class="identity-info">
+      <h3>{{ name || "Your Name" }}</h3>
+      <p>{{ department || "No department set" }}</p>
+    </div>
+
+    <div class="identity-actions">
+
+      <label class="file-btn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Choose Image
+        <input
+        type="file"
+        accept="image/*"
+        @change="handleImage"
+        />
+      </label>
+
+      <button
+      class="primary-btn"
+      @click="uploadImage"
+      >
+      Upload
+      </button>
+
+      <button
+      v-if="profileImage"
+      class="remove-btn"
+      @click="removeImage"
+      >
+      Remove
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================
+  PROFILE FORM
+  ===================== -->
+
+  <h3 class="section-title">Profile Information</h3>
+
+  <div class="form-grid">
+
+    <div class="field">
+      <label>Full Name</label>
+      <input
+      class="form-input"
+      v-model="name"
+      placeholder="Dr. John Doe"
+      />
+    </div>
+
+    <div class="field">
+      <label>Department</label>
+      <select
+      class="form-input"
+      v-model="department"
+      >
+
+      <option value="">
+      Select Department
+      </option>
+
+      <option>
+          24/7 Emergency
+      </option>
+
+      <option>
+      Cardiology
+      </option>
+
+      <option>
+      Neurology
+      </option>
+
+      <option>
+      Dermatology
+      </option>
+
+      <option>
+      Orthopedics
+      </option>
+
+      <option>
+      Pediatrics
+      </option>
+
+      <option>
+      Gynecology
+      </option>
+
+      <option>
+      General Medicine
+      </option>
+
+      <option>
+      ENT
+      </option>
+
+      <option>
+      Dental
+      </option>
+
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Specialties</label>
+      <input
+      class="form-input"
+      v-model="specialties"
+      placeholder="Cardiologist, Dentist"
+      />
+    </div>
 
-<div class="form-grid">
+    <div class="field">
+      <label>Qualifications</label>
+      <input
+      class="form-input"
+      v-model="qualifications"
+      placeholder="MBBS, FCPS"
+      />
+    </div>
 
+    <div class="field">
+      <label>Experience</label>
+      <input
+      class="form-input"
+      v-model="experience"
+      placeholder="e.g. 8 years"
+      />
+    </div>
 
+    <div class="field">
+      <label>Contact Information</label>
+      <input
+      class="form-input"
+      v-model="contactInformation"
+      placeholder="Phone or email"
+      />
+    </div>
 
-<input
-class="form-input"
-v-model="name"
-placeholder="Name"
-/>
+  </div>
 
-<select
-class="form-input"
-v-model="department"
->
 
-<option value="">
-Select Department
-</option>
+  <!-- =====================
+  AVAILABILITY
+  ===================== -->
 
-<option>
-    24/7 Emergency
-</option>
+  <h3 class="section-title">
+  Availability
+  </h3>
 
-<option>
-Cardiology
-</option>
 
-<option>
-Neurology
-</option>
+  <div class="availability-form">
 
-<option>
-Dermatology
-</option>
 
-<option>
-Orthopedics
-</option>
+  <div class="field">
+    <label>Day</label>
+    <select class="form-input" v-model="day">
 
-<option>
-Pediatrics
-</option>
+    <option value="">
+    Select Day
+    </option>
 
-<option>
-Gynecology
-</option>
+    <option>Mon</option>
+    <option>Tue</option>
+    <option>Wed</option>
+    <option>Thu</option>
+    <option>Fri</option>
+    <option>Sat</option>
+    <option>Sun</option>
 
-<option>
-General Medicine
-</option>
+    </select>
+  </div>
 
-<option>
-ENT
-</option>
 
-<option>
-Dental
-</option>
+  <div class="field">
+    <label>Start Time</label>
+    <input
+    class="form-input"
+    type="time"
+    v-model="startTime"
+    />
+  </div>
 
-</select>
 
+  <div class="field">
+    <label>End Time</label>
+    <input
+    class="form-input"
+    type="time"
+    v-model="endTime"
+    />
+  </div>
 
-<input
-class="form-input"
-v-model="specialties"
-placeholder="Cardiologist, Dentist"
-/>
 
+  <button
+  class="primary-btn add-slot-btn"
+  @click="addAvailability"
+  >
+  <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  Add Slot
+  </button>
 
 
+  </div>
 
-<input
-class="form-input"
-v-model="qualifications"
-placeholder="Qualification"
-/>
 
 
+  <div class="table-card">
 
+    <table class="availability-table" v-if="availability.length">
 
-<input
-class="form-input"
-v-model="experience"
-placeholder="Experience"
-/>
+    <thead>
+    <tr>
 
+    <th>Day</th>
 
+    <th>Start</th>
 
+    <th>End</th>
 
-<input
-class="form-input"
-v-model="contactInformation"
-placeholder="Contact"
-/>
+    <th>Action</th>
 
+    </tr>
+    </thead>
 
 
+    <tbody>
+    <tr
+    v-for="(slot,index) in availability"
+    :key="index"
+    >
 
-</div>
 
+    <td><span class="day-pill">{{ slot.day }}</span></td>
 
+    <td>{{ slot.startTime }}</td>
 
+    <td>{{ slot.endTime }}</td>
 
 
-<h3 class="section-title">
-Availability
-</h3>
 
 
+    <td>
 
 
+    <button
+    class="remove-btn small"
+    @click="removeAvailability(index)"
+    >
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Remove
+    </button>
 
-<div class="availability-form">
 
 
-<select class="form-input" v-model="day">
+    </td>
 
-<option value="">
-Select Day
-</option>
 
-<option>Mon</option>
-<option>Tue</option>
-<option>Wed</option>
-<option>Thu</option>
-<option>Fri</option>
-<option>Sat</option>
-<option>Sun</option>
+    </tr>
+    </tbody>
 
-</select>
+    </table>
 
+    <div class="empty-state" v-else>
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <p>No availability slots added yet.</p>
+    </div>
 
+  </div>
 
 
-
-<input
-class="form-input"
-type="time"
-v-model="startTime"
-/>
-
-
-
-
-<input
-class="form-input"
-type="time"
-v-model="endTime"
-/>
-
-
-
-
-
-<button 
-class="primary-btn"
-@click="addAvailability"
->
-
-Add Slot
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-<div class="table-card">
-
-
-<table class="availability-table">
-
-
-<tr>
-
-<th>Day</th>
-
-<th>Start</th>
-
-<th>End</th>
-
-<th>Action</th>
-
-</tr>
-
-
-
-
-<tr
-v-for="(slot,index) in availability"
-:key="index"
->
-
-
-<td>{{ slot.day }}</td>
-
-<td>{{ slot.startTime }}</td>
-
-<td>{{ slot.endTime }}</td>
-
-
-
-
-<td>
-
-
-<button
-class="remove-btn"
-@click="removeAvailability(index)"
->
-
-Remove
-
-</button>
-
-
-
-</td>
-
-
-</tr>
-
-
-
-</table>
-
-
-</div>
-
-
-
-
-
-<button 
-class="save-btn"
-@click="saveProfile"
->
-
-Save Profile
-
-</button>
-
+  <button
+  class="save-btn"
+  @click="saveProfile"
+  >
+  <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M17 21v-8H7v8M7 3v5h8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+  Save Profile
+  </button>
 
 
 </div>
@@ -720,20 +734,34 @@ Save Profile
 }
 
 
+.page-header{
+
+    margin-bottom:25px;
+
+}
+
+
+.eyebrow{
+
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--primary);
+    margin:0 0 6px;
+
+}
 
 
 .page-title{
 
     color:var(--text);
 
-    font-size:32px;
+    font-size:30px;
 
-    margin-bottom:30px;
+    margin:0;
 
 }
-
-
-
 
 
 .profile-card{
@@ -751,7 +779,133 @@ Save Profile
 }
 
 
+/* ---------- Identity ---------- */
 
+.identity-section{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:22px;
+
+    flex-wrap:wrap;
+
+    padding-bottom:28px;
+
+    margin-bottom:28px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+.identity-info{
+
+    flex:1;
+
+    min-width:160px;
+
+}
+
+
+.identity-info h3{
+
+    margin:0 0 4px;
+
+    color:var(--text);
+
+    font-size:19px;
+
+}
+
+
+.identity-info p{
+
+    margin:0;
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+
+.identity-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+
+.file-btn{
+
+    position:relative;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    background:#f8fafc;
+
+    color:var(--text);
+
+    font-weight:600;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+}
+
+
+.file-btn svg{
+
+    width:16px;
+
+    height:16px;
+
+}
+
+
+.file-btn input{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:0;
+
+    cursor:pointer;
+
+}
+
+
+/* ---------- Form ---------- */
+
+.section-title{
+
+    margin:0 0 20px;
+
+    color:var(--text);
+
+    font-size:17px;
+
+}
 
 
 .form-grid{
@@ -762,17 +916,42 @@ Save Profile
 
     gap:20px;
 
+    margin-bottom:34px;
+
 }
 
 
+.field{
 
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+
+.field label{
+
+    font-size:12px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.03em;
+
+    color:var(--muted);
+
+}
 
 
 .form-input{
 
     width:100%;
 
-    padding:15px;
+    padding:14px 15px;
 
     border-radius:12px;
 
@@ -784,10 +963,13 @@ Save Profile
 
     outline:none;
 
+    font-family:inherit;
+
+    color:var(--text);
+
+    box-sizing:border-box;
+
 }
-
-
-
 
 
 .form-input:focus{
@@ -799,35 +981,43 @@ Save Profile
 }
 
 
-
-
-
-.section-title{
-
-    margin:30px 0 20px;
-
-    color:var(--text);
-
-}
-
-
-
-
+/* ---------- Availability ---------- */
 
 .availability-form{
 
     display:grid;
 
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(3,1fr) auto;
 
     gap:15px;
 
-    align-items:center;
+    align-items:end;
+
+    margin-bottom:24px;
 
 }
 
 
+.add-slot-btn{
 
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    white-space:nowrap;
+
+}
+
+
+.add-slot-btn svg{
+
+    width:16px;
+
+    height:16px;
+
+}
 
 
 .primary-btn,
@@ -854,19 +1044,17 @@ Save Profile
 }
 
 
-
-
-
 .table-card{
-
-    margin-top:30px;
 
     overflow-x:auto;
 
+    background:#f8fafc;
+
+    border-radius:16px;
+
+    border:1px solid var(--border);
+
 }
-
-
-
 
 
 .availability-table{
@@ -878,32 +1066,32 @@ Save Profile
 }
 
 
+.availability-table thead th{
 
+    color:var(--muted);
 
+    font-size:12px;
 
-.availability-table th{
+    text-transform:uppercase;
 
-    background:linear-gradient(
-        135deg,
-        var(--primary),
-        var(--primary-dark)
-    );
+    letter-spacing:.04em;
 
-    color:white;
-
-    padding:15px;
+    font-weight:700;
 
     text-align:left;
+
+    padding:14px 18px;
+
+    border-bottom:1px solid var(--border);
+
+    background:transparent;
 
 }
 
 
-
-
-
 .availability-table td{
 
-    padding:15px;
+    padding:14px 18px;
 
     border-bottom:1px solid var(--border);
 
@@ -912,7 +1100,76 @@ Save Profile
 }
 
 
+.availability-table tbody tr:last-child td{
 
+    border-bottom:none;
+
+}
+
+
+.availability-table tbody tr:hover{
+
+    background:rgba(20,184,166,.05);
+
+}
+
+
+.day-pill{
+
+    display:inline-block;
+
+    padding:5px 12px;
+
+    border-radius:999px;
+
+    background:rgba(20,184,166,.15);
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    font-size:12px;
+
+}
+
+
+.empty-state{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:40px 20px;
+
+    color:var(--muted);
+
+}
+
+
+.empty-state svg{
+
+    width:30px;
+
+    height:30px;
+
+    opacity:.6;
+
+}
+
+
+.empty-state p{
+
+    margin:0;
+
+    font-size:14px;
+
+}
 
 
 .remove-btn{
@@ -931,22 +1188,53 @@ Save Profile
 
     font-weight:700;
 
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
 }
 
 
+.remove-btn svg{
 
+    width:14px;
+
+    height:14px;
+
+}
+
+
+.remove-btn.small{
+
+    padding:8px 12px;
+
+    font-size:13px;
+
+}
 
 
 .save-btn{
 
     margin-top:30px;
 
-    width:200px;
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
 
 }
 
 
+.save-btn svg{
 
+    width:16px;
+
+    height:16px;
+
+}
 
 
 button:hover{
@@ -958,18 +1246,18 @@ button:hover{
 
 .doctor-avatar{
 
-width:100px;
-height:100px;
+width:88px;
+height:88px;
 border-radius:50%;
-background:var(--secondary);
+background:linear-gradient(135deg,var(--primary),var(--primary-dark));
 color:white;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:40px;
+font-size:32px;
 font-weight:bold;
 overflow:hidden;
-margin-bottom:20px;
+flex-shrink:0;
 
 }
 
@@ -997,6 +1285,15 @@ object-fit:cover;
 .availability-form{
 
     grid-template-columns:1fr;
+
+}
+
+
+.identity-section{
+
+    flex-direction:column;
+
+    align-items:flex-start;
 
 }
 

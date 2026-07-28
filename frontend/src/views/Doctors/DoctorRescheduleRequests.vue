@@ -267,6 +267,19 @@ getHistory();
 });
 
 
+// Display-only helper (no backend / data change)
+
+const initials = (name) => {
+  if (!name || name === "Unknown") return "?";
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase())
+    .join("");
+};
+
+
 
 </script>
 
@@ -280,9 +293,10 @@ getHistory();
 <div class="container">
 
 
-<h1>
-🔄 Reschedule Requests
-</h1>
+<div class="page-header">
+  <p class="eyebrow">Scheduling</p>
+  <h2 class="page-title">Reschedule Requests</h2>
+</div>
 
 
 
@@ -294,9 +308,10 @@ getHistory();
 <div class="section">
 
 
-<h2>
-Pending Requests
-</h2>
+<div class="section-head">
+  <h2 class="section-title">Pending Requests</h2>
+  <span class="section-count" v-if="requests.length">{{ requests.length }} awaiting response</span>
+</div>
 
 
 
@@ -305,7 +320,8 @@ v-if="requests.length===0"
 class="empty"
 >
 
-No Pending Requests
+<svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 5v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+<p>No pending requests.</p>
 
 </div>
 
@@ -319,51 +335,34 @@ class="card"
 
 
 
-<h3>
+<div class="card__head">
 
-Patient:
-{{item.patient?.user?.name || "Unknown"}}
+<span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
 
-</h3>
+<div class="card__head-info">
+  <h3>{{item.patient?.user?.name || "Unknown"}}</h3>
+  <span class="status status--pending">Pending</span>
+</div>
 
-
-
-
-<p>
-
-<b>Current:</b>
-
-<br>
-
-{{formatDateTime(item.appointmentDateTime)}}
-
-</p>
+</div>
 
 
 
+<div class="date-compare">
 
-<p>
+<div class="date-block">
+  <span class="date-label">Current</span>
+  <span class="date-value">{{formatDateTime(item.appointmentDateTime)}}</span>
+</div>
 
-<b>Requested:</b>
+<svg class="date-arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-<br>
+<div class="date-block date-block--requested">
+  <span class="date-label">Requested</span>
+  <span class="date-value">{{formatDateTime(item.rescheduledDateTime)}}</span>
+</div>
 
-{{formatDateTime(item.rescheduledDateTime)}}
-
-</p>
-
-
-
-
-<p>
-
-<b>Status:</b>
-
-<span class="pending">
-Pending
-</span>
-
-</p>
+</div>
 
 
 
@@ -380,7 +379,7 @@ class="approve"
 :disabled="processing"
 
 >
-
+<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 Accept
 
 </button>
@@ -396,7 +395,7 @@ class="reject"
 :disabled="processing"
 
 >
-
+<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
 Reject
 
 </button>
@@ -428,11 +427,10 @@ Reject
 <div class="section">
 
 
-<h2>
-
-Reschedule History
-
-</h2>
+<div class="section-head">
+  <h2 class="section-title">Reschedule History</h2>
+  <span class="section-count" v-if="history.length">{{ history.length }} patient(s)</span>
+</div>
 
 
 
@@ -444,7 +442,8 @@ class="empty"
 
 >
 
-No History
+<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+<p>No history yet.</p>
 
 </div>
 
@@ -462,12 +461,13 @@ class="card"
 >
 
 
-<h3>
+<div class="card__head">
 
-Patient:
-{{item.patient?.user?.name || "Unknown"}}
+<span class="avatar avatar--muted">{{ initials(item.patient?.user?.name) }}</span>
 
-</h3>
+<h3>{{item.patient?.user?.name || "Unknown"}}</h3>
+
+</div>
 
 
 
@@ -482,54 +482,40 @@ class="history-box"
 >
 
 
-<p>
+<div class="date-compare date-compare--compact">
 
-<b>Old Date:</b>
+<div class="date-block">
+  <span class="date-label">Old Date</span>
+  <span class="date-value">{{formatDateTime(h.oldDateTime)}}</span>
+</div>
 
-<br>
+<svg class="date-arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-{{formatDateTime(h.oldDateTime)}}
+<div class="date-block date-block--requested">
+  <span class="date-label">New Date</span>
+  <span class="date-value">{{formatDateTime(h.newDateTime)}}</span>
+</div>
 
-</p>
-
-
-
-<p>
-
-<b>New Date:</b>
-
-<br>
-
-{{formatDateTime(h.newDateTime)}}
-
-</p>
+</div>
 
 
-
-<p>
-
-<b>Status:</b>
-
+<div class="history-box__footer">
 
 <span
-:class="h.status"
+:class="`status status--${h.status}`"
 >
 
 {{h.status}}
 
 </span>
 
+<p class="reply" v-if="h.doctorReply">
+
+<b>Reply:</b> {{h.doctorReply}}
 
 </p>
 
-
-<p v-if="h.doctorReply">
-
-<b>Reply:</b>
-
-{{h.doctorReply}}
-
-</p>
+</div>
 
 
 
@@ -566,12 +552,32 @@ padding:30px;
 }
 
 
+.page-header{
 
-h1{
+margin-bottom:25px;
 
-font-size:32px;
+}
 
-margin-bottom:30px;
+
+.eyebrow{
+
+font-size:13px;
+font-weight:600;
+letter-spacing:.04em;
+text-transform:uppercase;
+color:var(--primary);
+margin:0 0 6px;
+
+}
+
+
+.page-title{
+
+font-size:30px;
+
+color:var(--text);
+
+margin:0;
 
 }
 
@@ -585,9 +591,37 @@ margin-bottom:40px;
 
 
 
-.section h2{
+.section-head{
 
-margin-bottom:20px;
+display:flex;
+
+align-items:baseline;
+
+justify-content:space-between;
+
+margin-bottom:18px;
+
+}
+
+
+.section-title{
+
+margin:0;
+
+color:var(--text);
+
+font-size:20px;
+
+}
+
+
+.section-count{
+
+font-size:13px;
+
+color:var(--muted);
+
+font-weight:500;
 
 }
 
@@ -595,15 +629,182 @@ margin-bottom:20px;
 
 .card{
 
-background:white;
+background:var(--white);
 
 padding:25px;
 
-border-radius:20px;
+border-radius:18px;
 
 margin-bottom:20px;
 
-box-shadow:0 10px 25px rgba(0,0,0,.08);
+box-shadow:var(--shadow);
+
+border:1px solid var(--border);
+
+}
+
+
+.card__head{
+
+display:flex;
+
+align-items:center;
+
+gap:14px;
+
+margin-bottom:20px;
+
+}
+
+
+.card__head h3{
+
+margin:0;
+
+color:var(--text);
+
+font-size:16px;
+
+}
+
+
+.card__head-info{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+flex-wrap:wrap;
+
+}
+
+
+.card__head-info h3{
+
+margin:0;
+
+}
+
+
+.avatar{
+
+flex-shrink:0;
+
+width:44px;
+
+height:44px;
+
+border-radius:50%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+
+color:#fff;
+
+font-size:14px;
+
+font-weight:700;
+
+}
+
+
+.avatar--muted{
+
+background:linear-gradient(135deg,#94a3b8,#64748b);
+
+}
+
+
+/* ---------- Date compare ---------- */
+
+.date-compare{
+
+display:flex;
+
+align-items:center;
+
+gap:16px;
+
+padding:16px;
+
+background:#f8fafc;
+
+border-radius:14px;
+
+border:1px solid var(--border);
+
+}
+
+
+.date-compare--compact{
+
+margin-bottom:12px;
+
+}
+
+
+.date-block{
+
+flex:1;
+
+display:flex;
+
+flex-direction:column;
+
+gap:4px;
+
+}
+
+
+.date-block--requested .date-value{
+
+color:var(--primary);
+
+}
+
+
+.date-label{
+
+font-size:11px;
+
+font-weight:700;
+
+text-transform:uppercase;
+
+letter-spacing:.04em;
+
+color:var(--muted);
+
+}
+
+
+.date-value{
+
+font-size:14px;
+
+font-weight:600;
+
+color:var(--text);
+
+}
+
+
+.date-arrow{
+
+flex-shrink:0;
+
+width:18px;
+
+height:18px;
+
+color:var(--muted);
 
 }
 
@@ -613,11 +814,39 @@ box-shadow:0 10px 25px rgba(0,0,0,.08);
 
 background:#f8fafc;
 
-padding:15px;
+padding:16px;
 
-border-radius:12px;
+border-radius:14px;
 
 margin-top:15px;
+
+border:1px solid var(--border);
+
+}
+
+
+.history-box__footer{
+
+margin-top:12px;
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+flex-wrap:wrap;
+
+}
+
+
+.reply{
+
+margin:0;
+
+font-size:13px;
+
+color:var(--text);
 
 }
 
@@ -627,7 +856,7 @@ margin-top:15px;
 
 display:flex;
 
-gap:15px;
+gap:12px;
 
 margin-top:20px;
 
@@ -637,13 +866,50 @@ margin-top:20px;
 
 button{
 
-padding:10px 25px;
+padding:11px 22px;
 
 border:none;
 
 border-radius:10px;
 
 cursor:pointer;
+
+display:inline-flex;
+
+align-items:center;
+
+gap:8px;
+
+font-weight:700;
+
+font-size:14px;
+
+transition:transform .15s ease, opacity .15s ease;
+
+}
+
+
+button svg{
+
+width:16px;
+
+height:16px;
+
+}
+
+
+button:hover:not(:disabled){
+
+transform:translateY(-2px);
+
+}
+
+
+button:disabled{
+
+opacity:.6;
+
+cursor:not-allowed;
 
 }
 
@@ -669,31 +935,48 @@ color:white;
 
 
 
-.pending{
+.status{
 
-color:#f59e0b;
+display:inline-block;
 
-font-weight:bold;
+padding:6px 14px;
+
+border-radius:999px;
+
+font-weight:700;
+
+font-size:12px;
+
+text-transform:capitalize;
+
+}
+
+
+.status--pending{
+
+background:rgba(234,179,8,.15);
+
+color:#ca8a04;
 
 }
 
 
 
-.approved{
+.status--approved{
+
+background:rgba(22,163,74,.15);
 
 color:#16a34a;
 
-font-weight:bold;
-
 }
 
 
 
-.rejected{
+.status--rejected{
+
+background:rgba(220,38,38,.15);
 
 color:#dc2626;
-
-font-weight:bold;
 
 }
 
@@ -701,13 +984,78 @@ font-weight:bold;
 
 .empty{
 
-padding:30px;
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+gap:12px;
+
+padding:50px 20px;
 
 text-align:center;
 
-color:#777;
+background:var(--white);
 
-font-size:18px;
+border-radius:18px;
+
+box-shadow:var(--shadow);
+
+border:1px solid var(--border);
+
+color:var(--muted);
+
+}
+
+
+.empty svg{
+
+width:36px;
+
+height:36px;
+
+opacity:.6;
+
+}
+
+
+.empty p{
+
+margin:0;
+
+font-size:14px;
+
+}
+
+
+@media (max-width:600px){
+
+.date-compare{
+
+flex-direction:column;
+
+align-items:stretch;
+
+}
+
+
+.date-arrow{
+
+transform:rotate(90deg);
+
+align-self:center;
+
+}
+
+
+.buttons{
+
+flex-direction:column;
+
+}
 
 }
 

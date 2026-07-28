@@ -179,6 +179,19 @@ router.push(
 
 
 
+// Display-only helper (no backend / data change)
+
+const initials = (name) => {
+  if (!name || name === "Unknown") return "?";
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase())
+    .join("");
+};
+
+
 
 
 onMounted(()=>{
@@ -195,15 +208,20 @@ getAppointments();
 <div class="appointments-page">
 
 
-<h2 class="page-title">
-My Patient Appointments
-</h2>
+<div class="page-header">
+  <div>
+    <p class="eyebrow">Appointments</p>
+    <h2 class="page-title">My Patient Appointments</h2>
+  </div>
+  <span class="count-pill" v-if="!loading">{{ appointments.length }} total</span>
+</div>
 
 
 
-<p v-if="loading" class="loading-text">
-Loading...
-</p>
+<div v-if="loading" class="loading-state">
+  <span class="spinner"></span>
+  <p>Loading appointments...</p>
+</div>
 
 
 
@@ -227,7 +245,7 @@ Email
 </th>
 
 <th>
-Date
+Date &amp; Time
 </th>
 
 <th>
@@ -250,14 +268,13 @@ Action
 <tbody>
 
 
-<tr
-v-if="appointments.length===0"
->
+<tr v-if="appointments.length===0">
 
 <td colspan="5" class="empty-data">
-
-No appointments found
-
+  <div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <p>No appointments found</p>
+  </div>
 </td>
 
 </tr>
@@ -278,14 +295,15 @@ highlight:item._id === route.params.id
 
 
 <td class="patient-name">
-
-{{item.patient?.user?.name || item.patient?.name || "Unknown"}}
-
+  <div class="patient-cell">
+    <span class="avatar">{{ initials(item.patient?.user?.name || item.patient?.name) }}</span>
+    {{item.patient?.user?.name || item.patient?.name || "Unknown"}}
+  </div>
 </td>
 
 
 
-<td>
+<td class="muted-cell">
 
 {{item.patient?.user?.email || item.patient?.email || "N/A"}}
 
@@ -293,7 +311,7 @@ highlight:item._id === route.params.id
 
 
 
-<td>
+<td class="muted-cell">
 
 {{
 new Date(item.appointmentDateTime)
@@ -306,7 +324,7 @@ new Date(item.appointmentDateTime)
 
 <td>
 
-<span class="status">
+<span :class="`status status--${item.status}`">
 
 {{item.status}}
 
@@ -323,10 +341,11 @@ new Date(item.appointmentDateTime)
 
 
 <button
-class="confirm-btn"
+class="icon-btn confirm-btn"
+title="Confirm"
 @click="updateStatus(item._id,'confirmed')"
 >
-
+<svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
 Confirm
 
 </button>
@@ -335,10 +354,11 @@ Confirm
 
 
 <button
-class="complete-btn"
+class="icon-btn complete-btn"
+title="Complete"
 @click="updateStatus(item._id,'completed')"
 >
-
+<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 Complete
 
 </button>
@@ -348,17 +368,21 @@ Complete
 
 
 <button
-class="cancel-btn"
+class="icon-btn cancel-btn"
+title="Cancel"
 @click="selectedAppointment=item._id"
 >
-
+<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
 Cancel
 
 </button>
 
 <button
+class="icon-btn history-btn"
+title="History"
 @click="viewHistory(item.patient)"
 >
+<svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 5v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
 History
 </button>
 
@@ -380,18 +404,23 @@ History
 
 
 
-<!-- Cancel Popup -->
+<!-- Cancel Modal -->
 
 
-<div
-v-if="selectedAppointment"
-class="cancel-box"
->
+<Teleport to="body">
+<div v-if="selectedAppointment" class="modal-overlay" @click.self="selectedAppointment=null">
 
+<div class="cancel-box">
 
-<h3>
-Cancel Appointment
-</h3>
+  <div class="cancel-box__header">
+    <div class="cancel-box__icon">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div>
+      <h3>Cancel Appointment</h3>
+      <p>This will notify the patient and free up the slot.</p>
+    </div>
+  </div>
 
 
 
@@ -406,7 +435,7 @@ placeholder="Enter cancellation reason"
 
 
 
-<div>
+<div class="cancel-box__actions">
 
 
 <button
@@ -436,6 +465,9 @@ Close
 
 </div>
 
+</div>
+</Teleport>
+
 
 
 </div>
@@ -455,25 +487,91 @@ min-height:100%;
 }
 
 
+/* ---------- Header ---------- */
 
-.page-title{
+.page-header{
 
-color:var(--text);
-
-font-size:32px;
-
+display:flex;
+align-items:flex-end;
+justify-content:space-between;
+flex-wrap:wrap;
+gap:16px;
 margin-bottom:30px;
 
 }
 
 
+.eyebrow{
+
+font-size:13px;
+font-weight:600;
+letter-spacing:.04em;
+text-transform:uppercase;
+color:var(--primary);
+margin:0 0 6px;
+
+}
 
 
-.loading-text{
+.page-title{
 
+color:var(--text);
+
+font-size:30px;
+
+margin:0;
+
+}
+
+
+.count-pill{
+
+display:inline-flex;
+align-items:center;
+padding:10px 18px;
+border-radius:999px;
+background:var(--white);
+border:1px solid var(--border);
+box-shadow:var(--shadow);
+color:var(--muted);
+font-size:14px;
+font-weight:500;
+
+}
+
+
+
+/* ---------- Loading ---------- */
+
+
+.loading-state{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:14px;
+padding:60px 0;
 color:var(--muted);
 
-font-size:18px;
+}
+
+
+.spinner{
+
+width:32px;
+height:32px;
+border-radius:50%;
+border:3px solid var(--border);
+border-top-color:var(--primary);
+animation:spin .8s linear infinite;
+
+}
+
+
+@keyframes spin{
+
+to{ transform:rotate(360deg); }
 
 }
 
@@ -483,9 +581,9 @@ font-size:18px;
 
 background:var(--white);
 
-padding:30px;
+padding:10px 24px 24px;
 
-border-radius:22px;
+border-radius:18px;
 
 box-shadow:var(--shadow);
 
@@ -510,19 +608,23 @@ border-collapse:collapse;
 
 .appointments-table th{
 
-padding:16px;
+padding:16px 12px;
 
 text-align:left;
 
-color:white;
+color:var(--muted);
 
-background:
+font-size:12px;
 
-linear-gradient(
-135deg,
-var(--primary),
-var(--primary-dark)
-);
+text-transform:uppercase;
+
+letter-spacing:.04em;
+
+font-weight:700;
+
+background:transparent;
+
+border-bottom:1px solid var(--border);
 
 }
 
@@ -530,11 +632,22 @@ var(--primary-dark)
 
 .appointments-table td{
 
-padding:16px;
+padding:16px 12px;
 
 color:var(--text);
 
 border-bottom:1px solid var(--border);
+
+font-size:14px;
+
+vertical-align:middle;
+
+}
+
+
+.appointments-table tbody tr:last-child td{
+
+border-bottom:none;
 
 }
 
@@ -548,12 +661,45 @@ background:#f8fafc;
 
 
 
+.muted-cell{
+
+color:var(--muted);
+
+}
+
+
+.patient-cell{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+}
+
+
+.avatar{
+
+flex-shrink:0;
+width:34px;
+height:34px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+color:#fff;
+font-size:12px;
+font-weight:700;
+
+}
+
+
 
 .patient-name{
 
 font-weight:700;
 
-color:var(--primary);
+color:var(--text);
 
 }
 
@@ -561,21 +707,29 @@ color:var(--primary);
 
 .status{
 
-padding:8px 15px;
+display:inline-block;
 
-border-radius:20px;
+padding:6px 14px;
 
-background:rgba(20,184,166,.15);
+border-radius:999px;
 
-color:var(--primary);
-
-font-size:13px;
+font-size:12px;
 
 font-weight:700;
 
 text-transform:capitalize;
 
+background:rgba(20,184,166,.15);
+
+color:var(--primary);
+
 }
+
+
+.status--pending{ background:rgba(234,179,8,.15); color:#ca8a04; }
+.status--confirmed{ background:rgba(37,99,235,.15); color:#2563eb; }
+.status--completed{ background:rgba(22,163,74,.15); color:#16a34a; }
+.status--cancelled{ background:rgba(220,38,38,.15); color:#dc2626; }
 
 
 
@@ -585,15 +739,20 @@ display:flex;
 
 gap:8px;
 
+flex-wrap:wrap;
+
 }
 
 
 
-button{
+.icon-btn{
 
+display:inline-flex;
+align-items:center;
+gap:6px;
 border:none;
 
-padding:10px 14px;
+padding:9px 13px;
 
 border-radius:10px;
 
@@ -601,7 +760,19 @@ cursor:pointer;
 
 color:white;
 
-font-weight:700;
+font-weight:600;
+
+font-size:13px;
+
+transition:transform .15s ease, box-shadow .15s ease;
+
+}
+
+
+.icon-btn svg{
+
+width:14px;
+height:14px;
 
 }
 
@@ -630,41 +801,111 @@ background:#dc2626;
 }
 
 
+.history-btn{
 
-button:hover{
+background:var(--muted);
+
+}
+
+
+
+.icon-btn:hover{
 
 transform:translateY(-2px);
+
+box-shadow:0 6px 14px rgba(0,0,0,.12);
 
 }
 
 
 
 
+/* ---------- Cancel Modal ---------- */
 
-/* Cancel Modal */
+
+.modal-overlay{
+
+position:fixed;
+inset:0;
+background:rgba(15,23,42,.5);
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:1000;
+
+}
 
 
 .cancel-box{
 
-margin-top:30px;
+width:100%;
+max-width:440px;
 
-background:#fff1f2;
+background:var(--white);
 
-padding:25px;
+padding:28px;
 
 border-radius:18px;
 
-border:1px solid #fecaca;
+border:1px solid var(--border);
+
+box-shadow:0 20px 40px rgba(0,0,0,.18);
 
 }
 
 
+.cancel-box__header{
 
-.cancel-box h3{
+display:flex;
+align-items:flex-start;
+gap:14px;
+margin-bottom:18px;
 
+}
+
+
+.cancel-box__icon{
+
+flex-shrink:0;
+width:42px;
+height:42px;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:rgba(220,38,38,.12);
 color:#dc2626;
 
-margin-bottom:15px;
+}
+
+
+.cancel-box__icon svg{
+
+width:22px;
+height:22px;
+
+}
+
+
+.cancel-box__header h3{
+
+color:var(--text);
+
+margin:0 0 4px;
+
+font-size:17px;
+
+}
+
+
+.cancel-box__header p{
+
+margin:0;
+
+color:var(--muted);
+
+font-size:13px;
 
 }
 
@@ -676,7 +917,7 @@ width:100%;
 
 height:100px;
 
-padding:15px;
+padding:14px;
 
 border-radius:10px;
 
@@ -684,7 +925,34 @@ border:1px solid var(--border);
 
 resize:none;
 
-margin-bottom:15px;
+margin-bottom:18px;
+
+font-family:inherit;
+
+font-size:14px;
+
+color:var(--text);
+
+box-sizing:border-box;
+
+}
+
+
+.cancel-box textarea:focus{
+
+outline:none;
+
+border-color:var(--primary);
+
+}
+
+
+
+.cancel-box__actions{
+
+display:flex;
+
+gap:10px;
 
 }
 
@@ -692,9 +960,21 @@ margin-bottom:15px;
 
 .confirm-cancel{
 
-background:#dc2626;
+flex:1;
 
-margin-right:10px;
+border:none;
+
+padding:12px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+color:white;
+
+font-weight:700;
+
+background:#dc2626;
 
 }
 
@@ -702,7 +982,29 @@ margin-right:10px;
 
 .close-btn{
 
-background:#64748b;
+flex:1;
+
+border:none;
+
+padding:12px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+color:white;
+
+font-weight:700;
+
+background:var(--muted);
+
+}
+
+
+.confirm-cancel:hover,
+.close-btn:hover{
+
+opacity:.9;
 
 }
 
@@ -712,17 +1014,49 @@ background:#64748b;
 
 text-align:center;
 
-padding:30px;
+padding:0;
 
+}
+
+
+.empty-state{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:12px;
+padding:50px 20px;
 color:var(--muted);
 
 }
+
+
+.empty-state svg{
+
+width:36px;
+height:36px;
+opacity:.6;
+
+}
+
+
+.empty-state p{
+
+margin:0;
+
+font-size:14px;
+
+}
+
+
 
 .highlight{
 
 background:#ecfeff !important;
 
-border-left:5px solid var(--primary);
+border-left:4px solid var(--primary);
 
 }
+
 </style>

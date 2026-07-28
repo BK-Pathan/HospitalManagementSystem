@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import api from "../../api/axios";
 import {
   Doughnut,
@@ -47,6 +47,8 @@ const chartData = ref({
     {
       label: "Appointments",
       backgroundColor: "#14b8a6",
+      borderRadius: 8,
+      maxBarThickness: 46,
       data: [0, 0, 0, 0, 0]
     }
   ]
@@ -55,13 +57,35 @@ const chartData = ref({
 
 const chartOptions = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: true
+      display: false
     },
     title: {
-      display: true,
-      text: "Appointment Analytics"
+      display: false
+    }
+  },
+  scales: {
+    x: {
+      grid: { display: false }
+    },
+    y: {
+      beginAtZero: true,
+      ticks: { precision: 0 },
+      grid: { color: "rgba(148,163,184,0.15)" }
+    }
+  }
+};
+
+const doughnutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  cutout: "68%",
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: { boxWidth: 10, padding: 16 }
     }
   }
 };
@@ -109,10 +133,34 @@ const feedbackChart = ref({
         "#EAB308",
         "#22C55E",
         "#0F766E"
-      ]
+      ],
+      borderWidth: 0
     }
   ]
 });
+
+
+// =====================
+// GREETING / DATE
+// =====================
+
+const today = new Date();
+
+const greeting = computed(() => {
+  const h = today.getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+});
+
+const formattedDate = computed(() =>
+  today.toLocaleDateString(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  })
+);
 
 
 // =====================
@@ -181,6 +229,8 @@ const getAnalytics = async () => {
         {
           label: "Appointments",
           backgroundColor: "#14b8a6",
+          borderRadius: 8,
+          maxBarThickness: 46,
           data: [
             res.data.pending || 0,
             res.data.confirmed || 0,
@@ -240,7 +290,8 @@ const getFeedbackAnalytics = async () => {
             "#EAB308",
             "#22C55E",
             "#0F766E"
-          ]
+          ],
+          borderWidth: 0
         }
       ]
     };
@@ -248,6 +299,23 @@ const getFeedbackAnalytics = async () => {
     console.log("Feedback Analytics Error:", error.response?.data || error.message);
   }
 };
+
+
+// =====================
+// HELPERS (display only — no backend / data changes)
+// =====================
+
+const initials = (name) => {
+  if (!name || name === "N/A") return "?";
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase())
+    .join("");
+};
+
+const statusClass = (status) => `status status--${(status || "").toLowerCase()}`;
 
 
 onMounted(() => {
@@ -264,9 +332,20 @@ onMounted(() => {
 
   <div class="dashboard-page">
 
-    <h2 class="page-title">
-      Doctor Dashboard
-    </h2>
+    <!-- =====================
+    HEADER
+    ===================== -->
+
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">{{ greeting }}, Doctor</p>
+        <h2 class="page-title">Dashboard Overview</h2>
+      </div>
+      <div class="header-meta">
+        <span class="date-pill">{{ formattedDate }}</span>
+      </div>
+    </div>
+
 
     <!-- =====================
     STATS CARDS
@@ -275,40 +354,75 @@ onMounted(() => {
     <div class="cards">
 
       <div class="stat-card">
-        <h3>Patients</h3>
-        <h1>{{ stats.patients }}</h1>
+        <div class="stat-icon stat-icon--patients">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Patients</h3>
+          <h1>{{ stats.patients }}</h1>
+        </div>
       </div>
 
       <div class="stat-card">
-        <h3>Pending</h3>
-        <h1>{{ stats.pending }}</h1>
+        <div class="stat-icon stat-icon--pending">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Pending</h3>
+          <h1>{{ stats.pending }}</h1>
+        </div>
       </div>
 
       <div class="stat-card">
-        <h3>Confirmed</h3>
-        <h1>{{ stats.confirmed }}</h1>
+        <div class="stat-icon stat-icon--confirmed">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Confirmed</h3>
+          <h1>{{ stats.confirmed }}</h1>
+        </div>
       </div>
 
       <div class="stat-card">
-        <h3>Completed</h3>
-        <h1>{{ stats.completed }}</h1>
+        <div class="stat-icon stat-icon--completed">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Completed</h3>
+          <h1>{{ stats.completed }}</h1>
+        </div>
       </div>
 
       <div class="stat-card">
-        <h3>Cancelled</h3>
-        <h1>{{ stats.cancelled }}</h1>
+        <div class="stat-icon stat-icon--cancelled">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Cancelled</h3>
+          <h1>{{ stats.cancelled }}</h1>
+        </div>
       </div>
 
       <!-- Feedback Cards -->
 
       <div class="stat-card">
-        <h3>Average Rating</h3>
-        <h1>⭐ {{ feedbackStats.averageRating }}</h1>
+        <div class="stat-icon stat-icon--rating">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.4 7 .7-5.2 4.8 1.5 6.9L12 17.3 5.8 20.8l1.5-6.9L2.1 9.1l7-.7L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Average Rating</h3>
+          <h1>{{ feedbackStats.averageRating }}<span class="unit">/5</span></h1>
+        </div>
       </div>
 
       <div class="stat-card">
-        <h3>Total Reviews</h3>
-        <h1>{{ feedbackStats.totalReviews }}</h1>
+        <div class="stat-icon stat-icon--reviews">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="stat-body">
+          <h3>Total Reviews</h3>
+          <h1>{{ feedbackStats.totalReviews }}</h1>
+        </div>
       </div>
 
     </div>
@@ -318,70 +432,90 @@ onMounted(() => {
     TODAY APPOINTMENTS
     ===================== -->
 
-    <h2 class="section-title">
-      📅 Today's Appointments
-    </h2>
+    <div class="section-head">
+      <h2 class="section-title">Today's Appointments</h2>
+      <span class="section-count" v-if="todaysAppointments.length">{{ todaysAppointments.length }} scheduled</span>
+    </div>
 
     <div class="table-card">
 
       <table class="appointments-table" v-if="todaysAppointments.length">
-        <tr>
-          <th>Patient</th>
-          <th>Problem</th>
-          <th>Time</th>
-          <th>Status</th>
-        </tr>
-
-        <tr v-for="item in todaysAppointments" :key="item._id">
-          <td>{{ item.patient?.user?.name || "N/A" }}</td>
-          <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
-          <td>
-            {{
-              new Date(item.appointmentDateTime)
-                .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-            }}
-          </td>
-          <td>
-            <span class="status">{{ item.status }}</span>
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Problem</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in todaysAppointments" :key="item._id">
+            <td>
+              <div class="patient-cell">
+                <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+                {{ item.patient?.user?.name || "N/A" }}
+              </div>
+            </td>
+            <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
+            <td>
+              {{
+                new Date(item.appointmentDateTime)
+                  .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+              }}
+            </td>
+            <td>
+              <span :class="statusClass(item.status)">{{ item.status }}</span>
+            </td>
+          </tr>
+        </tbody>
       </table>
 
-      <p v-else>No appointments today.</p>
+      <div class="empty-state" v-else>
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <p>No appointments today.</p>
+      </div>
 
     </div>
 
 
     <!-- =====================
-    APPOINTMENT ANALYTICS
+    ANALYTICS
     ===================== -->
 
-    <h2 class="section-title">
-      📊 Appointment Analytics
-    </h2>
-
-    <div class="table-card">
-      <Bar
-        :key="chartData.datasets[0].data.join('-')"
-        :data="chartData"
-        :options="chartOptions"
-      />
+    <div class="section-head">
+      <h2 class="section-title">Analytics</h2>
     </div>
 
+    <div class="analytics-grid">
 
-    <!-- =====================
-    FEEDBACK ANALYTICS
-    ===================== -->
+      <div class="chart-card">
+        <div class="chart-card__head">
+          <h3>Appointment Breakdown</h3>
+          <p>Status distribution across all appointments</p>
+        </div>
+        <div class="chart-wrap chart-wrap--bar">
+          <Bar
+            :key="chartData.datasets[0].data.join('-')"
+            :data="chartData"
+            :options="chartOptions"
+          />
+        </div>
+      </div>
 
-    <h2 class="section-title">
-      ⭐ Patient Feedback Analytics
-    </h2>
+      <div class="chart-card">
+        <div class="chart-card__head">
+          <h3>Patient Feedback</h3>
+          <p>{{ feedbackStats.totalReviews }} reviews · {{ feedbackStats.averageRating }}★ average</p>
+        </div>
+        <div class="chart-wrap chart-wrap--doughnut">
+          <Doughnut
+            :key="feedbackChart.datasets[0].data.join('-')"
+            :data="feedbackChart"
+            :options="doughnutOptions"
+          />
+        </div>
+      </div>
 
-    <div class="table-card">
-      <Doughnut
-        :key="feedbackChart.datasets[0].data.join('-')"
-        :data="feedbackChart"
-      />
     </div>
 
 
@@ -389,38 +523,50 @@ onMounted(() => {
     UPCOMING APPOINTMENTS
     ===================== -->
 
-    <h2 class="section-title">
-      📅 Upcoming Appointments
-    </h2>
+    <div class="section-head">
+      <h2 class="section-title">Upcoming Appointments</h2>
+      <span class="section-count" v-if="upcomingAppointments.length">{{ upcomingAppointments.length }} upcoming</span>
+    </div>
 
     <div class="table-card">
 
-      <table class="appointments-table">
-        <tr>
-          <th>Patient</th>
-          <th>Problem</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Status</th>
-        </tr>
-
-        <tr v-for="item in upcomingAppointments" :key="item._id">
-          <td>{{ item.patient?.user?.name || "N/A" }}</td>
-          <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
-          <td>{{ new Date(item.appointmentDateTime).toLocaleDateString() }}</td>
-          <td>
-            {{
-              new Date(item.appointmentDateTime)
-                .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-            }}
-          </td>
-          <td>
-            <span class="status">{{ item.status }}</span>
-          </td>
-        </tr>
+      <table class="appointments-table" v-if="upcomingAppointments.length">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Problem</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in upcomingAppointments" :key="item._id">
+            <td>
+              <div class="patient-cell">
+                <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+                {{ item.patient?.user?.name || "N/A" }}
+              </div>
+            </td>
+            <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
+            <td>{{ new Date(item.appointmentDateTime).toLocaleDateString() }}</td>
+            <td>
+              {{
+                new Date(item.appointmentDateTime)
+                  .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+              }}
+            </td>
+            <td>
+              <span :class="statusClass(item.status)">{{ item.status }}</span>
+            </td>
+          </tr>
+        </tbody>
       </table>
 
-      <p v-if="!upcomingAppointments.length">No upcoming appointments.</p>
+      <div class="empty-state" v-else>
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <p>No upcoming appointments.</p>
+      </div>
 
     </div>
 
@@ -435,53 +581,145 @@ onMounted(() => {
   min-height: 100%;
 }
 
-.page-title {
-  font-size: 32px;
-  color: var(--text);
+/* ---------- Header ---------- */
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
   margin-bottom: 30px;
 }
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 0 0 6px;
+}
+
+.page-title {
+  font-size: 30px;
+  color: var(--text);
+  margin: 0;
+}
+
+.date-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------- Stat cards ---------- */
 
 .cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  gap: 22px;
 }
 
 .stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   background: var(--white);
-  padding: 25px;
-  border-radius: 20px;
+  padding: 22px;
+  border-radius: 18px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  transition: .3s;
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
-.stat-card h3 {
-  color: var(--muted);
-  font-size: 16px;
-}
-
-.stat-card h1 {
+.stat-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 184, 166, .12);
   color: var(--primary);
-  font-size: 38px;
-  margin-top: 15px;
+}
+
+.stat-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.stat-icon--patients { background: rgba(20, 184, 166, .12); color: var(--primary); }
+.stat-icon--pending { background: rgba(234, 179, 8, .14); color: #ca8a04; }
+.stat-icon--confirmed { background: rgba(59, 130, 246, .14); color: #2563eb; }
+.stat-icon--completed { background: rgba(34, 197, 94, .14); color: #16a34a; }
+.stat-icon--cancelled { background: rgba(239, 68, 68, .14); color: #dc2626; }
+.stat-icon--rating { background: rgba(234, 179, 8, .14); color: #ca8a04; }
+.stat-icon--reviews { background: rgba(20, 184, 166, .12); color: var(--primary); }
+
+.stat-body h3 {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  margin: 0 0 6px;
+}
+
+.stat-body h1 {
+  color: var(--text);
+  font-size: 28px;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-body h1 .unit {
+  font-size: 15px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+/* ---------- Section headers ---------- */
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 34px;
+  margin-bottom: 14px;
 }
 
 .section-title {
-  grid-column: 1 / -1;
-  margin-top: 30px;
   color: var(--text);
+  font-size: 20px;
+  margin: 0;
 }
 
+.section-count {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ---------- Table card ---------- */
+
 .table-card {
-  grid-column: 1 / -1;
   background: var(--white);
-  padding: 30px;
-  border-radius: 20px;
+  padding: 10px 24px 24px;
+  border-radius: 18px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   overflow-x: auto;
@@ -492,31 +730,138 @@ onMounted(() => {
   border-collapse: collapse;
 }
 
-.appointments-table th {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  padding: 15px;
+.appointments-table thead th {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-weight: 700;
   text-align: left;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
 }
 
 .appointments-table td {
-  padding: 15px;
+  padding: 16px 12px;
   color: var(--text);
   border-bottom: 1px solid var(--border);
+  font-size: 14px;
 }
 
-.appointments-table tr:hover {
+.appointments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appointments-table tbody tr:hover {
   background: #f8fafc;
 }
 
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .status {
-  padding: 8px 14px;
-  border-radius: 20px;
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: capitalize;
   background: rgba(20, 184, 166, .15);
   color: var(--primary);
-  font-weight: 700;
+}
+
+.status--pending { background: rgba(234, 179, 8, .15); color: #ca8a04; }
+.status--confirmed { background: rgba(59, 130, 246, .15); color: #2563eb; }
+.status--completed { background: rgba(34, 197, 94, .15); color: #16a34a; }
+.status--cancelled { background: rgba(239, 68, 68, .15); color: #dc2626; }
+
+/* ---------- Empty state ---------- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 50px 20px;
+  color: var(--muted);
+}
+
+.empty-state svg {
+  width: 36px;
+  height: 36px;
+  opacity: .6;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ---------- Analytics ---------- */
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 22px;
+}
+
+.chart-card {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.chart-card__head h3 {
+  margin: 0 0 4px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.chart-card__head p {
+  margin: 0 0 18px;
+  color: var(--muted);
   font-size: 13px;
-  text-transform: capitalize;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.chart-wrap--bar {
+  height: 280px;
+}
+
+.chart-wrap--doughnut {
+  height: 280px;
+}
+
+@media (max-width: 1100px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1000px) {
@@ -528,6 +873,10 @@ onMounted(() => {
 @media (max-width: 600px) {
   .cards {
     grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    align-items: flex-start;
   }
 }
 
