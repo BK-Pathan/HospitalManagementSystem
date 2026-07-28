@@ -367,7 +367,7 @@ const exportPDF = ()=>{
 
 .patients-container{
 
-padding:30px;
+padding:0px;
 
 min-height:100%;
 
@@ -428,36 +428,45 @@ color:var(--muted);
 
 
 .header-actions{
-    width:100%;
+
     display:flex;
+
     align-items:center;
+
+    justify-content:flex-end;
+
     gap:10px;
+
     flex-wrap:nowrap;
+
 }
 
 
 
 .total-card{
 
-    flex:1;
-    min-width:120px;
-    padding:12px;
-background:var(--white);
+    width:60px;
+    height:62px;
 
-padding:14px 25px;
+    /* background:var(--white); */
 
-border-radius:var(--radius-lg);
+    padding:12px 14px;
 
-box-shadow:var(--shadow);
+    border-radius:var(--radius-md);
 
-display:flex;
+    box-shadow:var(--shadow);
 
-flex-direction:column;
+    display:flex;
 
-text-align:center;
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
 
 }
-
 
 
 .total-card span{
@@ -474,7 +483,7 @@ font-weight:600;
 
 .total-card strong{
 
-font-size:28px;
+font-size:20px;
 
 color:var(--primary);
 
@@ -967,7 +976,7 @@ padding:40px;
 }
 
 .export{
-    width:100%;
+    width:10%;
     padding:12px;
     font-size:13px;
 }

@@ -130,7 +130,15 @@ insuranceDetails.value="";
 };
 
 
+const scrollToForm = ()=>{
 
+    document
+    .querySelector(".patient-form")
+    ?.scrollIntoView({
+        behavior:"smooth"
+    });
+
+};
 
 
 onMounted(()=>{
@@ -170,22 +178,179 @@ getPatients();
         </div>
 
 
-        <div class="badge">
+        <!-- <div class="badge">
             Hospital Admin
-        </div>
+        </div> -->
 
+              <div class="header-actions">
+
+    <div class="badge">
+        Hospital Admin
+    </div>
+
+
+    <button 
+    class="scroll-form-btn"
+    @click="scrollToForm"
+    >
+        Add Patient ↓
+    </button>
+
+</div>
 
     </div>
 
 
+    <!-- Patient List -->
+
+
+    <div class="card">
+
+
+        <div class="card-head">
+
+            <h3>
+                Patient List
+            </h3>
+
+
+            <span>
+                {{patients.length}} Records
+            </span>
+
+
+        </div>
 
 
 
 
-    <!-- Create Patient -->
+        <div class="table-wrapper">
 
 
-    <div class="card form-card">
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Patient
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Age
+                    </th>
+
+                    <th>
+                        Gender
+                    </th>
+
+                    <th>
+                        Contact
+                    </th>
+
+                    <th>
+                        Medical History
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+
+            <tbody>
+
+
+            <tr
+            v-for="patient in patients"
+            :key="patient._id"
+            >
+
+
+                <td>
+
+                    <div class="patient">
+
+                        <div class="avatar">
+
+                            {{patient.user?.name?.charAt(0)}}
+
+                        </div>
+
+
+                        <strong>
+                            {{patient.user?.name}}
+                        </strong>
+
+                    </div>
+
+
+                </td>
+
+
+
+                <td>
+                    {{patient.user?.email}}
+                </td>
+
+
+
+                <td>
+                    {{patient.age}}
+                </td>
+
+
+
+                <td>
+
+                    <span class="gender">
+                        {{patient.gender}}
+                    </span>
+
+                </td>
+
+
+
+
+                <td>
+                    {{patient.contactInformation}}
+                </td>
+
+
+
+                <td>
+                    {{patient.medicalHistory || "N/A"}}
+                </td>
+
+
+
+            </tr>
+
+
+
+            </tbody>
+
+
+        </table>
+
+
+        </div>
+
+
+
+    </div>
+
+        <!-- Create Patient -->
+
+
+    <div class="card form-card patient-form">
 
 
         <div class="card-head">
@@ -392,160 +557,6 @@ getPatients();
 
 
     </div>
-
-
-
-
-
-
-
-
-    <!-- Patient List -->
-
-
-    <div class="card">
-
-
-        <div class="card-head">
-
-            <h3>
-                Patient List
-            </h3>
-
-
-            <span>
-                {{patients.length}} Records
-            </span>
-
-
-        </div>
-
-
-
-
-        <div class="table-wrapper">
-
-
-        <table>
-
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Patient
-                    </th>
-
-                    <th>
-                        Email
-                    </th>
-
-                    <th>
-                        Age
-                    </th>
-
-                    <th>
-                        Gender
-                    </th>
-
-                    <th>
-                        Contact
-                    </th>
-
-                    <th>
-                        Medical History
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-
-
-            <tbody>
-
-
-            <tr
-            v-for="patient in patients"
-            :key="patient._id"
-            >
-
-
-                <td>
-
-                    <div class="patient">
-
-                        <div class="avatar">
-
-                            {{patient.user?.name?.charAt(0)}}
-
-                        </div>
-
-
-                        <strong>
-                            {{patient.user?.name}}
-                        </strong>
-
-                    </div>
-
-
-                </td>
-
-
-
-                <td>
-                    {{patient.user?.email}}
-                </td>
-
-
-
-                <td>
-                    {{patient.age}}
-                </td>
-
-
-
-                <td>
-
-                    <span class="gender">
-                        {{patient.gender}}
-                    </span>
-
-                </td>
-
-
-
-
-                <td>
-                    {{patient.contactInformation}}
-                </td>
-
-
-
-                <td>
-                    {{patient.medicalHistory || "N/A"}}
-                </td>
-
-
-
-            </tr>
-
-
-
-            </tbody>
-
-
-        </table>
-
-
-        </div>
-
-
-
-    </div>
-
 
 
 
@@ -1137,5 +1148,140 @@ font-weight:700;
 }
 
 
+/* Header Actions */
+.header-actions{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+
+}
+
+
+/* Scroll Form Button */
+
+.scroll-form-btn{
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    color:white;
+
+    padding:11px 18px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    box-shadow:var(--shadow);
+
+    transition:.3s;
+
+}
+
+
+.scroll-form-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+
+/* Tablet */
+
+@media(max-width:800px){
+
+.header-actions{
+
+    width:100%;
+
+    flex-direction:column;
+
+    align-items:stretch;
+
+}
+
+
+.badge,
+.scroll-form-btn{
+
+    width:100%;
+
+    text-align:center;
+
+}
+
+
+.scroll-form-btn{
+
+    padding:12px;
+
+    font-size:14px;
+
+}
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:600px){
+
+
+.header-actions{
+
+    gap:10px;
+
+}
+
+
+.scroll-form-btn{
+
+    padding:11px 14px;
+
+    font-size:13px;
+
+    border-radius:12px;
+
+}
+
+
+.badge{
+
+    padding:10px 14px;
+
+    font-size:12px;
+
+}
+
+
+}
+
+
+
+/* Small Mobile */
+
+@media(max-width:380px){
+
+
+.scroll-form-btn{
+
+    padding:10px;
+
+    font-size:12px;
+
+}
+
+
+}
 
 </style>

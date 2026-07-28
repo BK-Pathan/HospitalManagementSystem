@@ -1,8 +1,32 @@
 <script setup>
 
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
 import Sidebar from "../components/Sidebar.vue";
 import Navbar from "../components/Navbar.vue";
 import CommonFooter from "../components/Footer.vue";
+
+
+const route = useRoute();
+
+const content = ref(null);
+
+
+watch(
+    () => route.path,
+    () => {
+
+        if(content.value){
+
+            content.value.scrollTop = 0;
+
+        }
+
+    }
+);
+
+
 </script>
 
 
@@ -28,12 +52,12 @@ import CommonFooter from "../components/Footer.vue";
 
         <!-- Page Content -->
 
-        <main class="content">
+<main class="content" ref="content">
 
-            <router-view />
-            <CommonFooter/>
+    <router-view />
+    <CommonFooter/>
 
-        </main>
+</main>
 
 
     </div>

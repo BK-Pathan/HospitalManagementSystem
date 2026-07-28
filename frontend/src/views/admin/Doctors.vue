@@ -405,7 +405,15 @@ getDoctors();
 }
 
 };
+const scrollToForm = ()=>{
 
+    document
+    .querySelector(".doctor-form")
+    ?.scrollIntoView({
+        behavior:"smooth"
+    });
+
+};
 
 
 
@@ -438,9 +446,23 @@ getDoctors();
         </div>
 
 
-        <div class="badge">
-            {{ doctors.length }} on this page
-        </div>
+      <div class="header-actions">
+
+    <div class="badge">
+        {{ doctors.length }} on this page
+    </div>
+
+
+    <button 
+    class="scroll-form-btn"
+    @click="scrollToForm"
+    >
+        Add Doctor ↓
+    </button>
+
+</div>
+
+        
 
     </div>
 
@@ -1766,6 +1788,142 @@ grid-template-columns:1fr;
         gap:5px;
 
     }
+
+}
+
+/* Header Actions */
+.header-actions{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+
+}
+
+
+/* Scroll Form Button */
+
+.scroll-form-btn{
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    color:white;
+
+    padding:11px 18px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    box-shadow:var(--shadow);
+
+    transition:.3s;
+
+}
+
+
+.scroll-form-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+
+/* Tablet */
+
+@media(max-width:800px){
+
+.header-actions{
+
+    width:100%;
+
+    flex-direction:column;
+
+    align-items:stretch;
+
+}
+
+
+.badge,
+.scroll-form-btn{
+
+    width:100%;
+
+    text-align:center;
+
+}
+
+
+.scroll-form-btn{
+
+    padding:12px;
+
+    font-size:14px;
+
+}
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:600px){
+
+
+.header-actions{
+
+    gap:10px;
+
+}
+
+
+.scroll-form-btn{
+
+    padding:11px 14px;
+
+    font-size:13px;
+
+    border-radius:12px;
+
+}
+
+
+.badge{
+
+    padding:10px 14px;
+
+    font-size:12px;
+
+}
+
+
+}
+
+
+
+/* Small Mobile */
+
+@media(max-width:380px){
+
+
+.scroll-form-btn{
+
+    padding:10px;
+
+    font-size:12px;
+
+}
+
 
 }
 </style>
