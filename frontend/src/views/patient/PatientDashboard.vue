@@ -100,261 +100,239 @@ getStats();
 
 <template>
 
-<div>
+<div class="dashboard">
 
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Patient Overview</p>
+      <h1>Your Health Dashboard</h1>
+    </div>
+  </div>
 
-<div class="cards">
 
+  <div class="cards">
 
-<div class="card">
 
-<h3>
-Total Appointments
-</h3>
+    <div class="card">
+      <div class="card-icon card-icon--total">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="card-body">
+        <h3>Total Appointments</h3>
+        <h1>{{stats.totalAppointments}}</h1>
+      </div>
+    </div>
 
-<h1>
-{{stats.totalAppointments}}
-</h1>
 
-</div>
+    <div class="card">
+      <div class="card-icon card-icon--pending">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="card-body">
+        <h3>Pending Appointments</h3>
+        <h1>{{stats.pendingAppointments}}</h1>
+      </div>
+    </div>
 
+    <div class="card">
+      <div class="card-icon card-icon--completed">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-body">
+        <h3>Completed</h3>
+        <h1>{{stats.completedAppointments}}</h1>
+      </div>
+    </div>
 
-<div class="card">
 
-<h3>
-Pending Appointments
-</h3>
+    <div class="card">
+      <div class="card-icon card-icon--prescriptions">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="7" rx="3.5" stroke="currentColor" stroke-width="2"/><path d="M8 11v7M16 11v7" stroke="currentColor" stroke-width="2"/></svg>
+      </div>
+      <div class="card-body">
+        <h3>Prescriptions</h3>
+        <h1>{{stats.totalPrescriptions}}</h1>
+      </div>
+    </div>
 
-<h1>
-{{stats.pendingAppointments}}
-</h1>
 
-</div>
+    <div class="card">
+      <div class="card-icon card-icon--doctors">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="card-body">
+        <h3>Doctors Visited</h3>
+        <h1>{{stats.doctorsVisited}}</h1>
+      </div>
+    </div>
 
-<div class="card">
 
-<h3>
-Completed
-</h3>
+    <div class="card">
+      <div class="card-icon card-icon--upcoming">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="2" fill="currentColor"/></svg>
+      </div>
+      <div class="card-body">
+        <h3>Upcoming Appointments</h3>
+        <h1>{{stats.upcomingAppointments}}</h1>
+      </div>
+    </div>
 
-<h1>
-{{stats.completedAppointments}}
-</h1>
 
-</div>
+    <!-- <div class="card">
 
 
+    <h3>
+    Latest Feedback
+    </h3>
 
 
+    <div v-if="stats.latestFeedback">
 
-<div class="card">
 
-<h3>
-Prescriptions
-</h3>
+    ⭐ {{stats.latestFeedback.rating}}
 
-<h1>
-{{stats.totalPrescriptions}}
-</h1>
 
-</div>
+    <br>
 
 
+    {{stats.latestFeedback.comment}}
 
 
+    </div>
 
-<div class="card">
 
-<h3>
-Doctors Visited
-</h3>
+    <p v-else>
 
-<h1>
-{{stats.doctorsVisited}}
-</h1>
+    No Feedback
 
-</div>
+    </p>
 
 
+    </div> -->
 
 
 
+  </div>
 
-<div class="card">
 
-<h3>
-Upcoming Appointments
-</h3>
+  <div class="upcoming-panel">
 
-<h1>
-{{stats.upcomingAppointments}}
-</h1>
 
-</div>
+    <div class="panel-header">
+      <h2>Upcoming Appointments</h2>
+      <span class="panel-count" v-if="stats.upcomingAppointmentList.length">
+        {{stats.upcomingAppointmentList.length}} scheduled
+      </span>
+    </div>
 
 
 
+    <div
+    v-if="stats.upcomingAppointmentList.length"
+    class="appointment-list"
+    >
 
 
 
+      <div
 
-<!-- <div class="card">
+      class="appointment-card"
 
+      v-for="appointment in stats.upcomingAppointmentList"
 
-<h3>
-Latest Feedback
-</h3>
+      :key="appointment._id"
 
+      >
 
-<div v-if="stats.latestFeedback">
+        <div class="appointment-avatar">
+          {{ (appointment.doctor?.name || "D").charAt(0) }}
+        </div>
 
+        <div class="appointment-info">
 
-⭐ {{stats.latestFeedback.rating}}
+          <h3>
+          Dr. {{appointment.doctor?.name}}
+          </h3>
 
+          <p class="meta-row">
+            <span class="tag">{{appointment.doctor?.department}}</span>
+            <span class="specialty" v-if="appointment.doctor?.specialties?.length">
+              {{appointment.doctor?.specialties?.join(", ")}}
+            </span>
+          </p>
 
-<br>
 
+        </div>
 
-{{stats.latestFeedback.comment}}
 
 
-</div>
+        <div class="date-box">
 
 
-<p v-else>
+          <p class="date-line">
 
-No Feedback
+          {{
 
-</p>
+          new Date(
+          appointment.appointmentDateTime
+          )
+          .toLocaleDateString(
+          "en-US",
+          {
+          weekday:"long",
+          year:"numeric",
+          month:"short",
+          day:"numeric"
+          }
+          )
 
+          }}
 
-</div> -->
+          </p>
 
 
+          <p class="time-line">
 
-</div>
+          {{
 
-<hr>
+          new Date(
+          appointment.appointmentDateTime
+          )
+          .toLocaleTimeString(
+          "en-US",
+          {
+          hour:"2-digit",
+          minute:"2-digit"
+          }
+          )
 
-<div class="upcoming-panel">
+          }}
 
+          </p>
 
-<h2>
-📅 Upcoming Appointments
-</h2>
 
+        </div>
 
 
-<div 
-v-if="stats.upcomingAppointmentList.length"
-class="appointment-list"
->
+      </div>
 
 
 
-<div
+    </div>
 
-class="appointment-card"
 
-v-for="appointment in stats.upcomingAppointmentList"
+    <div class="empty-state" v-else>
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <p>No upcoming appointments.</p>
+    </div>
 
-:key="appointment._id"
 
->
+  </div>
 
 
-<div>
 
-<h3>
-👨‍⚕️ 
-{{appointment.doctor?.name}}
-</h3>
 
-<p>
-Department:
-{{appointment.doctor?.department}}
-</p>
-
-<p>
-Speciality:
-{{appointment.doctor?.specialties?.join(", ")}}
-</p>
-
-
-</div>
-
-
-
-<div class="date-box">
-
-
-<p>
-
-📅 
-
-{{
-
-new Date(
-appointment.appointmentDateTime
-)
-.toLocaleDateString(
-"en-US",
-{
-weekday:"long",
-year:"numeric",
-month:"short",
-day:"numeric"
-}
-)
-
-}}
-
-</p>
-
-
-<p>
-
-⏰
-
-{{
-
-new Date(
-appointment.appointmentDateTime
-)
-.toLocaleTimeString(
-"en-US",
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-)
-
-}}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-<p v-else>
-No Upcoming Appointments
-</p>
-
-
-</div>
-
-
-
-
-<RouterView />
+  <RouterView />
 
 
 </div>
@@ -367,17 +345,54 @@ No Upcoming Appointments
 
 <style scoped>
 
+.dashboard{
+
+  padding:28px;
+  color:var(--text);
+
+}
+
+
+.dashboard-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:24px;
+
+}
+
+.eyebrow{
+
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  font-size:12px;
+  font-weight:700;
+  color:var(--primary);
+  margin:0 0 6px;
+
+}
+
+.dashboard-header h1{
+
+  font-size:28px;
+  font-weight:700;
+  color:var(--text);
+  margin:0;
+
+}
+
 
 .cards{
 
-display:grid;
+  display:grid;
 
-grid-template-columns:
-repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:
+  repeat(auto-fit,minmax(230px,1fr));
 
-gap:20px;
+  gap:18px;
 
-margin:20px;
+  margin-bottom:22px;
 
 }
 
@@ -385,47 +400,124 @@ margin:20px;
 
 .card{
 
+  display:flex;
+  align-items:center;
+  gap:16px;
 
-background:white;
+  background:var(--white);
 
-padding:25px;
+  padding:22px;
 
-border-radius:15px;
+  border-radius:18px;
 
-box-shadow:0 5px 15px #ddd;
+  border:1px solid var(--border);
 
+  box-shadow:var(--shadow);
+
+  transition:box-shadow .2s ease, transform .2s ease;
+
+}
+
+.card:hover{
+
+  transform:translateY(-4px);
+
+}
+
+.card-icon{
+
+  width:48px;
+  height:48px;
+  min-width:48px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(20,184,166,.12);
+  color:var(--primary);
+
+}
+
+.card-icon svg{
+
+  width:24px;
+  height:24px;
+
+}
+
+.card-icon--total{ background:rgba(20,184,166,.12); color:var(--primary); }
+.card-icon--pending{ background:rgba(234,179,8,.14); color:#ca8a04; }
+.card-icon--completed{ background:rgba(34,197,94,.14); color:#16a34a; }
+.card-icon--prescriptions{ background:rgba(37,99,235,.14); color:#2563eb; }
+.card-icon--doctors{ background:rgba(124,58,237,.14); color:#7c3aed; }
+.card-icon--upcoming{ background:rgba(79,70,229,.14); color:#4f46e5; }
+
+
+.card-body h3{
+
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  margin:0 0 6px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
 
 }
 
 
+.card-body h1{
 
-.card h1{
-
-font-size:35px;
-
-color:#2563eb;
+  font-size:28px;
+  font-weight:700;
+  color:var(--text);
+  margin:0;
+  line-height:1;
 
 }
+
+
 .upcoming-panel{
 
-margin:20px;
+  background:var(--white);
 
-background:white;
+  padding:24px;
 
-padding:25px;
+  border-radius:18px;
 
-border-radius:18px;
+  border:1px solid var(--border);
 
-box-shadow:0 5px 15px #ddd;
+  box-shadow:var(--shadow);
+
+}
+
+
+.panel-header{
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
 
 }
 
 
 .upcoming-panel h2{
 
-color:#2563eb;
+  color:var(--text);
+  font-size:18px;
+  font-weight:700;
+  margin:0;
 
-margin-bottom:20px;
+}
+
+.panel-count{
+
+  font-size:13px;
+  font-weight:600;
+  color:var(--primary);
+  background:rgba(20,184,166,.12);
+  padding:4px 10px;
+  border-radius:999px;
 
 }
 
@@ -433,11 +525,11 @@ margin-bottom:20px;
 
 .appointment-list{
 
-display:flex;
+  display:flex;
 
-flex-direction:column;
+  flex-direction:column;
 
-gap:15px;
+  gap:12px;
 
 }
 
@@ -445,39 +537,89 @@ gap:15px;
 
 .appointment-card{
 
-display:flex;
+  display:flex;
 
-justify-content:space-between;
+  align-items:center;
 
-align-items:center;
+  gap:16px;
 
-padding:20px;
+  padding:16px 18px;
 
-border-radius:15px;
+  border-radius:14px;
 
-background:#f8fafc;
+  background:#f8fafc;
 
-border:1px solid #e5e7eb;
+  border:1px solid var(--border);
+
+  border-left:4px solid var(--primary);
+
+  transition:background .2s ease;
+
+}
+
+.appointment-card:hover{
+
+  background:#eef3f8;
+
+}
+
+.appointment-avatar{
+
+  width:44px;
+  height:44px;
+  min-width:44px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:16px;
+
+}
+
+.appointment-info{
+
+  flex:1;
 
 }
 
 
+.appointment-info h3{
 
-.appointment-card h3{
-
-color:#2563eb;
-
-margin-bottom:8px;
+  color:var(--text);
+  font-size:15px;
+  font-weight:700;
+  margin:0 0 6px;
 
 }
 
+.meta-row{
 
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:0;
 
-.appointment-card p{
+}
 
-margin:5px 0;
+.tag{
 
-color:#475569;
+  font-size:12px;
+  font-weight:600;
+  color:var(--primary);
+  background:rgba(20,184,166,.12);
+  padding:3px 9px;
+  border-radius:999px;
+
+}
+
+.specialty{
+
+  font-size:13px;
+  color:var(--muted);
 
 }
 
@@ -485,32 +627,82 @@ color:#475569;
 
 .date-box{
 
-text-align:right;
+  text-align:right;
 
-font-weight:600;
+  min-width:150px;
 
 }
 
+.date-line{
+
+  font-weight:600;
+  font-size:13px;
+  color:var(--text);
+  margin:0 0 4px;
+
+}
+
+.time-line{
+
+  font-weight:700;
+  font-size:14px;
+  color:var(--primary);
+  margin:0;
+
+}
+
+
+.empty-state{
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+  padding:44px 0;
+  color:var(--muted);
+
+}
+
+.empty-state svg{
+
+  width:34px;
+  height:34px;
+  opacity:.6;
+
+}
+
+.empty-state p{
+
+  margin:0;
+  font-size:14px;
+
+}
 
 
 @media(max-width:700px){
 
-.appointment-card{
+  .dashboard{
+    padding:18px;
+  }
 
-flex-direction:column;
+  .appointment-card{
 
-align-items:flex-start;
+  flex-direction:column;
 
-gap:15px;
+  align-items:flex-start;
 
-}
+  gap:12px;
+
+  }
 
 
-.date-box{
+  .date-box{
 
-text-align:left;
+  text-align:left;
 
-}
+  }
 
 }
 

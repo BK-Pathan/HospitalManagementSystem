@@ -200,11 +200,13 @@ getProfile();
 
         <div>
 
+            <p class="eyebrow">Patient Portal</p>
+
             <h2>
-                👤 My Profile
+                My Profile
             </h2>
 
-            <p>
+            <p class="subtext">
                 Complete your healthcare information and medical details
             </p>
 
@@ -213,7 +215,8 @@ getProfile();
 
 
         <div class="badge">
-            Patient Portal
+            <span class="badge-dot" :class="{ 'badge-dot--done': profilecompleted }"></span>
+            {{ profilecompleted ? "Profile Complete" : "Profile Incomplete" }}
         </div>
 
 
@@ -221,44 +224,62 @@ getProfile();
 
 
 
-<div class="patient-avatar">
+    <div class="avatar-card">
 
-  <img
-    v-if="profileImage"
-    :src="profileImage"
-    alt="Profile"
-  />
+        <div class="patient-avatar">
 
-  <span v-else>
-    {{ name?.charAt(0)?.toUpperCase() }}
-  </span>
+          <img
+            v-if="profileImage"
+            :src="profileImage"
+            alt="Profile"
+          />
 
-</div>
+          <span v-else>
+            {{ name?.charAt(0)?.toUpperCase() }}
+          </span>
 
-<input
-  type="file"
-  accept="image/*"
-  @change="handleImage"
-/>
+        </div>
 
-<div class="image-actions">
+        <div class="avatar-info">
 
-  <button
-    class="update-btn"
-    @click="uploadImage"
-  >
-    Upload Image
-  </button>
+            <h3>{{ name || "Patient" }}</h3>
+            <p>{{ email }}</p>
 
-  <button
-    v-if="profileImage"
-    class="remove-btn"
-    @click="removeImage"
-  >
-    Remove Image
-  </button>
+            <div class="image-controls">
 
-</div>
+                <label class="file-label">
+                    Choose Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      @change="handleImage"
+                    />
+                </label>
+
+                <div class="image-actions">
+
+                  <button
+                    class="update-btn small-btn"
+                    @click="uploadImage"
+                  >
+                    Upload
+                  </button>
+
+                  <button
+                    v-if="profileImage"
+                    class="remove-btn small-btn"
+                    @click="removeImage"
+                  >
+                    Remove
+                  </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
     <div class="profile-card">
 
@@ -271,37 +292,35 @@ getProfile();
 
         </div>
 
+        <div class="form-grid">
+
         <div class="input-group">
 
-<label>
-Name
-</label>
+        <label>
+        Name
+        </label>
 
-<input
-v-model="name"
-disabled
-/>
+        <input
+        v-model="name"
+        disabled
+        />
 
-</div>
-
-
-
-<div class="input-group">
-
-<label>
-Email
-</label>
-
-<input
-v-model="email"
-disabled
-/>
-
-</div>
+        </div>
 
 
 
-        <div class="form-grid">
+        <div class="input-group">
+
+        <label>
+        Email
+        </label>
+
+        <input
+        v-model="email"
+        disabled
+        />
+
+        </div>
 
 
             <div class="input-group">
@@ -424,7 +443,7 @@ disabled
 
 
 
-        <div class="complete-box">
+        <label class="complete-box">
 
 
             <input 
@@ -433,11 +452,11 @@ disabled
             />
 
             <span>
-                Profile Completed
+                Mark profile as completed
             </span>
 
 
-        </div>
+        </label>
 
 
 
@@ -489,7 +508,30 @@ class="edit-btn"
 
 .profile-page{
 
+    --clinical-navy:#0F2A43;
+    --clinical-teal:#0D9488;
+    --clinical-teal-light:#CCFBF1;
+    --clinical-bg:#F4F7FA;
+    --clinical-surface:#FFFFFF;
+    --clinical-border:#E2E8F0;
+    --clinical-text:#1E293B;
+    --clinical-text-muted:#64748B;
+    --clinical-amber:#D97706;
+    --clinical-amber-light:#FEF3C7;
+    --clinical-green:#16A34A;
+    --clinical-green-light:#DCFCE7;
+    --clinical-red:#DC2626;
+    --clinical-red-light:#FEE2E2;
+
     min-height:100%;
+
+    padding:28px;
+
+    background:var(--clinical-bg);
+
+    font-family:-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+
+    color:var(--clinical-text);
 
 }
 
@@ -504,10 +546,22 @@ class="edit-btn"
 
     justify-content:space-between;
 
-    align-items:center;
+    align-items:flex-start;
 
-    margin-bottom:30px;
+    margin-bottom:24px;
 
+
+}
+
+
+.eyebrow{
+
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-size:12px;
+    font-weight:700;
+    color:var(--clinical-teal);
+    margin:0 0 6px;
 
 }
 
@@ -517,9 +571,13 @@ class="edit-btn"
 .header h2{
 
 
-    color:var(--text);
+    color:var(--clinical-navy);
 
-    font-size:30px;
+    font-size:26px;
+
+    font-weight:700;
+
+    margin:0;
 
 
 }
@@ -527,12 +585,14 @@ class="edit-btn"
 
 
 
-.header p{
+.header .subtext{
 
 
-    color:var(--muted);
+    color:var(--clinical-text-muted);
 
-    margin-top:8px;
+    margin-top:6px;
+
+    font-size:14px;
 
 
 }
@@ -544,30 +604,176 @@ class="edit-btn"
 .badge{
 
 
-    padding:12px 20px;
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:10px 18px;
 
 
-    border-radius:30px;
+    border-radius:999px;
 
 
-    color:white;
+    color:var(--clinical-text-muted);
 
 
-    background:
+    background:var(--clinical-surface);
 
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+    border:1px solid var(--clinical-border);
 
 
-    font-weight:700;
+    font-weight:600;
+
+    font-size:13px;
+
+    white-space:nowrap;
 
 
 }
 
+.badge-dot{
 
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--clinical-amber);
+
+}
+
+.badge-dot--done{
+
+    background:var(--clinical-green);
+
+}
+
+
+
+.avatar-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:24px;
+
+    background:var(--clinical-surface);
+
+    border:1px solid var(--clinical-border);
+
+    border-radius:16px;
+
+    padding:24px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 1px 2px rgba(15,42,67,0.04);
+
+}
+
+.avatar-info h3{
+
+    margin:0 0 2px;
+    color:var(--clinical-navy);
+    font-size:17px;
+
+}
+
+.avatar-info p{
+
+    margin:0 0 12px;
+    color:var(--clinical-text-muted);
+    font-size:13px;
+
+}
+
+.image-controls{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+
+}
+
+.file-label{
+
+    position:relative;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    height:36px;
+
+    padding:0 16px;
+
+    border-radius:8px;
+
+    border:1px solid var(--clinical-border);
+
+    background:var(--clinical-bg);
+
+    color:var(--clinical-text);
+
+    font-size:13px;
+
+    font-weight:600;
+
+    line-height:1;
+
+    box-sizing:border-box;
+
+    cursor:pointer;
+
+}
+
+.file-label input{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:0;
+
+    cursor:pointer;
+
+}
+
+.image-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.small-btn{
+
+    display:inline-flex !important;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:36px;
+
+    padding:0 16px !important;
+
+    margin:0;
+
+    font-size:13px !important;
+
+    line-height:1;
+
+    box-sizing:border-box;
+
+    transform:none !important;
+
+}
 
 
 
@@ -575,19 +781,19 @@ class="edit-btn"
 .profile-card{
 
 
-    background:var(--white);
+    background:var(--clinical-surface);
 
 
-    padding:35px;
+    padding:32px;
 
 
-    border-radius:22px;
+    border-radius:16px;
 
 
-    box-shadow:var(--shadow);
+    box-shadow:0 1px 2px rgba(15,42,67,0.04);
 
 
-    border:1px solid var(--border);
+    border:1px solid var(--clinical-border);
 
 
 }
@@ -599,9 +805,13 @@ class="edit-btn"
 .section-title h3{
 
 
-    color:var(--text);
+    color:var(--clinical-navy);
 
-    margin-bottom:25px;
+    margin:0 0 22px;
+
+    font-size:18px;
+
+    font-weight:700;
 
 }
 
@@ -618,7 +828,7 @@ class="edit-btn"
     grid-template-columns:repeat(2,1fr);
 
 
-    gap:25px;
+    gap:20px;
 
 
 }
@@ -659,7 +869,16 @@ label{
     font-weight:600;
 
 
-    color:var(--text);
+    color:var(--clinical-text-muted);
+
+
+    font-size:13px;
+
+
+    text-transform:uppercase;
+
+
+    letter-spacing:.02em;
 
 
 }
@@ -674,19 +893,25 @@ textarea{
     width:100%;
 
 
-    padding:15px;
+    padding:13px 14px;
 
 
-    border-radius:12px;
+    border-radius:10px;
 
 
-    border:1px solid var(--border);
+    border:1px solid var(--clinical-border);
 
 
-    background:#f8fafc;
+    background:var(--clinical-bg);
 
 
-    font-size:15px;
+    font-size:14px;
+
+
+    font-family:inherit;
+
+
+    color:var(--clinical-text);
 
 
     outline:none;
@@ -695,7 +920,7 @@ textarea{
     resize:none;
 
 
-    transition:.3s;
+    transition:.2s;
 
 
 }
@@ -707,7 +932,7 @@ textarea{
 textarea{
 
 
-    min-height:120px;
+    min-height:110px;
 
 
 }
@@ -720,12 +945,12 @@ input:focus,
 textarea:focus{
 
 
-    border-color:var(--secondary);
+    border-color:var(--clinical-teal);
 
 
     box-shadow:
 
-    0 0 0 4px rgba(20,184,166,.15);
+    0 0 0 3px rgba(13,148,136,.15);
 
 
 }
@@ -739,7 +964,9 @@ input:disabled,
 textarea:disabled{
 
 
-    background:#f1f5f9;
+    background:#F1F5F9;
+
+    color:var(--clinical-text-muted);
 
 
     cursor:not-allowed;
@@ -756,7 +983,7 @@ textarea:disabled{
 .complete-box{
 
 
-    margin-top:25px;
+    margin-top:22px;
 
 
     display:flex;
@@ -768,10 +995,18 @@ textarea:disabled{
     gap:10px;
 
 
-    color:var(--text);
+    color:var(--clinical-text);
 
 
     font-weight:600;
+
+
+    font-size:14px;
+
+
+    cursor:pointer;
+
+    text-transform:none;
 
 
 }
@@ -788,6 +1023,8 @@ textarea:disabled{
 
     height:18px;
 
+    accent-color:var(--clinical-teal);
+
 
 }
 
@@ -798,7 +1035,7 @@ textarea:disabled{
 .actions{
 
 
-    margin-top:30px;
+    margin-top:26px;
 
 
 }
@@ -809,22 +1046,24 @@ textarea:disabled{
 button{
 
 
-    padding:14px 25px;
+    padding:12px 24px;
 
 
     border:none;
 
 
-    border-radius:12px;
+    border-radius:10px;
 
 
     cursor:pointer;
 
 
-    font-weight:700;
+    font-weight:600;
 
 
-    font-size:15px;
+    font-size:14px;
+
+    color:white;
 
 
 }
@@ -837,16 +1076,7 @@ button{
 .update-btn{
 
 
-    color:white;
-
-
-    background:
-
-    linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+    background:var(--clinical-teal);
 
 
 }
@@ -861,7 +1091,7 @@ button:hover{
     transform:translateY(-2px);
 
 
-    box-shadow:0 10px 20px rgba(15,118,110,.25);
+    box-shadow:0 8px 18px rgba(13,148,136,.25);
 
 
 }
@@ -886,6 +1116,21 @@ button:hover{
 
     gap:15px;
 
+
+}
+
+
+
+.avatar-card{
+
+    flex-direction:column;
+    text-align:center;
+
+}
+
+.image-controls{
+
+    justify-content:center;
 
 }
 
@@ -923,18 +1168,18 @@ button:hover{
 
 }
 .patient-avatar{
-    width:120px;
-    height:120px;
+    width:96px;
+    height:96px;
+    min-width:96px;
     border-radius:50%;
     overflow:hidden;
-    background:var(--secondary);
+    background:var(--clinical-navy);
     color:#fff;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:42px;
+    font-size:34px;
     font-weight:bold;
-    margin:20px auto;
 }
 
 .patient-avatar img{
@@ -943,15 +1188,8 @@ button:hover{
     object-fit:cover;
 }
 
-.image-actions{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    margin-bottom:25px;
-}
-
 .remove-btn{
-    background:#ef4444;
+    background:var(--clinical-red);
     color:white;
 }
 

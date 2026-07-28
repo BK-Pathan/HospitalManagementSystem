@@ -234,306 +234,302 @@ getMyPrescriptions();
 <div class="page">
 
 
-<h2 class="title">
+  <div class="page-header">
 
-📄 Prescription History
+    <div>
+      <p class="eyebrow">Patient Records</p>
+      <h2 class="title">Prescription History</h2>
+    </div>
 
-</h2>
+    <span class="count-badge" v-if="prescriptions.length">
+      {{ prescriptions.length }} record{{ prescriptions.length === 1 ? '' : 's' }}
+    </span>
 
+  </div>
 
 
-<div v-if="loading">
 
-Loading prescriptions...
+  <div v-if="loading" class="loading-state">
 
-</div>
+    <div class="spinner"></div>
+    <p>Loading prescriptions...</p>
 
+  </div>
 
 
 
-<div
 
-v-else-if="!prescriptions.length"
+  <div
 
-class="empty"
+  v-else-if="!prescriptions.length"
 
->
+  class="empty"
 
-No Prescription Available
+  >
 
-</div>
+    <div class="empty-icon">📄</div>
+    <p>No Prescription Available</p>
 
+  </div>
 
 
 
 
 
-<div
 
-v-for="item in prescriptions"
+  <div
 
-:key="item._id"
+  v-for="item in prescriptions"
 
-class="prescription-card"
+  :key="item._id"
 
->
+  class="prescription-card"
 
+  >
 
-<div class="header">
 
-<div>
+    <div class="header">
 
-<h3>
-👤 Patient:
-{{ item.patient?.user?.name || "Patient" }}
-</h3>
+      <div class="header-info">
 
+        <h3><span class="header-icon">👤</span> {{ item.patient?.user?.name || "Patient" }}</h3>
 
-<h3>
-👨‍⚕️ Doctor:
-{{ item.doctor?.user?.name || item.doctor?.name || "Doctor" }}
-</h3>
 
+        <h3 class="doctor-line"><span class="header-icon">👨‍⚕️</span> Dr. {{ item.doctor?.user?.name || item.doctor?.name || "Doctor" }}</h3>
 
-<p v-if="item.doctor?.specialties">
 
-🏥 Speciality:
-{{ item.doctor.specialties.join(", ") }}
+        <div class="header-tags">
 
-</p>
+          <span class="tag" v-if="item.doctor?.specialties">
+            🏥 {{ item.doctor.specialties.join(", ") }}
+          </span>
 
 
-<p v-if="item.doctor?.department">
+          <span class="tag tag--muted" v-if="item.doctor?.department">
+            🏢 {{ item.doctor.department }}
+          </span>
 
-🏢 Department:
-{{ item.doctor.department }}
+        </div>
 
-</p>
 
+      </div>
 
-</div>
 
 
 
+      <div class="date-box">
 
-<div class="date-box">
 
+        <p>
 
-<p>
+        📅
 
-📅 Prescription Date:
+        {{
 
-{{
+        new Date(item.createdAt)
+        .toLocaleDateString()
 
-new Date(item.createdAt)
-.toLocaleDateString()
+        }}
 
-}}
+        </p>
 
-</p>
 
+        <p>
 
-<p>
+        ⏰
 
-⏰ Time:
+        {{
 
-{{
+        new Date(item.createdAt)
+        .toLocaleTimeString(
+        "en-US",
+        {
+        hour:"2-digit",
+        minute:"2-digit"
+        }
+        )
 
-new Date(item.createdAt)
-.toLocaleTimeString(
-"en-US",
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-)
+        }}
 
-}}
+        </p>
 
-</p>
 
+      </div>
 
-</div>
 
 
+    </div>
 
-</div>
 
 
 
 
+    <div class="section-divider"></div>
 
-<hr>
 
 
 
 
+    <h4 class="section-label">💊 Medicines</h4>
 
-<h3>
 
-💊 Medicines
 
-</h3>
 
+    <table>
 
 
+      <thead>
 
-<table>
 
+      <tr>
 
-<thead>
+      <th>
+      Medicine
+      </th>
 
 
-<tr>
+      <th>
+      Dosage
+      </th>
 
-<th>
-Medicine
-</th>
 
+      <th>
+      Frequency
+      </th>
 
-<th>
-Dosage
-</th>
 
+      </tr>
 
-<th>
-Frequency
-</th>
 
+      </thead>
 
-</tr>
 
 
-</thead>
+      <tbody>
 
 
 
-<tbody>
+      <tr
 
+      v-for="med in item.medicines"
 
+      :key="med._id"
 
-<tr
+      >
 
-v-for="med in item.medicines"
 
-:key="med._id"
+      <td class="med-name">
 
->
+      {{ med.name }}
 
+      </td>
 
-<td>
 
-{{ med.name }}
 
-</td>
+      <td>
 
+      {{ med.dosage || "-" }}
 
+      </td>
 
-<td>
 
-{{ med.dosage || "-" }}
 
-</td>
+      <td>
 
+      {{ med.frequency || "-" }}
 
+      </td>
 
-<td>
 
-{{ med.frequency || "-" }}
 
-</td>
+      </tr>
 
 
 
-</tr>
+      </tbody>
 
 
 
-</tbody>
+    </table>
 
 
+    <div class="appointment-info">
 
-</table>
+      <h4>
+      📋 Appointment Information
+      </h4>
 
 
-<div class="appointment-info">
+      <p>
+      Status:
+      <span class="status">
+      Completed
+      </span>
+      </p>
 
-<h4>
-📋 Appointment Information
-</h4>
 
+      <p v-if="item.doctor?.experience">
 
-<p>
-Status:
-<span class="status">
-Completed
-</span>
-</p>
+      Experience: {{item.doctor.experience}} Years
 
+      </p>
 
-<p v-if="item.doctor?.experience">
 
-Experience:
-{{item.doctor.experience}} Years
+    </div>
 
-</p>
 
+    <div class="info">
 
-</div>
 
+      <h4>
 
-<div class="info">
+      📝 Instructions
 
+      </h4>
 
-<h4>
 
-📝 Instructions
+      <p>
 
-</h4>
+      {{ item.instructions || "No instructions" }}
 
+      </p>
 
-<p>
 
-{{ item.instructions || "No instructions" }}
 
-</p>
 
 
+      <h4>
 
+      📌 Notes
 
+      </h4>
 
-<h4>
 
-📌 Notes
+      <p>
 
-</h4>
+      {{ item.notes || "No notes" }}
 
+      </p>
 
-<p>
 
-{{ item.notes || "No notes" }}
 
-</p>
+    </div>
 
 
+    <button
 
-</div>
+    class="download-btn"
 
+    @click="downloadPDF(item)"
 
-<button
+    >
 
-class="download-btn"
+    ⬇️ Download PDF
 
-@click="downloadPDF(item)"
+    </button>
 
->
 
-⬇️ Download PDF
-
-</button>
-
-
-</div>
+  </div>
 
 
 
@@ -550,35 +546,132 @@ class="download-btn"
 
 .page{
 
-padding:30px;
+  --clinical-navy:#0F2A43;
+  --clinical-teal:#0D9488;
+  --clinical-teal-light:#CCFBF1;
+  --clinical-bg:#F4F7FA;
+  --clinical-surface:#FFFFFF;
+  --clinical-border:#E2E8F0;
+  --clinical-text:#1E293B;
+  --clinical-text-muted:#64748B;
+  --clinical-amber:#D97706;
+  --clinical-amber-light:#FEF3C7;
+  --clinical-green:#16A34A;
+  --clinical-green-light:#DCFCE7;
+  --clinical-blue:#2563EB;
+  --clinical-blue-light:#DBEAFE;
+  --clinical-purple:#7C3AED;
+  --clinical-purple-light:#EDE9FE;
+  --clinical-indigo:#4F46E5;
+  --clinical-indigo-light:#E0E7FF;
+
+  padding:28px;
+
+  background:var(--clinical-bg);
+
+  font-family:-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+
+  color:var(--clinical-text);
 
 }
 
 
+.page-header{
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin-bottom:22px;
+
+}
+
+.eyebrow{
+
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-size:12px;
+  font-weight:700;
+  color:var(--clinical-teal);
+  margin:0 0 6px;
+
+}
+
 
 .title{
 
-font-size:32px;
+  font-size:26px;
 
-margin-bottom:30px;
+  font-weight:700;
 
-color:var(--text);
+  margin:0;
 
+  color:var(--clinical-navy);
+
+}
+
+.count-badge{
+
+  font-size:13px;
+  font-weight:600;
+  color:var(--clinical-teal);
+  background:var(--clinical-teal-light);
+  padding:5px 12px;
+  border-radius:999px;
+
+}
+
+
+.loading-state{
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:70px 0;
+  color:var(--clinical-text-muted);
+
+}
+
+.spinner{
+
+  width:34px;
+  height:34px;
+  border:3px solid var(--clinical-border);
+  border-top-color:var(--clinical-teal);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
 }
 
 
 
 .empty{
 
-background:white;
+  background:var(--clinical-surface);
 
-padding:30px;
+  padding:50px 30px;
 
-border-radius:20px;
+  border-radius:16px;
 
-text-align:center;
+  text-align:center;
 
-box-shadow:var(--shadow);
+  box-shadow:0 1px 2px rgba(15,42,67,0.04);
+
+  border:1px solid var(--clinical-border);
+
+  color:var(--clinical-text-muted);
+
+}
+
+.empty-icon{
+
+  font-size:34px;
+  margin-bottom:10px;
 
 }
 
@@ -588,17 +681,17 @@ box-shadow:var(--shadow);
 .prescription-card{
 
 
-background:white;
+  background:var(--clinical-surface);
 
-padding:30px;
+  padding:28px;
 
-border-radius:25px;
+  border-radius:16px;
 
-margin-bottom:25px;
+  margin-bottom:20px;
 
-box-shadow:var(--shadow);
+  box-shadow:0 1px 2px rgba(15,42,67,0.04);
 
-border:1px solid var(--border);
+  border:1px solid var(--clinical-border);
 
 
 }
@@ -608,34 +701,114 @@ border:1px solid var(--border);
 .header{
 
 
-display:flex;
+  display:flex;
 
-justify-content:space-between;
+  justify-content:space-between;
 
-align-items:center;
+  align-items:flex-start;
 
+  gap:20px;
+
+
+}
+
+.header-info h3{
+
+  font-size:17px;
+
+  color:var(--clinical-navy);
+
+  margin:0 0 6px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+}
+
+.doctor-line{
+
+  color:var(--clinical-teal) !important;
+
+}
+
+.header-icon{
+
+  font-size:15px;
+
+}
+
+
+.header-tags{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:8px;
+
+  margin-top:8px;
+
+}
+
+.tag{
+
+  font-size:12px;
+  font-weight:600;
+  color:var(--clinical-teal);
+  background:var(--clinical-teal-light);
+  padding:4px 10px;
+  border-radius:999px;
+
+}
+
+.tag--muted{
+
+  color:var(--clinical-text-muted);
+  background:var(--clinical-bg);
+  border:1px solid var(--clinical-border);
 
 }
 
 
 
-.header h3{
 
-color:var(--primary);
+.section-divider{
+
+  height:1px;
+
+  background:var(--clinical-border);
+
+  margin:20px 0;
 
 }
 
 
+.section-label{
+
+  color:var(--clinical-navy);
+
+  font-size:15px;
+
+  margin:0 0 4px;
+
+}
 
 
 
 table{
 
-width:100%;
+  width:100%;
 
-border-collapse:collapse;
+  border-collapse:collapse;
 
-margin-top:20px;
+  margin-top:12px;
+
+  overflow:hidden;
+
+  border-radius:10px;
 
 
 }
@@ -645,18 +818,23 @@ margin-top:20px;
 th{
 
 
-background:linear-gradient(
-135deg,
-var(--primary),
-var(--primary-dark)
-);
+  background:var(--clinical-bg);
 
+  color:var(--clinical-text-muted);
 
-color:white;
+  font-size:12px;
 
-padding:14px;
+  text-transform:uppercase;
 
-text-align:left;
+  letter-spacing:.04em;
+
+  font-weight:700;
+
+  padding:12px 14px;
+
+  text-align:left;
+
+  border-bottom:1px solid var(--clinical-border);
 
 
 }
@@ -666,10 +844,26 @@ text-align:left;
 td{
 
 
-padding:14px;
+  padding:12px 14px;
 
-border-bottom:1px solid #ddd;
+  border-bottom:1px solid var(--clinical-border);
 
+  font-size:14px;
+
+
+}
+
+.med-name{
+
+  font-weight:600;
+
+  color:var(--clinical-navy);
+
+}
+
+tbody tr:last-child td{
+
+  border-bottom:none;
 
 }
 
@@ -678,13 +872,13 @@ border-bottom:1px solid #ddd;
 .info{
 
 
-margin-top:25px;
+  margin-top:22px;
 
-background:#f8fafc;
+  background:var(--clinical-bg);
 
-padding:20px;
+  padding:18px 20px;
 
-border-radius:15px;
+  border-radius:12px;
 
 
 }
@@ -694,49 +888,80 @@ border-radius:15px;
 .info h4{
 
 
-color:var(--primary);
+  color:var(--clinical-navy);
 
-margin-top:15px;
+  margin:14px 0 4px;
+
+  font-size:14px;
 
 
 }
+
+.info h4:first-child{
+
+  margin-top:0;
+
+}
+
+.info p{
+
+  margin:0;
+
+  color:var(--clinical-text);
+
+  font-size:14px;
+
+  line-height:1.5;
+
+}
+
 .download-btn{
 
-margin-top:20px;
+  margin-top:20px;
 
-padding:12px 20px;
+  padding:11px 22px;
 
-border:none;
+  border:none;
 
-border-radius:12px;
+  border-radius:10px;
 
-background:linear-gradient(
-135deg,
-#2563eb,
-#0ea5e9
-);
+  background:var(--clinical-teal);
 
-color:white;
+  color:white;
 
-font-weight:700;
+  font-weight:600;
 
-cursor:pointer;
+  font-size:14px;
+
+  cursor:pointer;
+
+  transition:background .2s ease, transform .2s ease;
 
 }
 
 
 .download-btn:hover{
 
-transform:translateY(-2px);
+  background:#0B7A70;
+
+  transform:translateY(-2px);
 
 }
 
 
 .date-box{
 
-text-align:right;
-color:#475569;
-font-weight:600;
+  text-align:right;
+  color:var(--clinical-text-muted);
+  font-weight:600;
+  font-size:13px;
+  white-space:nowrap;
+
+}
+
+.date-box p{
+
+  margin:2px 0;
 
 }
 
@@ -744,13 +969,13 @@ font-weight:600;
 
 .appointment-info{
 
-margin-top:20px;
+  margin-top:20px;
 
-background:#eff6ff;
+  background:var(--clinical-teal-light);
 
-padding:20px;
+  padding:18px 20px;
 
-border-radius:15px;
+  border-radius:12px;
 
 }
 
@@ -758,9 +983,21 @@ border-radius:15px;
 
 .appointment-info h4{
 
-color:var(--primary);
+  color:var(--clinical-navy);
 
-margin-bottom:10px;
+  margin:0 0 10px;
+
+  font-size:14px;
+
+}
+
+.appointment-info p{
+
+  margin:6px 0;
+
+  font-size:14px;
+
+  color:var(--clinical-text);
 
 }
 
@@ -768,15 +1005,46 @@ margin-bottom:10px;
 
 .status{
 
-background:#dcfce7;
+  background:var(--clinical-green-light);
 
-color:#16a34a;
+  color:var(--clinical-green);
 
-padding:5px 12px;
+  padding:4px 12px;
 
-border-radius:20px;
+  border-radius:999px;
 
-font-weight:700;
+  font-weight:700;
+
+  font-size:12px;
+
+}
+
+
+@media(max-width:700px){
+
+  .page{
+    padding:16px;
+  }
+
+  .page-header{
+
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+
+  }
+
+  .header{
+
+    flex-direction:column;
+
+  }
+
+  .date-box{
+
+    text-align:left;
+
+  }
 
 }
 </style>

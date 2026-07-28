@@ -15,6 +15,9 @@ const doctor = ref(null);
 const appointmentDateTime = ref("");
 
 
+const booking = ref(false);
+
+
 
 // Get Doctor Details
 
@@ -47,12 +50,17 @@ console.log(error);
 const bookAppointment = async()=>{
 
 
+if(booking.value) return;
+
+
 console.log("BOOK BUTTON CLICKED");
 
 console.log("Doctor ID:", route.params.doctorId);
 
 console.log("Date:", appointmentDateTime.value);
 
+
+booking.value = true;
 
 
 try{
@@ -89,6 +97,11 @@ error.response?.data?.message ||
 
 
 }
+finally{
+
+booking.value = false;
+
+}
 
 
 }
@@ -105,6 +118,19 @@ getDoctor();
 });
 
 
+// Display-only helper (no backend / data change)
+
+const initials = (name) => {
+  if (!name) return "?";
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase())
+    .join("");
+};
+
+
 </script>
 
 
@@ -117,9 +143,14 @@ getDoctor();
 <div class="appointment-page">
 
 
-<h2 class="page-title">
-Book Appointment
-</h2>
+<div class="page-header">
+  <button class="back-btn" @click="router.back()">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back
+  </button>
+  <p class="eyebrow">New Appointment</p>
+  <h2 class="page-title">Book Appointment</h2>
+</div>
 
 
 
@@ -127,31 +158,36 @@ Book Appointment
 <div v-if="doctor" class="doctor-card">
 
 
+<div class="doctor-card__head">
 
-<h3 class="doctor-name">
-{{doctor.name}}
-</h3>
+  <span class="avatar">{{ initials(doctor.name) }}</span>
 
+  <div class="doctor-card__head-info">
+    <h3 class="doctor-name">{{doctor.name}}</h3>
+    <span class="dept-pill" v-if="doctor.department">{{doctor.department}}</span>
+  </div>
 
-
-<p class="doctor-info">
-Speciality:
-{{doctor.specialties.join(", ")}}
-</p>
-
+</div>
 
 
-<p class="doctor-info">
-Qualification:
-{{doctor.qualifications}}
-</p>
+<div class="info-grid">
 
+<div class="info-item">
+  <span class="info-label">Speciality</span>
+  <span class="info-value">{{doctor.specialties.join(", ")}}</span>
+</div>
 
+<div class="info-item">
+  <span class="info-label">Qualification</span>
+  <span class="info-value">{{doctor.qualifications}}</span>
+</div>
 
-<p class="doctor-info">
-Experience:
-{{doctor.experience}}
-</p>
+<div class="info-item">
+  <span class="info-label">Experience</span>
+  <span class="info-value">{{doctor.experience}}</span>
+</div>
+
+</div>
 
 
 
@@ -162,7 +198,7 @@ Available Times
 
 
 
-<ul class="availability-list">
+<ul class="availability-list" v-if="doctor.availability?.length">
 
 
 <li
@@ -171,16 +207,11 @@ v-for="item in doctor.availability"
 class="availability-item"
 >
 
+<svg class="availability-item__icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
 
-{{item.day}}
+<span class="availability-item__day">{{item.day}}</span>
 
-:
-
-{{item.startTime}}
-
--
-
-{{item.endTime}}
+{{item.startTime}} - {{item.endTime}}
 
 
 
@@ -188,6 +219,8 @@ class="availability-item"
 
 
 </ul>
+
+<p class="no-data" v-else>No availability listed for this doctor.</p>
 
 
 
@@ -215,15 +248,26 @@ v-model="appointmentDateTime"
 <button
 class="confirm-btn"
 @click="bookAppointment"
+:disabled="booking || !appointmentDateTime"
 >
 
-Confirm Appointment
+<span v-if="booking" class="btn-spinner"></span>
+
+<svg v-else viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+{{ booking ? "Booking..." : "Confirm Appointment" }}
 
 </button>
 
 
 
 
+</div>
+
+
+<div v-else class="doctor-card doctor-card--loading">
+  <span class="spinner"></span>
+  <p>Loading doctor details...</p>
 </div>
 
 
@@ -244,14 +288,93 @@ Confirm Appointment
 }
 
 
+.page-header{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:14px;
+
+    margin-bottom:30px;
+
+}
+
+
+.back-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    border:1px solid var(--border);
+
+    background:var(--white);
+
+    color:var(--text);
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    box-shadow:var(--shadow);
+
+    transition:transform .15s ease;
+
+}
+
+
+.back-btn svg{
+
+    width:15px;
+
+    height:15px;
+
+}
+
+
+.back-btn:hover{
+
+    transform:translateX(-2px);
+
+}
+
+
+.eyebrow{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    letter-spacing:.04em;
+
+    text-transform:uppercase;
+
+    color:var(--primary);
+
+    margin:0;
+
+}
+
+
 
 .page-title{
 
     color:var(--text);
 
-    font-size:32px;
+    font-size:30px;
 
-    margin-bottom:30px;
+    margin:0;
 
 }
 
@@ -274,26 +397,187 @@ Confirm Appointment
 }
 
 
+.doctor-card--loading{
 
-.doctor-name{
+    display:flex;
 
-    color:var(--primary);
+    align-items:center;
 
-    font-size:26px;
+    gap:14px;
 
-    margin-bottom:20px;
+    color:var(--muted);
+
+}
+
+
+.spinner{
+
+    width:26px;
+
+    height:26px;
+
+    border-radius:50%;
+
+    border:3px solid var(--border);
+
+    border-top-color:var(--primary);
+
+    animation:spin .8s linear infinite;
+
+    flex-shrink:0;
+
+}
+
+
+@keyframes spin{
+
+    to{ transform:rotate(360deg); }
+
+}
+
+
+.doctor-card__head{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding-bottom:24px;
+
+    margin-bottom:24px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+.avatar{
+
+    flex-shrink:0;
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+
+    color:#fff;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+
+.doctor-card__head-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
 
 }
 
 
 
-.doctor-info{
+.doctor-name{
 
     color:var(--text);
 
-    margin:12px 0;
+    font-size:22px;
 
-    font-size:15px;
+    margin:0;
+
+}
+
+
+.dept-pill{
+
+    display:inline-block;
+
+    align-self:flex-start;
+
+    padding:5px 12px;
+
+    border-radius:999px;
+
+    background:rgba(37,99,235,.12);
+
+    color:#2563eb;
+
+    font-weight:600;
+
+    font-size:12px;
+
+}
+
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:16px;
+
+    margin-bottom:8px;
+
+}
+
+
+.info-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    background:#f8fafc;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:14px;
+
+}
+
+
+.info-label{
+
+    font-size:11px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.04em;
+
+    color:var(--muted);
+
+}
+
+
+.info-value{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:var(--text);
 
 }
 
@@ -307,6 +591,8 @@ Confirm Appointment
 
     margin-bottom:15px;
 
+    font-size:16px;
+
 }
 
 
@@ -316,6 +602,8 @@ Confirm Appointment
     list-style:none;
 
     padding:0;
+
+    margin:0;
 
     display:flex;
 
@@ -329,9 +617,15 @@ Confirm Appointment
 
 .availability-item{
 
-    background:rgba(20,184,166,.15);
+    display:inline-flex;
 
-    color:var(--primary);
+    align-items:center;
+
+    gap:8px;
+
+    background:rgba(20,184,166,.12);
+
+    color:var(--text);
 
     padding:10px 15px;
 
@@ -339,8 +633,46 @@ Confirm Appointment
 
     font-weight:600;
 
+    font-size:13.5px;
+
+    border:1px solid rgba(20,184,166,.2);
+
 }
 
+
+.availability-item__icon{
+
+    width:14px;
+
+    height:14px;
+
+    color:var(--primary);
+
+    flex-shrink:0;
+
+}
+
+
+.availability-item__day{
+
+    color:var(--primary);
+
+    font-weight:700;
+
+}
+
+
+.no-data{
+
+    color:var(--muted);
+
+    font-style:italic;
+
+    font-size:14px;
+
+    margin:0;
+
+}
 
 
 
@@ -360,6 +692,12 @@ Confirm Appointment
     font-size:15px;
 
     outline:none;
+
+    box-sizing:border-box;
+
+    font-family:inherit;
+
+    color:var(--text);
 
 }
 
@@ -392,6 +730,12 @@ Confirm Appointment
 
     font-weight:700;
 
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:9px;
+
     background:linear-gradient(
         135deg,
         var(--primary),
@@ -401,12 +745,60 @@ Confirm Appointment
 }
 
 
+.confirm-btn svg{
 
-.confirm-btn:hover{
+    width:17px;
+
+    height:17px;
+
+}
+
+
+.confirm-btn:disabled{
+
+    opacity:.65;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+
+.btn-spinner{
+
+    width:16px;
+
+    height:16px;
+
+    border-radius:50%;
+
+    border:2px solid rgba(255,255,255,.5);
+
+    border-top-color:#fff;
+
+    animation:spin .7s linear infinite;
+
+}
+
+
+
+.confirm-btn:hover:not(:disabled){
 
     transform:translateY(-2px);
 
     box-shadow:0 10px 20px rgba(15,118,110,.25);
+
+}
+
+
+@media (max-width:600px){
+
+    .info-grid{
+
+        grid-template-columns:1fr;
+
+    }
 
 }
 
