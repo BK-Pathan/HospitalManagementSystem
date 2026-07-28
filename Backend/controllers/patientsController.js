@@ -1286,7 +1286,11 @@ doctor:doctor._id
 .populate({
 
 path:"patient",
-select:"name"
+
+populate:{
+    path:"user",
+    select:"name email"
+}
 
 })
 .sort({

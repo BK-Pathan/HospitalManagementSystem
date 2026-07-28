@@ -361,17 +361,22 @@ getDoctorProfile();
         >
 
 
-          <div class="review-avatar">
-            {{ (feedback.patient?.name || "P").charAt(0) }}
-          </div>
+<div class="review-avatar">
+  {{
+    (feedback.patient?.user?.name || "P")
+    .charAt(0)
+    .toUpperCase()
+  }}
+</div>
 
           <div class="review-body">
 
             <div class="review-top">
 
               <span class="review-stars">⭐ {{feedback.rating}}</span>
-
-              <small class="review-author">{{feedback.patient?.name}}</small>
+<small class="review-author">
+  {{feedback.patient?.user?.name || "Anonymous Patient"}}
+</small>
 
             </div>
 

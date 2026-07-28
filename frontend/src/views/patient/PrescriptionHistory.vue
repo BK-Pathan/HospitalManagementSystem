@@ -300,13 +300,13 @@ getMyPrescriptions();
 
         <div class="header-tags">
 
-          <span class="tag" v-if="item.doctor?.specialties">
-            🏥 {{ item.doctor.specialties.join(", ") }}
-          </span>
+          <!-- <span class="tag" v-if="item.doctor?.specialties">
+            specialties {{ item.doctor.specialties.join(", ") }}
+          </span> -->
 
 
           <span class="tag tag--muted" v-if="item.doctor?.department">
-            🏢 {{ item.doctor.department }}
+            Department : {{ item.doctor.department }}
           </span>
 
         </div>
@@ -470,7 +470,7 @@ getMyPrescriptions();
 
       <p v-if="item.doctor?.experience">
 
-      Experience: {{item.doctor.experience}} Years
+      Dr's Experience: {{item.doctor.experience}} Years
 
       </p>
 

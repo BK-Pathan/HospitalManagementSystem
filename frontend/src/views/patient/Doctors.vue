@@ -65,6 +65,22 @@ const initials = (name) => {
 };
 
 
+// Display-only helper (no backend / data change)
+// Deterministically assigns one of the theme accent colors to a
+// doctor based on their name, purely for visual variety.
+
+const accentPalette = ["teal", "blue", "purple", "indigo", "amber", "green"];
+
+const accentFor = (name) => {
+  if (!name) return accentPalette[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return accentPalette[Math.abs(hash) % accentPalette.length];
+};
+
+
 </script>
 
 
@@ -76,185 +92,133 @@ const initials = (name) => {
 
     <div class="header">
 
-        <p class="eyebrow">Directory</p>
+        <div>
 
-        <h2>
-            Available Doctors
-        </h2>
+            <p class="eyebrow">Directory</p>
 
-
-        <p class="subtitle">
-            Find and book an appointment with our specialists
-        </p>
+            <h2>
+                Available Doctors
+            </h2>
 
 
-    </div>
+            <p class="subtitle">
+                Find and book an appointment with our specialists
+            </p>
 
+        </div>
 
-
-
-    <div class="table-card">
-
-
-    <table v-if="doctors.length">
-
-
-    <thead>
-    <tr>
-
-    <th>Doctor</th>
-
-    <th>Department</th>
-
-    <th>Speciality</th>
-
-    <th>Qualification</th>
-
-    <th>Experience</th>
-
-    <th>Availability</th>
-
-    <th>Action</th>
-
-
-    </tr>
-    </thead>
-
-
-
-
-    <tbody>
-    <tr
-    v-for="doctor in doctors"
-    :key="doctor._id"
-    >
-
-
-
-    <td>
-      <div class="doctor-cell">
-        <span class="avatar">{{ initials(doctor.name) }}</span>
-        <span class="doctor-name">{{doctor.name}}</span>
-      </div>
-    </td>
-
-
-    <td>
-
-    <span class="dept-pill">{{doctor.department}}</span>
-
-    </td>
-
-
-    <td class="muted-cell">
-
-    {{doctor.specialties.join(", ")}}
-
-    </td>
-
-
-
-
-
-    <td class="muted-cell">
-
-    {{doctor.qualifications}}
-
-    </td>
-
-
-
-
-
-    <td class="muted-cell">
-
-    {{doctor.experience}}
-
-    </td>
-
-
-
-
-
-
-    <td>
-
-
-    <div class="availability" v-if="doctor.availability?.length">
-
-
-    <div
-    v-for="item in doctor.availability"
-    :key="item._id"
-    class="time-slot"
-    >
-
-
-    <span class="time-slot__day">{{item.day}}</span>
-    {{item.startTime}} - {{item.endTime}}
+        <span class="count-badge" v-if="doctors.length">
+            {{ doctors.length }} specialist{{ doctors.length === 1 ? "" : "s" }}
+        </span>
 
 
     </div>
 
 
+
+
+    <div class="doctor-grid" v-if="doctors.length">
+
+
+        <div
+        v-for="doctor in doctors"
+        :key="doctor._id"
+        class="doctor-card"
+        :class="`accent--${accentFor(doctor.name)}`"
+        >
+
+            <div class="card-top">
+
+                <span class="avatar">{{ initials(doctor.name) }}</span>
+
+                <div class="doctor-identity">
+                    <h3 class="doctor-name">Dr. {{doctor.name}}</h3>
+                    <span class="dept-pill"> Department :{{doctor.department}}</span>
+                </div>
+
+            </div>
+
+
+            <p class="specialties" v-if="doctor.specialties?.length">
+               Specialties : {{doctor.specialties.join(", ")}}
+            </p>
+
+
+            <div class="stat-row">
+
+                <div class="stat">
+                    <span class="stat-icon">🎓</span>
+                    <span>{{doctor.qualifications}}</span>
+                </div>
+
+                <div class="stat">
+                    <span class="stat-icon">📈</span>
+                    <span>{{doctor.experience}} yrs experience</span>
+                </div>
+
+            </div>
+
+
+            <div class="card-divider"></div>
+
+
+            <div class="availability-block">
+
+                <p class="availability-label">Availability</p>
+
+                <div class="availability" v-if="doctor.availability?.length">
+
+                    <span
+                    v-for="item in doctor.availability.slice(0,3)"
+                    :key="item._id"
+                    class="time-slot"
+                    >
+                        <span class="time-slot__day">{{item.day}}</span>
+                        {{item.startTime}} – {{item.endTime}}
+                    </span>
+
+                    <span class="more-slots" v-if="doctor.availability.length > 3">
+                        +{{ doctor.availability.length - 3 }} more
+                    </span>
+
+                </div>
+
+                <span class="no-data" v-else>Not set</span>
+
+            </div>
+
+
+            <div class="action-buttons">
+
+                <button
+                class="book-btn"
+                @click="router.push(`/patient/book-appointment/${doctor._id}`)"
+                >
+                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Book Appointment
+                </button>
+
+                <button
+
+                class="profile-btn"
+
+                @click="viewDoctorProfile(doctor._id)"
+
+                >
+                <svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
+                View Doctor
+                </button>
+
+            </div>
+
+        </div>
+
+
     </div>
-
-    <span class="no-data" v-else>Not set</span>
-
-
-    </td>
-
-
-
-
-
-
-
-    <td>
-
-    <div class="action-buttons">
-
-    <button
-    class="book-btn"
-    @click="router.push(`/patient/book-appointment/${doctor._id}`)"
-    >
-    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    Book Appointment
-    </button>
-
-    <button
-
-    class="profile-btn"
-
-    @click="viewDoctorProfile(doctor._id)"
-
-    >
-    <svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
-    View Doctor
-    </button>
-
-    </div>
-    </td>
-
-
-
-
-
-    </tr>
-    </tbody>
-
-
-
-
-
-    </table>
 
     <div class="empty-state" v-else>
       <svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <p>No doctors available right now.</p>
-    </div>
-
-
     </div>
 
 
@@ -268,7 +232,34 @@ const initials = (name) => {
 
 .page{
 
+    --clinical-navy:#0F2A43;
+    --clinical-teal:#0D9488;
+    --clinical-teal-light:#CCFBF1;
+    --clinical-bg:#F4F7FA;
+    --clinical-surface:#FFFFFF;
+    --clinical-border:#E2E8F0;
+    --clinical-text:#1E293B;
+    --clinical-text-muted:#64748B;
+    --clinical-amber:#D97706;
+    --clinical-amber-light:#FEF3C7;
+    --clinical-green:#16A34A;
+    --clinical-green-light:#DCFCE7;
+    --clinical-blue:#2563EB;
+    --clinical-blue-light:#DBEAFE;
+    --clinical-purple:#7C3AED;
+    --clinical-purple-light:#EDE9FE;
+    --clinical-indigo:#4F46E5;
+    --clinical-indigo-light:#E0E7FF;
+
     min-height:100%;
+
+    padding:28px;
+
+    background:var(--clinical-bg);
+
+    font-family:-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+
+    color:var(--clinical-text);
 
 }
 
@@ -276,22 +267,30 @@ const initials = (name) => {
 
 .header{
 
-    margin-bottom:30px;
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:space-between;
+
+    margin-bottom:26px;
+
+    gap:16px;
 
 }
 
 
 .eyebrow{
 
-    font-size:13px;
+    font-size:12px;
 
-    font-weight:600;
+    font-weight:700;
 
-    letter-spacing:.04em;
+    letter-spacing:.08em;
 
     text-transform:uppercase;
 
-    color:var(--primary);
+    color:var(--clinical-teal);
 
     margin:0 0 6px;
 
@@ -300,9 +299,11 @@ const initials = (name) => {
 
 .header h2{
 
-    color:var(--text);
+    color:var(--clinical-navy);
 
-    font-size:30px;
+    font-size:28px;
+
+    font-weight:700;
 
     margin:0;
 
@@ -312,115 +313,124 @@ const initials = (name) => {
 
 .header .subtitle{
 
-    color:var(--muted);
+    color:var(--clinical-text-muted);
 
-    margin-top:8px;
-
-}
-
-
-
-
-.table-card{
-
-    background:var(--white);
-
-    padding:10px 24px 24px;
-
-    border-radius:20px;
-
-    box-shadow:var(--shadow);
-
-    border:1px solid var(--border);
-
-    overflow-x:auto;
-
-}
-
-
-
-
-table{
-
-    width:100%;
-
-    border-collapse:collapse;
-
-}
-
-
-
-
-thead th{
-
-    color:var(--muted);
-
-    font-size:12px;
-
-    text-transform:uppercase;
-
-    letter-spacing:.04em;
-
-    font-weight:700;
-
-    text-align:left;
-
-    padding:16px 12px;
-
-    border-bottom:1px solid var(--border);
-
-    background:transparent;
-
-}
-
-
-
-
-td{
-
-    padding:16px 12px;
-
-    border-bottom:1px solid var(--border);
-
-    color:var(--text);
+    margin-top:6px;
 
     font-size:14px;
 
-    vertical-align:top;
+}
+
+
+.count-badge{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:var(--clinical-teal);
+
+    background:var(--clinical-teal-light);
+
+    padding:6px 14px;
+
+    border-radius:999px;
+
+    white-space:nowrap;
 
 }
 
 
-tbody tr:last-child td{
-
-    border-bottom:none;
-
-}
 
 
+.doctor-grid{
 
+    display:grid;
 
-tbody tr:hover{
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 
-    background:#f8fafc;
+    gap:20px;
 
 }
 
 
-.muted-cell{
 
-    color:var(--muted);
+.doctor-card{
+
+    --card-accent:var(--clinical-teal);
+    --card-accent-light:var(--clinical-teal-light);
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:var(--clinical-surface);
+
+    border:1px solid var(--clinical-border);
+
+    border-radius:18px;
+
+    padding:22px;
+
+    box-shadow:0 1px 3px rgba(15,42,67,.05);
+
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+
+    overflow:hidden;
 
 }
 
 
-.doctor-cell{
+.doctor-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    height:4px;
+
+    background:var(--card-accent);
+
+}
+
+
+.doctor-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 16px 32px rgba(15,42,67,.12);
+
+    border-color:var(--card-accent);
+
+}
+
+
+.accent--teal{ --card-accent:var(--clinical-teal); --card-accent-light:var(--clinical-teal-light); }
+.accent--blue{ --card-accent:var(--clinical-blue); --card-accent-light:var(--clinical-blue-light); }
+.accent--purple{ --card-accent:var(--clinical-purple); --card-accent-light:var(--clinical-purple-light); }
+.accent--indigo{ --card-accent:var(--clinical-indigo); --card-accent-light:var(--clinical-indigo-light); }
+.accent--amber{ --card-accent:var(--clinical-amber); --card-accent-light:var(--clinical-amber-light); }
+.accent--green{ --card-accent:var(--clinical-green); --card-accent-light:var(--clinical-green-light); }
+
+
+
+.card-top{
 
     display:flex;
 
     align-items:center;
 
-    gap:10px;
+    gap:14px;
+
+    margin-bottom:14px;
 
 }
 
@@ -429,11 +439,11 @@ tbody tr:hover{
 
     flex-shrink:0;
 
-    width:38px;
+    width:52px;
 
-    height:38px;
+    height:52px;
 
-    border-radius:50%;
+    border-radius:14px;
 
     display:flex;
 
@@ -441,24 +451,48 @@ tbody tr:hover{
 
     justify-content:center;
 
-    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    background:var(--card-accent);
 
     color:#fff;
 
-    font-size:13px;
+    font-size:16px;
 
     font-weight:700;
+
+    letter-spacing:.02em;
 
 }
 
 
 
+.doctor-identity{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    min-width:0;
+
+}
+
 
 .doctor-name{
 
+    font-size:16px;
+
     font-weight:700;
 
-    color:var(--text);
+    color:var(--clinical-navy);
+
+    margin:0;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 
 }
 
@@ -467,24 +501,114 @@ tbody tr:hover{
 
     display:inline-block;
 
-    padding:5px 12px;
+    width:fit-content;
+
+    padding:3px 10px;
 
     border-radius:999px;
 
-    background:rgba(37,99,235,.12);
+    background:var(--card-accent-light);
 
-    color:#2563eb;
+    color:var(--card-accent);
 
-    font-weight:600;
+    font-weight:700;
 
-    font-size:12px;
+    font-size:11px;
+
+    text-transform:uppercase;
+
+    letter-spacing:.03em;
+
+}
+
+
+.specialties{
+
+    color:var(--clinical-text-muted);
+
+    font-size:13px;
+
+    margin:0 0 14px;
+
+    line-height:1.5;
+
+}
+
+
+
+.stat-row{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    margin-bottom:16px;
+
+}
+
+
+.stat{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:13px;
+
+    color:var(--clinical-text);
+
+}
+
+.stat-icon{
+
+    font-size:13px;
+
+}
+
+
+.card-divider{
+
+    height:1px;
+
+    background:var(--clinical-border);
+
+    margin-bottom:16px;
+
+}
+
+
+.availability-block{
+
+    margin-bottom:18px;
+
+    flex-grow:1;
+
+}
+
+.availability-label{
+
+    font-size:11px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.04em;
+
+    color:var(--clinical-text-muted);
+
+    margin:0 0 10px;
 
 }
 
 
 .no-data{
 
-    color:var(--muted);
+    color:var(--clinical-text-muted);
 
     font-style:italic;
 
@@ -499,7 +623,7 @@ tbody tr:hover{
 
     display:flex;
 
-    flex-direction:column;
+    flex-wrap:wrap;
 
     gap:8px;
 
@@ -509,15 +633,17 @@ tbody tr:hover{
 
 .time-slot{
 
-    background:rgba(20,184,166,.12);
+    background:var(--card-accent-light);
 
-    color:var(--primary);
+    color:var(--card-accent);
 
-    padding:8px 12px;
+    padding:6px 10px;
 
-    border-radius:10px;
+    border-radius:8px;
 
-    font-size:13px;
+    font-size:12px;
+
+    font-weight:600;
 
 }
 
@@ -526,9 +652,31 @@ tbody tr:hover{
 
     font-weight:700;
 
-    margin-right:6px;
+    margin-right:5px;
 
 }
+
+
+.more-slots{
+
+    display:flex;
+
+    align-items:center;
+
+    padding:6px 10px;
+
+    border-radius:8px;
+
+    border:1px dashed var(--clinical-border);
+
+    color:var(--clinical-text-muted);
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
 
 
 .action-buttons{
@@ -539,7 +687,7 @@ tbody tr:hover{
 
     gap:8px;
 
-    min-width:170px;
+    margin-top:auto;
 
 }
 
@@ -567,7 +715,7 @@ tbody tr:hover{
 
     gap:8px;
 
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
 
 }
 
@@ -587,23 +735,18 @@ tbody tr:hover{
 
     color:white;
 
-
-    background:linear-gradient(
-        135deg,
-        var(--primary),
-        var(--secondary)
-    );
+    background:var(--card-accent);
 
 }
 
 
 .profile-btn{
 
-    background:var(--white);
+    background:var(--clinical-surface);
 
-    color:var(--primary);
+    color:var(--clinical-navy);
 
-    border:1px solid var(--border);
+    border:1px solid var(--clinical-border);
 
 }
 
@@ -614,7 +757,7 @@ tbody tr:hover{
 
     transform:translateY(-2px);
 
-    box-shadow:0 6px 14px rgba(0,0,0,.1);
+    box-shadow:0 8px 16px rgba(15,42,67,.12);
 
 }
 
@@ -631,9 +774,15 @@ tbody tr:hover{
 
     gap:12px;
 
-    padding:50px 20px;
+    padding:70px 20px;
 
-    color:var(--muted);
+    color:var(--clinical-text-muted);
+
+    background:var(--clinical-surface);
+
+    border:1px solid var(--clinical-border);
+
+    border-radius:18px;
 
 }
 
@@ -654,6 +803,29 @@ tbody tr:hover{
     margin:0;
 
     font-size:14px;
+
+}
+
+
+@media(max-width:640px){
+
+    .page{
+        padding:16px;
+    }
+
+    .header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .doctor-grid{
+
+        grid-template-columns:1fr;
+
+    }
 
 }
 

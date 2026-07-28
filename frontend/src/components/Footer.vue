@@ -47,6 +47,8 @@ const year = new Date().getFullYear();
 
     width:100%;
 
+    margin-top: 20px;
+
     padding:18px 25px;
 
     display:flex;
