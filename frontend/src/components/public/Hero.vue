@@ -6,7 +6,7 @@
 
       <div class="hero__left">
         <h1 class="hero__title">
-          Premium Treatments for a<br />
+          Premium Treatments for A<br />
           <span>Healthy Lifestyle</span>
         </h1>
         <p class="hero__desc">
@@ -224,6 +224,7 @@ box-shadow:
   font-size: 0.92rem;
   line-height: 1.7;
   margin: 0 0 1.75rem;
+    text-align:justify;
 }
 
 .hero__cta {
@@ -379,57 +380,177 @@ box-shadow:
 }
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {
-  .hero__nav-links {
-    display: none;
+
+  .hero__body{
+    grid-template-columns:1fr;
+    gap:3rem;
+    padding:2rem 1rem;
+    margin-top:60px;
+    text-align:center;
   }
 
-  .hero__body {
-    grid-template-columns: 1fr;
-    padding-top: 2.5rem;
+  .hero__left{
+    order:2;
   }
 
-  .hero__right {
-    min-height: 340px;
-    order: -1;
+  .hero__right{
+    order:1;
+    min-height:auto;
+    justify-content:center;
   }
 
-  .hero__desc {
-    max-width: 100%;
+  .hero__title{
+    font-size:clamp(2rem,6vw,2.7rem);
   }
 
-  .hero__finder {
-    flex-wrap: wrap;
-    border-radius: var(--radius-lg);
+  .hero__desc{
+    max-width:650px;
+    margin:0 auto 1.8rem;
   }
 
-  .hero__finder-field {
-    flex: 1 1 45%;
+  .hero__stats{
+    justify-content:center;
+    gap:2rem;
   }
 
-  .hero__finder-divider {
-    display: none;
+  .hero__cta{
+    margin:auto;
   }
 
-  .hero__finder-search {
-    flex: 1 1 100%;
-    justify-content: center;
+  .hero__doctor-img{
+    width:75%;
+    max-width:360px;
   }
+
+  .hero__blob{
+    width:75%;
+    height:90%;
+  }
+
+  .hero__badge{
+    right:8%;
+    top:4%;
+  }
+
+  .hero__search-card{
+    left:50%;
+    transform:translateX(-50%);
+    bottom:0;
+    width:85%;
+    max-width:330px;
+  }
+
 }
 
-@media (max-width: 560px) {
-  .hero__stats {
-    gap: 1.4rem;
+@media (max-width:560px){
+
+  .hero{
+    overflow:hidden;
   }
 
-  .hero__search-card {
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -4%;
-    width: 88%;
+  .hero__body{
+    padding:1.5rem 1rem 2rem;
+    gap:2rem;
+     margin-top: 90px; 
   }
 
-  .hero__finder-field {
-    flex: 1 1 100%;
+  .hero__title{
+    font-size:2rem;
+    line-height:1.25;
   }
+
+  .hero__desc{
+    font-size:.9rem;
+    line-height:1.7;
+  }
+
+  .hero__cta{
+    width:100%;
+    justify-content:center;
+    padding:.9rem 1rem;
+  }
+
+  /* .hero__stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:1.5rem;
+    text-align:center;
+  }
+
+  .hero__stat{
+    align-items:center;
+  }
+
+  .hero__stat strong{
+    font-size:1.3rem;
+  } */
+
+  .hero__right{
+    min-height:300px;
+  }
+
+  .hero__doctor-img{
+    width:90%;
+    max-width:300px;
+  }
+
+  .hero__blob{
+    width:95%;
+    height:90%;
+  }
+
+  .hero__badge{
+    top:8px;
+    right:10px;
+    padding:.45rem .8rem;
+    font-size:.72rem;
+  }
+
+  .hero__search-card{
+    width:92%;
+    padding:.8rem 1rem;
+  }
+
+
+
+}
+@media (max-width:560px){
+
+  .hero__stats{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:1rem;
+  }
+
+  .hero__stat{
+    flex:0 0 calc(50% - .5rem);
+    max-width:calc(50% - .5rem);
+    text-align:center;
+    align-items:center;
+  }
+
+}
+
+@media (max-width:380px){
+
+  .hero__title{
+    font-size:1.7rem;
+  }
+
+  .hero__stats{
+    grid-template-columns:1fr;
+  }
+
+  .hero__doctor-img{
+    width:100%;
+    max-width:250px;
+  }
+
+  .hero__badge{
+    font-size:.68rem;
+    padding:.4rem .7rem;
+  }
+
 }
 </style>

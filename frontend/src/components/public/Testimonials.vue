@@ -520,39 +520,297 @@ onBeforeUnmount(() => {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 900px) {
-  .carousel__group {
-    grid-template-columns: 1fr;
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px){
+
+  .feedback{
+    padding:80px 24px 90px;
   }
-  .feedback__summary {
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 16px 22px;
+
+
+  .carousel__group{
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
   }
-  .summary-divider {
-    display: none;
+
+
+  .testimonial{
+    padding:28px 22px 24px;
   }
+
 }
 
-@media (max-width: 560px) {
-  .carousel {
-    gap: 8px;
+
+
+@media (max-width:900px){
+
+  .feedback{
+    padding:70px 20px 80px;
   }
-  .carousel__nav {
-    width: 34px;
-    height: 34px;
-    font-size: 18px;
+
+
+
+  .feedback__title{
+    font-size:32px;
   }
+
+
+
+  .feedback__subtitle{
+    font-size:14px;
+  }
+
+
+
+  /* Summary responsive */
+
+  .feedback__summary{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    width:100%;
+    gap:10px;
+    padding:16px 12px;
+    border-radius:20px;
+
+  }
+
+
+  .summary-divider{
+    display:block;
+    width:1px;
+    height:35px;
+    align-self:center;
+  }
+
+
+
+  .summary-value{
+    font-size:18px;
+  }
+
+
+
+  .summary-label{
+    font-size:11px;
+    white-space:normal;
+    text-align:center;
+  }
+
+
+
+
+  /* Carousel */
+
+  .carousel{
+    gap:10px;
+  }
+
+
+
+  .carousel__group{
+
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+
+  }
+
+
+
+  .testimonial__text{
+
+    font-size:13px;
+    line-height:1.65;
+
+  }
+
+
+
+  .carousel__nav{
+
+    width:36px;
+    height:36px;
+    font-size:20px;
+
+  }
+
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .blob {
-    animation: none;
+
+
+
+
+@media(max-width:560px){
+
+
+  .feedback{
+
+    padding:55px 14px 70px;
+
   }
-  .feedback__header,
-  .carousel,
-  .carousel__page {
-    transition: none;
+
+
+
+  .feedback__header{
+
+    margin-bottom:30px;
+
   }
+
+
+
+  .feedback__title{
+
+    font-size:27px;
+    line-height:1.3;
+
+  }
+
+
+
+  .feedback__subtitle{
+
+    font-size:13px;
+    line-height:1.6;
+
+  }
+
+
+
+  /* Summary mobile */
+
+  .feedback__summary{
+
+    grid-template-columns:1fr;
+    gap:12px;
+    padding:18px 15px;
+    border-radius:18px;
+
+  }
+
+
+
+  .summary-divider{
+
+    width:60%;
+    height:1px;
+    margin:auto;
+
+  }
+
+
+
+  .summary-value{
+
+    font-size:22px;
+
+  }
+
+
+
+
+  /* Single testimonial card */
+
+  .carousel{
+
+    gap:6px;
+
+  }
+
+
+
+  .carousel__track{
+
+    width:100%;
+
+  }
+
+
+
+  .carousel__group{
+
+    grid-template-columns:1fr;
+    gap:14px;
+
+  }
+
+
+
+  .testimonial{
+
+    min-height:260px;
+    padding:26px 20px 22px;
+
+  }
+
+
+
+  .testimonial__quote-mark{
+
+    font-size:48px;
+    right:15px;
+
+  }
+
+
+
+  .testimonial__stars{
+
+    margin-bottom:12px;
+
+  }
+
+
+
+  .testimonial__text{
+
+    font-size:13px;
+
+  }
+
+
+
+  .testimonial__avatar{
+
+    width:40px;
+    height:40px;
+
+  }
+
+
+
+  .testimonial__name{
+
+    font-size:13px;
+
+  }
+
+
+
+  .testimonial__role{
+
+    font-size:11px;
+
+  }
+
+
+
+  .carousel__nav{
+
+    width:32px;
+    height:32px;
+    font-size:17px;
+
+  }
+
+
+
+  .carousel__dots{
+
+    margin-top:22px;
+
+  }
+
 }
 </style>

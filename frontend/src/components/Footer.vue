@@ -41,13 +41,11 @@ const year = new Date().getFullYear();
 
 
 <style scoped>
-
-
 .footer{
 
     width:100%;
 
-    margin-top: 20px;
+    margin-top:20px;
 
     padding:18px 25px;
 
@@ -59,14 +57,11 @@ const year = new Date().getFullYear();
 
     gap:15px;
 
-
     background:var(--surface);
 
     backdrop-filter:blur(12px);
 
-
     border-top:1px solid var(--border);
-
 
     color:var(--muted);
 
@@ -74,16 +69,21 @@ const year = new Date().getFullYear();
 
     font-weight:600;
 
+    box-sizing:border-box;
 
 }
 
 
+
+/* Right links */
 
 .footer-right{
 
     display:flex;
 
     gap:20px;
+
+    align-items:center;
 
 }
 
@@ -94,6 +94,8 @@ const year = new Date().getFullYear();
     cursor:pointer;
 
     transition:.3s;
+
+    white-space:nowrap;
 
 }
 
@@ -107,34 +109,119 @@ const year = new Date().getFullYear();
 
 
 
+/* Tablet */
+
+@media(max-width:900px){
+
+
+    .footer{
+
+        padding:16px 20px;
+
+        font-size:12.5px;
+
+    }
+
+
+    .footer-right{
+
+        gap:15px;
+
+    }
+
+}
+
+
+
+
+/* Mobile */
 
 @media(max-width:700px){
 
 
-.footer{
+    .footer{
 
-    flex-direction:column;
+        flex-direction:column;
 
-    text-align:center;
+        justify-content:center;
 
-    padding:15px;
+        align-items:center;
+
+        text-align:center;
+
+        padding:18px 14px;
+
+        gap:12px;
+
+    }
+
+
+
+    .footer-left{
+
+        width:100%;
+
+        line-height:1.5;
+
+    }
+
+
+
+    .footer-right{
+
+        width:100%;
+
+        display:flex;
+
+        justify-content:center;
+
+        flex-wrap:wrap;
+
+        gap:10px 18px;
+
+    }
+
+
+
+    .footer-right span{
+
+        font-size:12px;
+
+    }
 
 }
 
 
 
-.footer-right{
+/* Small mobile */
 
-    flex-wrap:wrap;
+@media(max-width:400px){
 
-    justify-content:center;
 
-    gap:12px;
+    .footer{
+
+        padding:15px 10px;
+
+    }
+
+
+
+    .footer-left{
+
+        font-size:11.5px;
+
+    }
+
+
+
+    .footer-right{
+
+        gap:8px 14px;
+
+    }
+
+
 
 }
-
-
-}
-
 
 </style>

@@ -897,14 +897,73 @@ font-weight:700;
 
 
 
-@media(max-width:850px){
+/* ==========================
+   RESPONSIVE FIX
+========================== */
+
+
+@media(max-width:1024px){
+
+.login-page{
+
+    padding:30px;
+
+}
 
 
 .login-card{
 
+    max-width:900px;
 
-grid-template-columns:1fr;
+}
 
+
+.welcome-section,
+.form-section{
+
+    padding:45px;
+
+}
+
+
+.welcome-section h1{
+
+    font-size:32px;
+
+}
+
+
+.form-section h2{
+
+    font-size:32px;
+
+}
+
+}
+
+
+
+
+@media(max-width:850px){
+
+
+.login-page{
+
+    min-height:auto;
+
+    padding:25px 15px;
+
+}
+
+
+
+.login-card{
+
+    grid-template-columns:1fr;
+
+    border-radius:25px;
+
+    margin:20px 0;
 
 }
 
@@ -912,11 +971,51 @@ grid-template-columns:1fr;
 
 .welcome-section{
 
+    padding:35px 25px;
 
-padding:40px;
+    text-align:center;
 
-text-align:center;
+    align-items:center;
 
+}
+
+
+
+.logo{
+
+    width:75px;
+
+    height:75px;
+
+    font-size:32px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.welcome-section h1{
+
+    font-size:28px;
+
+}
+
+
+
+.welcome-section p{
+
+    font-size:14px;
+
+}
+
+
+
+.features div{
+
+    font-size:14px;
+
+    margin-top:12px;
 
 }
 
@@ -924,9 +1023,203 @@ text-align:center;
 
 .form-section{
 
+    padding:35px 25px;
 
-padding:35px;
+}
 
+
+
+.form-section h2{
+
+    font-size:28px;
+
+    text-align:center;
+
+}
+
+
+
+.subtitle{
+
+    text-align:center;
+
+    font-size:14px;
+
+}
+
+
+
+.input-group{
+
+    margin-bottom:18px;
+
+}
+
+
+
+input,
+select{
+
+    padding:14px 15px;
+
+    font-size:14px;
+
+}
+
+
+
+.login-btn{
+
+    padding:14px;
+
+    font-size:16px;
+
+}
+
+
+}
+
+
+
+
+
+@media(max-width:480px){
+
+
+.login-page{
+
+    padding:15px 10px;
+
+}
+
+
+
+.login-card{
+
+    border-radius:20px;
+
+}
+
+
+
+.welcome-section{
+
+    padding:30px 18px;
+
+}
+
+
+
+.logo{
+
+    width:65px;
+
+    height:65px;
+
+    font-size:28px;
+
+}
+
+
+
+.welcome-section h1{
+
+    font-size:24px;
+
+}
+
+
+
+.welcome-section p{
+
+    line-height:1.6;
+
+}
+
+
+
+.features div{
+
+    font-size:13px;
+
+}
+
+
+
+.form-section{
+
+    padding:25px 18px;
+
+}
+
+
+
+.form-section h2{
+
+    font-size:24px;
+
+}
+
+
+
+.subtitle{
+
+    margin-bottom:25px;
+
+}
+
+
+
+label{
+
+    font-size:13px;
+
+}
+
+
+
+input,
+select{
+
+    border-radius:12px;
+
+}
+
+
+
+.signup-text{
+
+    font-size:13px;
+
+}
+
+}
+
+
+
+
+@media(max-width:350px){
+
+
+.welcome-section h1{
+
+    font-size:22px;
+
+}
+
+
+
+.form-section h2{
+
+    font-size:22px;
+
+}
+
+
+
+.login-btn{
+
+    font-size:15px;
 
 }
 

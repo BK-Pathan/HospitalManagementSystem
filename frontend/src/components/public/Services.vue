@@ -2,7 +2,7 @@
   <section class="services" id="services">
 
     <div class="services__header">
-      <p class="services__eyebrow">SERVICE</p>
+      <p class="services__eyebrow">SERVICES</p>
       <h2 class="services__title">Our Medical Services</h2>
     </div>
 
@@ -116,12 +116,14 @@ const badges = [
 .services {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 90px 32px 110px;
+  /* padding: 90px 32px 110px; */
   background: var(--color-bg);
   font-family: var(--font-body);
   color: var(--color-text);
 }
-
+.content{
+  text-align:justify;
+}
 .services__header {
   text-align: center;
   margin-bottom: 64px;
@@ -294,45 +296,185 @@ const badges = [
   transform: translateY(-2px);
 }
 
-@media (max-width: 860px) {
-  .services__grid {
-    grid-template-columns: 1fr;
+@media (max-width:860px){
+
+  .services{
+    padding:70px 24px 80px;
   }
-  .illustration {
-    min-height: 420px;
+
+  .services__header{
+    margin-bottom:50px;
   }
-  .content {
-    text-align: center;
+
+  .services__grid{
+    grid-template-columns:1fr;
+    gap:60px;
   }
-  .content p {
-    margin-left: auto;
-    margin-right: auto;
+
+  .illustration{
+    order:1;
+    min-height:480px;
   }
+
+  .content{
+    order:2;
+    text-align:justify;
+  }
+
+  .content p{
+    margin-left:auto;
+    margin-right:auto;
+    max-width:600px;
+  }
+
+  .btn{
+    margin:auto;
+  }
+
+  .doctor{
+    width:300px !important;
+    height:380px;
+  }
+
+  .blob{
+    width:280px;
+    height:360px;
+  }
+
+  .badge--eye{
+    top:18%;
+    left:6%;
+  }
+
+  .badge--cardio{
+    top:18%;
+    right:6%;
+  }
+
+  .badge--medicine{
+    top:52%;
+    left:6%;
+  }
+
+  .badge--ortho{
+    top:52%;
+    right:6%;
+  }
+
+  .badge--dental{
+    bottom:8%;
+    left:50%;
+    transform:translateX(-50%);
+  }
+
 }
 
-@media (max-width: 480px) {
-  .badge {
-    font-size: 12px;
-    padding: 6px 14px 6px 6px;
+@media (max-width:480px){
+
+  .services{
+    padding:60px 18px;
   }
-  .badge__icon {
-    width: 28px;
-    height: 28px;
+
+  .services__header{
+    margin-bottom:40px;
   }
-  .blob {
-    width: 260px;
-    height: 340px;
+
+  .services__title{
+    font-size:2rem;
   }
-  .doctor {
-    width: 150px;
+
+  .illustration{
+    min-height:380px;
   }
+
+  .blob{
+    width:220px;
+    height:290px;
+  }
+
+  .doctor{
+    width:220px !important;
+    height:300px;
+    margin-bottom:0;
+  }
+
+  .badge{
+    font-size:11px;
+    padding:6px 10px 6px 6px;
+    gap:6px;
+  }
+
+  .badge__icon{
+    width:26px;
+    height:26px;
+  }
+
+  .badge__icon :deep(svg){
+    width:14px;
+    height:14px;
+  }
+
+  .badge--eye{
+    top:14%;
+    left:0;
+  }
+
+  .badge--cardio{
+    top:14%;
+    right:0;
+  }
+
+  .badge--medicine{
+    top:50%;
+    left:0;
+  }
+
+  .badge--ortho{
+    top:50%;
+    right:0;
+  }
+
+  .badge--dental{
+    bottom:4%;
+    left:50%;
+    transform:translateX(-50%);
+  }
+
+  .content h3{
+    font-size:1.8rem;
+  }
+
+  .content p{
+    font-size:14px;
+    line-height:1.7;
+  }
+
+  .btn{
+    width:100%;
+    justify-content:center;
+  }
+
 }
+@media (max-width:360px){
 
-@media (max-width: 480px) {
+  .doctor{
+    width:190px !important;
+    height:260px;
+  }
 
-  .doctor {
-    width: 200px;
-    height: 300px;
+  .blob{
+    width:190px;
+    height:250px;
+  }
+
+  .badge{
+    font-size:10px;
+    padding:5px 8px;
+  }
+
+  .badge__icon{
+    width:22px;
+    height:22px;
   }
 
 }

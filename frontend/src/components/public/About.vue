@@ -40,7 +40,7 @@
         </p>
 
         <button class="about__cta" type="button">
-          <span class="about__cta-icon">
+          <!-- <span class="about__cta-icon">
             <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M3 8H13M13 8L9 4M13 8L9 12"
@@ -50,7 +50,7 @@
                 stroke-linejoin="round"
               />
             </svg>
-          </span>
+          </span> -->
           More About Us
         </button>
       </div>
@@ -101,7 +101,7 @@ const features = [
 .about {
 
   background: var(--color-bg);
-  padding: 96px 24px;
+  padding: 86px 24px;
   font-family: var(--font-body);
   color: var(--color-text);
 }
@@ -146,6 +146,7 @@ const features = [
   color: var(--color-text-muted);
   margin: 0 0 28px;
   max-width: 46ch;
+    text-align:justify;
 }
 
 .about__features {
@@ -197,7 +198,7 @@ const features = [
   gap: 12px;
   border: none;
   cursor: pointer;
-  padding: 8px 8px 8px 24px;
+  padding: 12px 12px 12px 12px;
   border-radius: var(--radius-pill);
   background: var(--color-primary-darker);
   color: var(--color-text-on-primary);
@@ -311,33 +312,136 @@ const features = [
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 960px) {
-  .about__container {
-    grid-template-columns: 1fr;
-    gap: 48px;
+@media (max-width:960px){
+
+  .about{
+    padding:80px 24px;
   }
 
-  .about__visual {
-    order: -1;
+  .about__container{
+    grid-template-columns:1fr;
+    gap:60px;
   }
 
-  .about__visual-frame {
-    max-width: 380px;
+  .about__content{
+    order:2;
+    text-align:center;
   }
+
+  .about__visual{
+    order:1;
+  }
+
+  .about__lead,
+  .about__note{
+    max-width:100%;
+    margin-left:auto;
+    margin-right:auto;
+      text-align:justify;
+  }
+
+  .about__features{
+    justify-content:center;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+  }
+
+  .about__feature{
+    justify-content:center;
+  }
+
+
+
+  .about__visual-frame{
+    max-width:420px;
+  }
+
+  .about__stat--top{
+    top:-5%;
+    right:-2%;
+  }
+
+  .about__stat--bottom{
+    left:-2%;
+    bottom:8%;
+  }
+
 }
+@media (max-width:480px){
 
-@media (max-width: 480px) {
-  .about {
-    padding: 64px 18px;
+  .about{
+    padding:60px 18px;
   }
 
-  .about__features {
-    grid-template-columns: 1fr;
+  .about__title{
+    font-size:2rem;
+    line-height:1.25;
   }
 
-  .about__stat--top,
-  .about__stat--bottom {
-    right: 0;
+  .about__lead,
+  .about__note{
+    font-size:14px;
   }
+
+  .about__features{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+
+  .about__feature{
+    justify-content:flex-start;
+  }
+
+
+  .about__visual-frame{
+    max-width:320px;
+  }
+
+  .about__img--main{
+    height:100%;
+  }
+
+  .about__stat{
+    padding:12px 14px;
+  }
+
+  .about__stat-value{
+    font-size:20px;
+  }
+
+  .about__stat-label{
+    font-size:10px;
+    max-width:70px;
+  }
+
+  .about__stat--top{
+    top:10px;
+    right:10px;
+  }
+
+  .about__stat--bottom{
+    left:10px;
+    bottom:10px;
+  }
+
+}
+@media (max-width:360px){
+
+  .about__title{
+    font-size:1.7rem;
+  }
+
+  .about__visual-frame{
+    max-width:280px;
+  }
+
+  .about__stat{
+    padding:10px 12px;
+  }
+
+  .about__stat-value{
+    font-size:18px;
+  }
+
 }
 </style>

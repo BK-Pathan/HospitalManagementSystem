@@ -477,30 +477,117 @@ onBeforeUnmount(() => {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1000px) {
-  .experts__grid {
-    grid-template-columns: repeat(2, 1fr);
+/* ---------- Tablet ---------- */
+@media (max-width:1000px){
+
+  .experts{
+    padding:80px 24px;
   }
+
+  .experts__header{
+    margin-bottom:50px;
+  }
+
+  .experts__grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:22px;
+  }
+
+  .card__body{
+    padding:18px;
+  }
+
+  .card__name{
+    font-size:17px;
+  }
+
+  .card__role{
+    font-size:12px;
+  }
+
 }
 
-@media (max-width: 560px) {
-  .experts__grid {
-    grid-template-columns: 1fr;
-    max-width: 320px;
-    margin: 0 auto;
-  }
-}
+/* ---------- Mobile ---------- */
+@media (max-width:560px){
 
-@media (prefers-reduced-motion: reduce) {
-  .blob {
-    animation: none;
+  .experts{
+    padding:60px 16px;
   }
-  .card,
-  .experts__header,
-  .experts__cta {
-    transition: none;
-    opacity: 1;
-    transform: none;
+
+  .experts__header{
+    margin-bottom:40px;
   }
+
+  .experts__title{
+    font-size:2rem;
+  }
+
+  .experts__subtitle{
+    font-size:14px;
+  }
+
+  /* Keep 2 cards in one row */
+  .experts__grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+    max-width:100%;
+  }
+
+  .card__media{
+    aspect-ratio:1/1;
+  }
+
+  .card__body{
+    padding:14px 12px 18px;
+  }
+
+  .card__name{
+    font-size:15px;
+  }
+
+  .card__role{
+    font-size:11px;
+    margin-bottom:8px;
+  }
+
+  .card__rating{
+    flex-wrap:wrap;
+    gap:3px;
+    font-size:10px;
+  }
+
+  .stars{
+    font-size:11px;
+  }
+
+  .card__badge{
+    top:8px;
+    right:8px;
+    font-size:9px;
+    padding:4px 8px;
+  }
+
+  .social{
+    width:26px;
+    height:26px;
+    font-size:11px;
+  }
+
+  .btn{
+    width:100%;
+    justify-content:center;
+  }
+
+}
+/* ---------- Very Small Phones ---------- */
+@media (max-width:360px){
+
+  /* Only on very small devices */
+  .experts__grid{
+    grid-template-columns:1fr;
+    max-width:300px;
+    margin:auto;
+  }
+
 }
 </style>

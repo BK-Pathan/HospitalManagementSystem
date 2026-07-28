@@ -120,7 +120,7 @@
               <span v-if="!loading" class="btn__arrow">→</span>
             </button>
 
-            <p class="form__note">This form is a static demo — no data is actually sent.</p>
+            <p class="form__note">This form is a static demo no data is actually sent.</p>
           </form>
         </transition>
       </div>
@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
   position: relative;
   max-width: 1300px;
   margin: 0 auto;
-  padding: 100px 32px 110px;
+  padding: 15px 15px 30px;
   background: var(--color-bg);
   font-family: var(--font-body);
   color: var(--color-text);
@@ -619,30 +619,371 @@ onBeforeUnmount(() => {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 900px) {
-  .contact__panel {
-    grid-template-columns: 1fr;
+/* ---------- Responsive ---------- */
+
+@media (max-width:1100px){
+
+  .contact{
+    padding:80px 24px 90px;
   }
-  .contact__media {
-    min-height: 280px;
+
+
+  .contact__panel{
+
+    grid-template-columns:1fr 1fr;
+
   }
-  .contact__form-wrap {
-    padding: 36px 26px 30px;
+
+
+  .contact__media{
+
+    min-height:520px;
+
   }
-  .form__row {
-    grid-template-columns: 1fr;
+
+
+  .contact__form-wrap{
+
+    padding:38px 30px;
+
   }
+
+
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .blob,
-  .contact__badge-dot,
-  .success__circle {
-    animation: none;
+
+
+@media(max-width:900px){
+
+
+  .contact{
+
+    padding:70px 20px 80px;
+
   }
-  .contact__header,
-  .contact__panel {
-    transition: none;
+
+
+
+  .contact__header{
+
+    margin-bottom:35px;
+
   }
+
+
+
+  .contact__title{
+
+    font-size:32px;
+
+  }
+
+
+
+  .contact__subtitle{
+
+    font-size:14px;
+    line-height:1.7;
+
+  }
+
+
+
+
+  /* Stack image and form */
+
+  .contact__panel{
+
+    grid-template-columns:1fr;
+
+  }
+
+
+
+  .contact__media{
+
+    min-height:380px;
+
+  }
+
+
+
+
+  .contact__badge{
+
+    top:18px;
+    left:18px;
+    font-size:12px;
+    padding:7px 14px;
+
+  }
+
+
+
+  .contact__info{
+
+    left:18px;
+    right:18px;
+    bottom:18px;
+    gap:12px;
+
+  }
+
+
+
+  .info-icon{
+
+    width:34px;
+    height:34px;
+
+  }
+
+
+
+  .info-value{
+
+    font-size:12.5px;
+
+  }
+
+
+
+  .contact__form-wrap{
+
+    padding:35px 24px 30px;
+
+  }
+
+
+
+  .form__row{
+
+    grid-template-columns:1fr;
+    gap:0;
+
+  }
+
+
+}
+
+
+
+@media(max-width:560px){
+
+
+  .contact{
+
+    padding:55px 14px 65px;
+
+  }
+
+
+
+  .contact__header{
+
+    margin-bottom:28px;
+
+  }
+
+
+
+  .contact__eyebrow{
+
+    font-size:11px;
+    letter-spacing:2px;
+
+  }
+
+
+
+  .contact__title{
+
+    font-size:27px;
+    line-height:1.3;
+
+  }
+
+
+
+  .contact__subtitle{
+
+    font-size:13px;
+
+  }
+
+
+
+  /* Image section */
+
+  .contact__media{
+
+    min-height:330px;
+
+  }
+
+
+
+  .contact__scrim{
+
+    background:
+    linear-gradient(
+      180deg,
+      rgba(28,43,46,0.15),
+      rgba(28,43,46,0.9)
+    );
+
+  }
+
+
+
+  .contact__badge{
+
+    top:14px;
+    left:14px;
+    font-size:11px;
+    padding:6px 12px;
+
+  }
+
+
+
+  .contact__info{
+
+    left:14px;
+    right:14px;
+    bottom:14px;
+    gap:10px;
+
+  }
+
+
+
+  .info-item{
+
+    gap:10px;
+
+  }
+
+
+
+  .info-icon{
+
+    width:32px;
+    height:32px;
+
+  }
+
+
+
+  .info-icon svg{
+
+    width:15px;
+    height:15px;
+
+  }
+
+
+
+  .info-label{
+
+    font-size:10px;
+
+  }
+
+
+
+  .info-value{
+
+    font-size:11.5px;
+    line-height:1.4;
+
+  }
+
+
+
+
+
+  /* Form */
+
+  .contact__form-wrap{
+
+    padding:28px 16px 24px;
+
+  }
+
+
+
+  .field{
+
+    margin-bottom:16px;
+
+  }
+
+
+
+  .field input,
+  .field select,
+  .field textarea{
+
+    font-size:13px;
+    padding:16px 12px 8px;
+
+  }
+
+
+
+  .field label{
+
+    left:12px;
+    font-size:13px;
+
+  }
+
+
+
+  .btn{
+
+    font-size:13.5px;
+    padding:14px 22px;
+
+  }
+
+
+
+  .form__note{
+
+    font-size:10.5px;
+
+  }
+
+
+
+  /* Success */
+
+  .success{
+
+    padding:20px 5px;
+
+  }
+
+
+
+  .success__circle{
+
+    width:55px;
+    height:55px;
+
+  }
+
+
+
+  .success h3{
+
+    font-size:18px;
+
+  }
+
+
+
 }
 </style>

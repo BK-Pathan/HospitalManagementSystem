@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
   position: relative;
   max-width: 1300px;
   margin: 0 auto;
-  padding: 100px 32px 110px;
+  padding: 10px 12px 10px;
   background: var(--color-bg);
   font-family: var(--font-body);
   color: var(--color-text);
@@ -526,53 +526,285 @@ onBeforeUnmount(() => {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 900px) {
-  .facilities__grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 170px;
+/* ---------- Responsive ---------- */
+
+@media (max-width:900px){
+
+  .facilities{
+    padding:70px 20px 80px;
   }
-  .tile--large {
-    grid-column: span 2;
-    grid-row: span 2;
+
+  .facilities__grid{
+    grid-template-columns:repeat(2,1fr);
+    grid-auto-rows:170px;
+    gap:14px;
   }
-  .tile--wide {
-    grid-column: span 2;
+
+
+  .tile--large{
+    grid-column:span 2;
+    grid-row:span 2;
   }
-  .facilities__stats {
-    grid-template-columns: repeat(2, 1fr);
+
+
+  .tile--small{
+    grid-column:span 1;
+    grid-row:span 1;
   }
-  .stat:nth-child(2) {
-    border-right: none;
+
+
+  .tile--wide{
+    grid-column:span 2;
   }
-  .stat {
-    padding-bottom: 16px;
+
+
+  /* Dark overlay for image text visibility */
+  .tile__scrim{
+    background:
+    linear-gradient(
+      0deg,
+      rgba(0,0,0,0.88) 0%,
+      rgba(0,0,0,0.55) 55%,
+      rgba(0,0,0,0.20) 100%
+    );
   }
+
+
+  .tile__content{
+    padding:14px;
+  }
+
+
+  .tile__title{
+    font-size:15px;
+  }
+
+
+  .tile--large .tile__title{
+    font-size:20px;
+  }
+
+
+  .tile__desc{
+    font-size:11.5px;
+    line-height:1.45;
+  }
+
+
+  .tile__icon{
+    width:34px;
+    height:34px;
+    top:12px;
+    right:12px;
+  }
+
+
+  /* Stats 2 per row */
+  .facilities__stats{
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    padding:25px 15px;
+  }
+
+
+  .stat{
+    border-right:1px solid var(--color-border);
+    padding:10px 5px;
+  }
+
+
+  .stat:nth-child(2),
+  .stat:nth-child(4){
+    border-right:none;
+  }
+
+
+  .stat__value{
+    font-size:26px;
+  }
+
 }
 
-@media (max-width: 560px) {
-  .facilities__grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 220px;
+
+
+@media(max-width:560px){
+
+  .facilities{
+    padding:55px 14px 70px;
   }
-  .tile--large,
-  .tile--wide,
-  .tile--small {
-    grid-column: span 1;
-    grid-row: span 1;
+
+
+  .facilities__header{
+    margin-bottom:35px;
   }
-  .facilities__stats {
-    grid-template-columns: 1fr;
+
+
+  .facilities__title{
+    font-size:28px;
   }
-  .stat {
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 16px;
-    margin-bottom: 12px;
+
+
+  .facilities__subtitle{
+    font-size:13px;
   }
-  .stat:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
+
+
+
+  .facilities__grid{
+
+    grid-template-columns:repeat(2,1fr);
+    grid-auto-rows:150px;
+    gap:10px;
+
   }
+
+
+  .tile--large{
+
+    grid-column:span 2;
+    grid-row:span 2;
+
+  }
+
+
+  .tile--wide{
+
+    grid-column:span 2;
+
+  }
+
+
+
+  .tile__content{
+
+    padding:12px;
+
+  }
+
+
+
+  .tile__title{
+
+    font-size:13px;
+
+  }
+
+
+
+  .tile--large .tile__title{
+
+    font-size:18px;
+
+  }
+
+
+
+  .tile__desc{
+
+    font-size:10.5px;
+    max-width:100%;
+
+  }
+
+
+
+  .tile__link{
+
+    font-size:11px;
+
+  }
+
+
+
+  .tile__icon{
+
+    width:30px;
+    height:30px;
+
+  }
+
+
+
+  .tile__icon svg{
+
+    width:15px;
+    height:15px;
+
+  }
+
+
+
+  /* Stats exactly 2 in one row */
+
+  .facilities__stats{
+
+    grid-template-columns:repeat(2,1fr);
+    padding:20px 10px;
+    gap:10px;
+
+  }
+
+
+
+  .stat__value{
+
+    font-size:22px;
+
+  }
+
+
+
+  .stat__label{
+
+    font-size:11px;
+
+  }
+
+
+
+  .facilities__cta{
+
+    margin-top:40px;
+
+  }
+
+
+  .btn{
+
+    width:100%;
+    justify-content:center;
+
+  }
+
+}
+
+/* @media (max-width:560px){
+
+  .facilities__grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .facility-card{
+    padding:14px;
+  }
+
+  .facility-card h3{
+    font-size:14px;
+    line-height:1.3;
+  }
+
+  .facility-card p{
+    font-size:11px;
+    line-height:1.5;
+  }
+
+  .facility-card img,
+  .facility-card svg{
+    width:42px;
+    height:42px;
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -587,5 +819,5 @@ onBeforeUnmount(() => {
     opacity: 1;
     transform: none;
   }
-}
+} */
 </style>

@@ -638,14 +638,26 @@ pointer-events:none;
 ========================= */
 
 
-@media(max-width:850px){
+ 
+/* =========================
+      RESPONSIVE UPDATE
+========================= */
+
+
+@media(max-width:1100px){
+
+
+.signup-page{
+
+    padding:30px;
+
+}
+
 
 
 .signup-card{
 
-
-grid-template-columns:1fr;
-
+    max-width:950px;
 
 }
 
@@ -653,11 +665,7 @@ grid-template-columns:1fr;
 
 .left-section{
 
-
-padding:40px;
-
-text-align:center;
-
+    padding:45px;
 
 }
 
@@ -665,9 +673,23 @@ text-align:center;
 
 .right-section{
 
+    padding:45px;
 
-padding:35px;
+}
 
+
+
+.left-section h1{
+
+    font-size:32px;
+
+}
+
+
+
+.right-section h2{
+
+    font-size:30px;
 
 }
 
@@ -675,5 +697,305 @@ padding:35px;
 }
 
 
+
+
+@media(max-width:850px){
+
+
+.signup-page{
+
+    min-height:auto;
+
+    padding:25px 15px;
+
+}
+
+
+
+.signup-card{
+
+    grid-template-columns:1fr;
+
+    border-radius:24px;
+
+    margin:20px 0;
+
+}
+
+
+
+.left-section{
+
+    padding:35px 25px;
+
+    align-items:center;
+
+    text-align:center;
+
+}
+
+
+
+.logo-circle{
+
+    width:70px;
+
+    height:70px;
+
+    font-size:32px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.left-section h1{
+
+    font-size:28px;
+
+}
+
+
+
+.left-section p{
+
+    font-size:14px;
+
+    line-height:1.6;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.feature{
+
+    font-size:14px;
+
+    margin-bottom:12px;
+
+}
+
+
+
+.right-section{
+
+    padding:35px 25px;
+
+}
+
+
+
+.right-section h2{
+
+    font-size:28px;
+
+    text-align:center;
+
+}
+
+
+
+.subtitle{
+
+    text-align:center;
+
+    font-size:14px;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.input-group{
+
+    margin-bottom:18px;
+
+}
+
+
+
+input,
+select{
+
+    padding:14px;
+
+    font-size:14px;
+
+}
+
+
+
+.signup-btn{
+
+    padding:14px;
+
+    font-size:15px;
+
+}
+
+
+
+.login-text{
+
+    font-size:13px;
+
+}
+
+
+
+}
+
+
+
+
+
+@media(max-width:480px){
+
+
+.signup-page{
+
+    padding:15px 10px;
+
+}
+
+
+
+.signup-card{
+
+    border-radius:20px;
+
+}
+
+
+
+.left-section{
+
+    padding:30px 18px;
+
+}
+
+
+
+.logo-circle{
+
+    width:60px;
+
+    height:60px;
+
+    font-size:26px;
+
+}
+
+
+
+.left-section h1{
+
+    font-size:23px;
+
+}
+
+
+
+.left-section p{
+
+    font-size:13px;
+
+}
+
+
+
+.feature{
+
+    font-size:12.5px;
+
+}
+
+
+
+.right-section{
+
+    padding:25px 18px;
+
+}
+
+
+
+.right-section h2{
+
+    font-size:24px;
+
+}
+
+
+
+label{
+
+    font-size:13px;
+
+}
+
+
+
+input,
+select{
+
+    border-radius:12px;
+
+}
+
+
+
+.signup-btn{
+
+    border-radius:12px;
+
+}
+
+
+}
+
+
+
+
+
+@media(max-width:350px){
+
+
+.left-section h1{
+
+    font-size:21px;
+
+}
+
+
+
+.right-section h2{
+
+    font-size:22px;
+
+}
+
+
+
+.feature{
+
+    font-size:12px;
+
+}
+
+
+
+.signup-btn{
+
+    font-size:14px;
+
+}
+
+
+}
 
 </style>
