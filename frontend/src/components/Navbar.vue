@@ -217,7 +217,8 @@ Hospital Management System
 
 <div
 class="notification-icon"
-@click="toggleDropdown"
+:class="{ ringing: unreadCount }"
+@click="openNotificationPage"
 >
 
 🔔
@@ -226,21 +227,33 @@ class="notification-icon"
 v-if="unreadCount"
 class="notification-badge"
 >
-
 {{ badgeText }}
-
 </span>
 
 </div>
 
 <div
 v-if="showDropdown"
+class="dropdown-backdrop"
+@click="showDropdown=false"
+></div>
+
+<div
+v-if="showDropdown"
 class="notification-dropdown"
 >
+
+<div class="dropdown-header">
 
 <h3>
 Notifications
 </h3>
+
+<span class="dropdown-close" @click="showDropdown=false">✕</span>
+
+</div>
+
+<div class="dropdown-body">
 
 <div
 v-if="notifications.length===0"
@@ -287,6 +300,8 @@ unread:!item.isRead
 
 </div>
 
+</div>
+
 <button
 class="view-btn"
 @click="openNotificationPage"
@@ -322,7 +337,7 @@ alt="Profile"
 
 <span class="welcome">
 
-Welcome
+Welcome back
 
 </span>
 
@@ -358,44 +373,43 @@ Welcome
 
 .navbar{
 
-height:82px;
+    height:78px;
+    min-height:78px;
+    flex-shrink:0;
 
-display:flex;
+    display:flex;
 
-justify-content:space-between;
+    justify-content:space-between;
 
-align-items:center;
+    align-items:center;
 
-padding:0 32px;
+    padding:0 32px;
 
-position:relative;
-
-z-index:50;
-
-
-background:
-
-rgba(255,255,255,.75);
+    position:sticky;
+    top:0;
+    z-index:50;
 
 
-backdrop-filter:
-
-blur(20px);
-
-
--webkit-backdrop-filter:
-
-blur(20px);
+    background:
+    rgba(255,255,255,.72);
 
 
-border-bottom:
+    backdrop-filter:
+    blur(22px) saturate(160%);
 
-1px solid rgba(226,232,240,.8);
+
+    -webkit-backdrop-filter:
+    blur(22px) saturate(160%);
 
 
-box-shadow:
+    border-bottom:
+    1px solid rgba(226,232,240,.7);
 
-0 10px 35px rgba(15,23,42,.08);
+
+    box-shadow:
+    0 12px 30px rgba(15,23,42,.06);
+
+    box-sizing:border-box;
 
 }
 
@@ -413,6 +427,8 @@ display:flex;
 align-items:center;
 
 gap:15px;
+
+min-width:0;
 
 }
 
@@ -466,13 +482,20 @@ box-shadow:
 
 
 .brand-section h2{
-
-
-font-size:20px;
+    font-family:Arial, Helvetica, sans-serif;
+font-size:19px;
 
 color:#0f172a;
 
-font-weight:700;
+font-weight:800;
+
+letter-spacing:.1px;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
 
 
 }
@@ -482,12 +505,16 @@ font-weight:700;
 .brand-section p{
 
 
-font-size:13px;
+font-size:12.5px;
 
 color:#64748b;
 
 
 margin-top:3px;
+
+white-space:nowrap;
+
+font-weight:500;
 
 
 }
@@ -506,7 +533,9 @@ position:relative;
 
 margin-left:auto;
 
-margin-right:30px;
+margin-right:22px;
+
+flex-shrink:0;
 
 }
 
@@ -515,9 +544,9 @@ margin-right:30px;
 .notification-icon{
 
 
-width:45px;
+width:44px;
 
-height:45px;
+height:44px;
 
 
 border-radius:50%;
@@ -530,7 +559,7 @@ align-items:center;
 justify-content:center;
 
 
-font-size:24px;
+font-size:21px;
 
 
 cursor:pointer;
@@ -559,10 +588,23 @@ border:
 background:#eff6ff;
 
 
+border-color:#bfdbfe;
+
+
 transform:
 
-translateY(-3px);
+translateY(-3px) scale(1.04);
 
+
+box-shadow:0 10px 22px rgba(37,99,235,.15);
+
+
+}
+
+
+.notification-icon.ringing{
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.08);
 
 }
 
@@ -577,14 +619,14 @@ translateY(-3px);
 position:absolute;
 
 
-top:-5px;
+top:-4px;
 
-right:-5px;
+right:-4px;
 
 
-min-width:21px;
+min-width:20px;
 
-height:21px;
+height:20px;
 
 
 padding:0 5px;
@@ -606,7 +648,7 @@ linear-gradient(
 
 135deg,
 
-#ef4444,
+#f87171,
 
 #dc2626
 
@@ -616,16 +658,54 @@ linear-gradient(
 color:white;
 
 
-font-size:11px;
+font-size:10.5px;
 
 
-font-weight:700;
+font-weight:800;
+
+
+border:2px solid white;
 
 
 box-shadow:
 
-0 5px 15px rgba(239,68,68,.35);
+0 4px 12px rgba(220,38,38,.45);
 
+
+animation:badge-pulse 2.2s ease-in-out infinite;
+
+
+}
+
+
+@keyframes badge-pulse{
+
+0%,100%{ transform:scale(1); }
+
+50%{ transform:scale(1.12); }
+
+}
+
+
+
+
+/* =========================
+        DROPDOWN BACKDROP
+        (click-outside catcher, mobile only)
+========================= */
+
+
+.dropdown-backdrop{
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+z-index:59;
+
+background:transparent;
 
 }
 
@@ -643,7 +723,7 @@ box-shadow:
 position:absolute;
 
 
-top:58px;
+top:56px;
 
 
 right:0;
@@ -651,23 +731,31 @@ right:0;
 
 width:380px;
 
+max-width:calc(100vw - 24px);
+
+max-height:min(70vh,520px);
+
+display:flex;
+
+flex-direction:column;
+
 
 background:
 
-rgba(255,255,255,.9);
+rgba(255,255,255,.92);
 
 
 backdrop-filter:
 
-blur(20px);
+blur(24px) saturate(160%);
 
 
 -webkit-backdrop-filter:
 
-blur(20px);
+blur(24px) saturate(160%);
 
 
-border-radius:20px;
+border-radius:18px;
 
 
 overflow:hidden;
@@ -681,29 +769,98 @@ border:
 
 box-shadow:
 
-0 25px 70px rgba(15,23,42,.18);
+0 28px 70px rgba(15,23,42,.2);
+
+
+z-index:60;
+
+
+animation:dropdown-in .22s ease;
 
 
 }
 
 
+@keyframes dropdown-in{
 
-.notification-dropdown h3{
+from{ opacity:0; transform:translateY(-6px); }
+
+to{ opacity:1; transform:translateY(0); }
+
+}
 
 
-padding:18px;
+.dropdown-header{
 
+display:flex;
 
-font-size:18px;
+align-items:center;
 
+justify-content:space-between;
 
-color:#0f172a;
-
+padding:16px 18px;
 
 border-bottom:
 
 1px solid #e2e8f0;
 
+flex-shrink:0;
+
+background:linear-gradient(180deg,rgba(248,250,252,.9),transparent);
+
+}
+
+
+.dropdown-header h3{
+
+font-size:16px;
+
+font-weight:700;
+
+color:#0f172a;
+
+}
+
+
+.dropdown-close{
+
+display:none;
+
+width:30px;
+
+height:30px;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:8px;
+
+background:#f1f5f9;
+
+color:#475569;
+
+font-size:13px;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+
+.dropdown-close:hover{
+
+background:#e2e8f0;
+
+}
+
+
+.dropdown-body{
+
+overflow-y:auto;
+
+flex:1;
 
 }
 
@@ -718,7 +875,7 @@ border-bottom:
 .notification-item{
 
 
-padding:16px;
+padding:15px 18px;
 
 
 cursor:pointer;
@@ -729,7 +886,7 @@ border-bottom:
 1px solid #f1f5f9;
 
 
-transition:.3s;
+transition:.25s;
 
 
 }
@@ -744,7 +901,7 @@ background:#f8fafc;
 
 transform:
 
-translateX(4px);
+translateX(3px);
 
 
 }
@@ -769,7 +926,7 @@ white
 
 border-left:
 
-4px solid #2563eb;
+3px solid #2563eb;
 
 
 }
@@ -779,13 +936,15 @@ border-left:
 .notification-item h4{
 
 
-font-size:15px;
+font-size:14.5px;
+
+font-weight:700;
 
 
 color:#0f172a;
 
 
-margin-bottom:6px;
+margin-bottom:5px;
 
 
 }
@@ -814,7 +973,7 @@ line-height:1.5;
 display:block;
 
 
-margin-top:8px;
+margin-top:7px;
 
 
 font-size:11px;
@@ -838,7 +997,7 @@ color:#94a3b8;
 width:100%;
 
 
-padding:15px;
+padding:14px;
 
 
 border:none;
@@ -849,8 +1008,13 @@ cursor:pointer;
 
 font-weight:700;
 
+font-size:13.5px;
+
 
 color:white;
+
+
+flex-shrink:0;
 
 
 background:
@@ -901,7 +1065,14 @@ display:flex;
 align-items:center;
 
 
-gap:14px;
+gap:12px;
+
+
+flex-shrink:0;
+
+padding-left:14px;
+
+border-left:1px solid rgba(226,232,240,.9);
 
 
 }
@@ -910,8 +1081,10 @@ gap:14px;
 
 .user-icon{
 
-width:46px;
-height:46px;
+width:44px;
+height:44px;
+
+flex-shrink:0;
 
 border-radius:50%;
 
@@ -921,7 +1094,7 @@ align-items:center;
 
 overflow:hidden;
 
-font-size:22px;
+font-size:20px;
 
 background:
 linear-gradient(
@@ -931,7 +1104,18 @@ linear-gradient(
 );
 
 border:
-1px solid #bfdbfe;
+2px solid white;
+
+box-shadow:0 0 0 2px #bfdbfe, 0 6px 16px rgba(37,99,235,.18);
+
+transition:.25s;
+
+}
+
+
+.user-icon:hover{
+
+box-shadow:0 0 0 2px #93c5fd, 0 8px 20px rgba(37,99,235,.25);
 
 }
 
@@ -949,13 +1133,23 @@ border-radius:50%;
 
 
 
+.user-info{
+
+min-width:0;
+
+}
+
+
+
 .welcome{
 
 
-font-size:12px;
+font-size:11.5px;
 
 
 color:#94a3b8;
+
+font-weight:500;
 
 
 }
@@ -971,7 +1165,9 @@ display:flex;
 align-items:center;
 
 
-gap:10px;
+gap:9px;
+
+margin-top:2px;
 
 
 }
@@ -981,10 +1177,20 @@ gap:10px;
 .role h4{
 
 
-font-size:15px;
+font-size:14.5px;
+
+font-weight:700;
 
 
 color:#0f172a;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+
+max-width:140px;
 
 
 }
@@ -994,19 +1200,23 @@ color:#0f172a;
 .role-badge{
 
 
-padding:5px 12px;
+padding:4px 11px;
 
 
 border-radius:30px;
 
 
-font-size:11px;
+font-size:10.5px;
 
 
-font-weight:700;
+font-weight:800;
+
+letter-spacing:.02em;
 
 
 color:white;
+
+white-space:nowrap;
 
 
 background:
@@ -1025,7 +1235,7 @@ linear-gradient(
 
 box-shadow:
 
-0 5px 15px rgba(37,99,235,.25);
+0 5px 14px rgba(37,99,235,.3);
 
 
 }
@@ -1041,13 +1251,47 @@ box-shadow:
 .empty{
 
 
-padding:30px;
+padding:34px 20px;
 
 
 text-align:center;
 
 
-color:#64748b;
+color:#94a3b8;
+
+font-size:13.5px;
+
+
+}
+
+
+/* =========================
+        RESPONSIVE
+========================= */
+
+
+@media(max-width:1024px){
+
+.navbar{
+
+    padding:0 20px;
+
+}
+
+
+.brand-section{
+
+    flex:1;
+
+}
+
+
+.notification-wrapper{
+
+    margin-right:15px;
+
+}
+
 
 
 }
@@ -1055,7 +1299,11 @@ color:#64748b;
 
 
 /* =========================
-        RESPONSIVE
+      MOBILE FIXED ALIGNMENT
+========================= */
+/* =========================
+   PERFECT MOBILE ALIGNMENT
+   Hospital | Bell | User
 ========================= */
 
 
@@ -1064,47 +1312,117 @@ color:#64748b;
 
 .navbar{
 
+    height:58px;
+    min-height:58px;
 
-padding:0 15px;
+    padding:0 12px;
 
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
 
 }
 
 
-.brand-section p{
 
+/* LEFT */
 
-display:none;
+.brand-section{
 
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    align-items:center;
 
 }
+
 
 
 .brand-section h2{
 
+    font-size:15px;
 
-font-size:16px;
+    font-weight:800;
 
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 
 }
 
+
+
+.brand-section p{
+
+    display:none;
+
+}
+
+
+
+/* CENTER NOTIFICATION */
 
 
 .notification-wrapper{
 
+    flex-shrink:0;
 
-margin-right:10px;
-
+    margin:0;
 
 }
 
 
 
-.notification-dropdown{
+.notification-icon{
+
+    width:40px;
+
+    height:40px;
+
+    font-size:18px;
+
+}
 
 
-width:300px;
 
+
+
+/* RIGHT USER */
+
+
+.user-section{
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    padding-left:0;
+
+    border-left:none;
+
+}
+
+
+
+.user-icon{
+
+    width:40px;
+
+    height:40px;
 
 }
 
@@ -1112,14 +1430,220 @@ width:300px;
 
 .user-info{
 
+    display:block;
 
-display:none;
+    max-width:70px;
+
+}
+
+
+
+.welcome{
+
+    display:none;
+
+}
+
+
+
+.role{
+
+    display:block;
+
+}
+
+
+
+.role-badge{
+
+    display:none;
+
+}
+
+
+
+.role h4{
+
+    display:block;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    max-width:70px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+
 
 
 }
 
 
+
+
+
+/* SMALL MOBILE */
+
+@media(max-width:480px){
+
+
+.navbar{
+
+    height:54px;
+    min-height:54px;
+
+    padding:0 10px;
+
+    gap:6px;
+
 }
 
 
+
+.brand-section h2{
+
+    font-size:14px;
+
+}
+
+
+
+.notification-icon{
+
+    width:36px;
+
+    height:36px;
+
+    font-size:17px;
+
+}
+
+
+
+.user-icon{
+
+    width:36px;
+
+    height:36px;
+
+}
+
+
+
+.user-info{
+
+    max-width:65px;
+
+}
+
+
+
+.role h4{
+
+    font-size:11px;
+
+    max-width:65px;
+
+}
+
+
+
+}
+
+
+
+
+/* VERY SMALL MOBILE */
+
+@media(max-width:360px){
+
+
+.navbar{
+
+    padding:0 8px;
+
+}
+
+
+
+/* Hospital kabhi hide nahi hoga */
+
+.brand-section{
+
+    flex:1;
+
+    display:flex;
+
+}
+
+
+
+.brand-section h2{
+
+    font-size:13px;
+
+}
+
+
+
+/* Bell */
+
+.notification-icon{
+
+    width:34px;
+
+    height:34px;
+
+}
+
+
+
+/* User */
+
+.user-section{
+
+    gap:5px;
+
+}
+
+
+
+.user-icon{
+
+    width:34px;
+
+    height:34px;
+
+}
+
+
+
+.user-info{
+
+    display:block;
+
+    max-width:50px;
+
+}
+
+
+
+.role h4{
+
+    font-size:10px;
+
+    max-width:50px;
+
+}
+
+
+
+}
 </style>

@@ -458,131 +458,7 @@ getDoctors();
     </div>
 
 
-    <div class="doctor-form card">
 
-        <div class="form-head">
-            <h3>{{editMode ? "Update Doctor" : "Add New Doctor"}}</h3>
-            <span v-if="editMode" class="edit-pill">Editing existing profile</span>
-        </div>
-
-
-        <div class="field-group">
-
-            <span class="group-label">Basic Information</span>
-
-            <div class="form-grid">
-
-                <label class="field">
-                    <span>Doctor Name</span>
-                    <input v-model="name" placeholder="e.g. Dr. Ayesha Khan" />
-                </label>
-
-                <label class="field">
-                    <span>Department</span>
-                    <input v-model="department" placeholder="e.g. Cardiology" />
-                </label>
-
-                <label class="field">
-                    <span>Speciality</span>
-                    <input v-model="specialties" placeholder="Comma separated e.g. Heart, ECG" />
-                </label>
-
-                <label class="field">
-                    <span>Qualification</span>
-                    <input v-model="qualifications" placeholder="e.g. MBBS, FCPS" />
-                </label>
-
-                <label class="field">
-                    <span>Experience (years)</span>
-                    <input v-model="experience" placeholder="e.g. 5" />
-                </label>
-
-                <label class="field">
-                    <span>Contact</span>
-                    <input v-model="contactInformation" placeholder="Phone number" />
-                </label>
-
-            </div>
-
-        </div>
-
-
-        <div class="field-group">
-
-            <span class="group-label">Login Credentials</span>
-
-            <div class="form-grid">
-
-                <label class="field">
-                    <span>Doctor Email</span>
-                    <input v-model="email" placeholder="doctor@hospital.com" />
-                </label>
-
-                <label class="field">
-                    <span>Doctor Password</span>
-                    <input v-model="password" placeholder="••••••••" type="password" />
-                </label>
-
-            </div>
-
-        </div>
-
-
-        <div class="field-group">
-
-            <span class="group-label">Availability</span>
-
-            <div class="availability-box">
-
-                <select v-model="day">
-                    <option value="">Select Day</option>
-                    <option>Mon</option>
-                    <option>Tue</option>
-                    <option>Wed</option>
-                    <option>Thu</option>
-                    <option>Fri</option>
-                    <option>Sat</option>
-                    <option>Sun</option>
-                </select>
-
-                <input type="time" v-model="startTime" />
-
-                <input type="time" v-model="endTime" />
-
-                <button class="primary-btn" @click="addAvailability">
-                    + Add Time
-                </button>
-
-            </div>
-
-            <div class="availability-list" v-if="availability.length">
-
-                <span v-for="(item,index) in availability" :key="index">
-                    {{item.day}} · {{item.startTime}} - {{item.endTime}}
-                    <button class="chip-remove" @click="removeAvailability(index)">✕</button>
-                </span>
-
-            </div>
-
-            <p class="empty-hint" v-else>No availability slots added yet.</p>
-
-        </div>
-
-
-        <div class="form-actions">
-
-            <button class="save-btn" @click="saveDoctor">
-                {{editMode ? "Update Doctor" : "Add Doctor"}}
-            </button>
-
-            <button v-if="editMode" class="cancel-btn" @click="clearForm">
-                Cancel
-            </button>
-
-        </div>
-
-
-    </div>
 
 
 <div class="card table-card">
@@ -742,7 +618,131 @@ getDoctors();
 
 </div>
 
+    <div class="doctor-form card">
 
+        <div class="form-head">
+            <h3>{{editMode ? "Update Doctor" : "Add New Doctor"}}</h3>
+            <span v-if="editMode" class="edit-pill">Editing existing profile</span>
+        </div>
+
+
+        <div class="field-group">
+
+            <span class="group-label">Basic Information</span>
+
+            <div class="form-grid">
+
+                <label class="field">
+                    <span>Doctor Name</span>
+                    <input v-model="name" placeholder="e.g. Dr. Ayesha Khan" />
+                </label>
+
+                <label class="field">
+                    <span>Department</span>
+                    <input v-model="department" placeholder="e.g. Cardiology" />
+                </label>
+
+                <label class="field">
+                    <span>Speciality</span>
+                    <input v-model="specialties" placeholder="Comma separated e.g. Heart, ECG" />
+                </label>
+
+                <label class="field">
+                    <span>Qualification</span>
+                    <input v-model="qualifications" placeholder="e.g. MBBS, FCPS" />
+                </label>
+
+                <label class="field">
+                    <span>Experience (years)</span>
+                    <input v-model="experience" placeholder="e.g. 5" />
+                </label>
+
+                <label class="field">
+                    <span>Contact</span>
+                    <input v-model="contactInformation" placeholder="Phone number" />
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="field-group">
+
+            <span class="group-label">Login Credentials</span>
+
+            <div class="form-grid">
+
+                <label class="field">
+                    <span>Doctor Email</span>
+                    <input v-model="email" placeholder="doctor@hospital.com" />
+                </label>
+
+                <label class="field">
+                    <span>Doctor Password</span>
+                    <input v-model="password" placeholder="••••••••" type="password" />
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="field-group">
+
+            <span class="group-label">Availability</span>
+
+            <div class="availability-box">
+
+                <select v-model="day">
+                    <option value="">Select Day</option>
+                    <option>Mon</option>
+                    <option>Tue</option>
+                    <option>Wed</option>
+                    <option>Thu</option>
+                    <option>Fri</option>
+                    <option>Sat</option>
+                    <option>Sun</option>
+                </select>
+
+                <input type="time" v-model="startTime" />
+
+                <input type="time" v-model="endTime" />
+
+                <button class="primary-btn" @click="addAvailability">
+                    + Add Time
+                </button>
+
+            </div>
+
+            <div class="availability-list" v-if="availability.length">
+
+                <span v-for="(item,index) in availability" :key="index">
+                    {{item.day}} · {{item.startTime}} - {{item.endTime}}
+                    <button class="chip-remove" @click="removeAvailability(index)">✕</button>
+                </span>
+
+            </div>
+
+            <p class="empty-hint" v-else>No availability slots added yet.</p>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button class="save-btn" @click="saveDoctor">
+                {{editMode ? "Update Doctor" : "Add Doctor"}}
+            </button>
+
+            <button v-if="editMode" class="cancel-btn" @click="clearForm">
+                Cancel
+            </button>
+
+        </div>
+
+
+    </div>
 </div>
 
 </template>
@@ -1404,6 +1404,368 @@ color:#dc2626;
 grid-template-columns:1fr;
 
 }
+
+}
+
+/* ================= RESPONSIVE ================= */
+
+
+/* Tablet + Small Laptop */
+@media(max-width:1100px){
+
+    .page{
+        padding:0;
+    }
+
+
+    .form-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+
+    .doctor-grid{
+
+        grid-template-columns:
+        repeat(2,1fr);
+
+    }
+
+
+    .card{
+
+        padding:24px;
+
+    }
+
+}
+
+
+
+/* Tablet */
+@media(max-width:800px){
+
+
+    .header{
+
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+
+    }
+
+
+    .header h2{
+
+        font-size:24px;
+
+    }
+
+
+    .badge{
+
+        width:100%;
+        text-align:center;
+
+    }
+
+
+
+    .search-bar{
+
+        margin-bottom:18px;
+
+    }
+
+
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .availability-box{
+
+        flex-direction:column;
+
+    }
+
+
+    .availability-box select,
+    .availability-box input,
+    .availability-box button{
+
+        width:100%;
+
+    }
+
+
+
+    .doctor-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .form-actions{
+
+        flex-direction:column;
+        align-items:stretch;
+        gap:10px;
+
+    }
+
+
+    .save-btn{
+
+        width:100%;
+
+    }
+
+
+    .cancel-btn{
+
+        margin-left:0;
+        width:100%;
+
+    }
+
+
+
+    .pagination{
+
+        gap:10px;
+
+    }
+
+
+}
+
+
+
+/* Mobile */
+@media(max-width:600px){
+
+
+    .page{
+
+        padding:10px;
+
+    }
+
+
+
+    .header h2{
+
+        font-size:21px;
+
+    }
+
+
+    .header p{
+
+        font-size:13px;
+
+    }
+
+
+
+    .card{
+
+        padding:16px;
+        border-radius:16px;
+
+    }
+
+
+
+    .form-head{
+
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+
+    }
+
+
+
+    .search-bar input{
+
+        font-size:13px;
+
+    }
+
+
+
+    .group-label{
+
+        font-size:11px;
+
+    }
+
+
+
+    input,
+    select{
+
+        padding:11px;
+
+        font-size:13px;
+
+    }
+
+
+
+    .availability-list span{
+
+        font-size:12px;
+
+    }
+
+
+
+    /* Doctor Cards */
+
+    .doctor-card{
+
+        padding:16px;
+
+        border-radius:18px;
+
+    }
+
+
+
+    .doctor-top{
+
+        gap:12px;
+
+    }
+
+
+
+    .doctor-avatar{
+
+        width:45px;
+        height:45px;
+
+        font-size:18px;
+
+    }
+
+
+
+    .doctor-top h4{
+
+        font-size:16px;
+
+    }
+
+
+
+    .doctor-info strong{
+
+        font-size:13px;
+
+        word-break:break-word;
+
+    }
+
+
+
+    .doctor-actions{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .doctor-actions button{
+
+        width:100%;
+
+    }
+
+
+
+    /* Pagination */
+
+    .pagination{
+
+        flex-wrap:wrap;
+
+    }
+
+
+    .pagination button{
+
+        padding:10px 14px;
+
+    }
+
+
+}
+
+
+
+/* Very Small Mobile */
+@media(max-width:380px){
+
+
+    .page{
+
+        padding:5px;
+
+    }
+
+
+
+    .card{
+
+        padding:14px;
+
+    }
+
+
+
+    .doctor-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .doctor-top{
+
+        align-items:flex-start;
+
+    }
+
+
+
+    .availability-card{
+
+        padding:12px;
+
+    }
+
+
+
+    .slot{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:5px;
+
+    }
 
 }
 </style>

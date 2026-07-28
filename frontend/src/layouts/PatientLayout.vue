@@ -2,7 +2,7 @@
 
 import Sidebar from "../components/Sidebar.vue";
 import Navbar from "../components/Navbar.vue";
-
+import CommonFooter from "../components/Footer.vue";
 </script>
 
 
@@ -25,7 +25,7 @@ import Navbar from "../components/Navbar.vue";
 
 
             <router-view/>
-
+<CommonFooter/>
 
         </div>
 

@@ -364,63 +364,84 @@ onMounted(()=>{
 
     <!-- ================= TODAY'S APPOINTMENTS ================= -->
 
-    <div class="panel panel-full">
+  <!-- ================= TODAY'S APPOINTMENTS ================= -->
 
-        <div class="panel-head">
-            <h2>📅 Today's Appointments</h2>
-            <span class="count-pill">{{ todaysAppointments.length }} today</span>
-        </div>
+<div class="panel panel-full">
 
-        <table v-if="todaysAppointments.length">
-
-            <thead>
-                <tr>
-                    <th>Patient</th>
-                    <th>Doctor</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr
-                v-for="appointment in todaysAppointments"
-                :key="appointment._id"
-                >
-
-                    <td>{{appointment.patient?.user?.name}}</td>
-
-                    <td>{{ appointment.doctor?.name }}</td>
-
-                    <td>
-                        {{
-                        new Date(appointment.appointmentDateTime)
-                        .toLocaleTimeString([],{
-                        hour:"2-digit",
-                        minute:"2-digit"
-                        })
-                        }}
-                    </td>
-
-                    <td>
-                        <span
-                        class="status-tag"
-                        :class="'status-' + appointment.status?.toLowerCase()"
-                        >
-                            {{ appointment.status }}
-                        </span>
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-        <p v-else class="empty-state">No appointments today.</p>
-
+    <div class="panel-head">
+        <h2>📅 Today's Appointments</h2>
+        <span class="count-pill">
+            {{ todaysAppointments.length }} today
+        </span>
     </div>
+
+
+    <table v-if="todaysAppointments.length" class="appointments-table">
+
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+
+            <tr
+            v-for="appointment in todaysAppointments"
+            :key="appointment._id"
+            >
+
+                <td data-label="Patient">
+                    {{appointment.patient?.user?.name}}
+                </td>
+
+
+                <td data-label="Doctor">
+                    {{ appointment.doctor?.name }}
+                </td>
+
+
+                <td data-label="Time">
+                    {{
+                    new Date(appointment.appointmentDateTime)
+                    .toLocaleTimeString([],{
+                    hour:"2-digit",
+                    minute:"2-digit"
+                    })
+                    }}
+                </td>
+
+
+                <td data-label="Status">
+
+                    <span
+                    class="status-tag"
+                    :class="'status-' + appointment.status?.toLowerCase()"
+                    >
+                        {{ appointment.status }}
+                    </span>
+
+                </td>
+
+
+            </tr>
+
+        </tbody>
+
+
+    </table>
+
+
+    <p v-else class="empty-state">
+        No appointments today.
+    </p>
+
+
+</div>
 
     <!-- ================= CHARTS GRID ================= -->
 
@@ -573,6 +594,7 @@ onMounted(()=>{
     font-size:12px;
     font-weight:700;
     color:#2563eb;
+    font-family:'Times New Roman', Times, serif;
 }
 
 .header h1{
@@ -861,17 +883,463 @@ onMounted(()=>{
     font-weight:500;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= GLOBAL RESPONSIVE FIX ================= */
 
-@media(max-width:1100px){
-    .kpi-row{ grid-template-columns:repeat(2,1fr); }
-    .charts-grid{ grid-template-columns:1fr; }
+.dashboard{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
 }
 
-@media(max-width:700px){
-    .kpi-row{ grid-template-columns:1fr; }
-    .doctor-status{ grid-template-columns:1fr; }
-    .header{ flex-direction:column; align-items:flex-start; gap:15px; }
+
+.panel,
+.card,
+.charts-grid,
+.kpi-row,
+.doctor-status{
+    min-width:0;
 }
 
+
+/* Chart canvas fix */
+
+.chart-wrapper canvas{
+    max-width:100% !important;
+}
+
+
+/* Table responsive without horizontal overflow */
+
+.panel-full{
+    overflow:hidden;
+}
+
+
+.panel table{
+    width:100%;
+    table-layout:fixed;
+}
+
+
+.panel td,
+.panel th{
+    word-break:break-word;
+}
+
+
+/* ================= TABLET ================= */
+
+@media(max-width:1200px){
+
+    .kpi-row{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+
+    .charts-grid{
+        grid-template-columns:1fr;
+    }
+
+
+    .doctor-status{
+        grid-template-columns:1fr;
+    }
+
+}
+
+
+
+/* ================= MOBILE ================= */
+/* ================= MOBILE TABLE FIX ================= */
+
+@media(max-width:768px){
+
+
+    .panel-full{
+        overflow:hidden;
+    }
+
+
+    .panel table,
+    .panel tbody,
+    .panel tr,
+    .panel td{
+        width:100%;
+    }
+
+
+
+    .panel table{
+        display:block;
+    }
+
+
+    .panel thead{
+        display:none;
+    }
+
+
+
+    .panel tbody tr{
+
+        display:block;
+        background:#f8fafc;
+        border-radius:16px;
+        padding:12px;
+        margin-bottom:14px;
+
+    }
+
+
+
+    .panel td{
+
+        display:flex;
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        background:transparent;
+
+        padding:10px 5px;
+
+        font-size:13px;
+
+        border:none;
+
+        color:#334155;
+
+        overflow-wrap:anywhere;
+
+    }
+
+
+
+    .panel td::before{
+
+        content:attr(data-label);
+
+        font-size:11px;
+
+        font-weight:700;
+
+        color:#64748b;
+
+        text-transform:uppercase;
+
+        margin-bottom:4px;
+
+    }
+
+
+
+    .status-tag{
+
+        margin-top:3px;
+
+    }
+
+
+}
+
+/* ================= TODAY APPOINTMENTS RESPONSIVE ================= */
+
+.appointments-table{
+    width:100%;
+}
+
+
+/* Mobile Card Style */
+
+@media(max-width:768px){
+
+
+    .appointments-table{
+        display:block;
+    }
+
+
+    .appointments-table thead{
+        display:none;
+    }
+
+
+    .appointments-table tbody{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+    }
+
+
+    .appointments-table tr{
+
+        display:flex;
+
+        flex-direction:column;
+
+        background:white;
+
+        border:1px solid #e2e8f0;
+
+        border-radius:18px;
+
+        padding:16px;
+
+        box-shadow:0 8px 25px rgba(15,23,42,.06);
+
+        gap:12px;
+
+    }
+
+
+
+    .appointments-table td{
+
+        display:flex;
+
+        flex-direction:row;
+
+        justify-content:space-between;
+
+        align-items:center;
+
+        background:#f8fafc;
+
+        border-radius:12px;
+
+        padding:12px;
+
+        font-size:14px;
+
+        color:#0f172a;
+
+        width:100%;
+
+    }
+
+
+
+    .appointments-table td::before{
+
+        content:attr(data-label);
+
+        font-size:12px;
+
+        font-weight:700;
+
+        color:#64748b;
+
+    }
+
+
+
+    .appointments-table .status-tag{
+
+        padding:5px 14px;
+
+        font-size:12px;
+
+    }
+
+
+}
+@media(max-width:768px){
+
+
+    .dashboard{
+        padding:12px;
+    }
+
+
+
+    .header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+
+    .header h1{
+        font-size:24px;
+    }
+
+
+
+    .badge{
+        width:100%;
+        text-align:center;
+    }
+
+
+
+    /* KPI */
+
+    .kpi-row{
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
+    }
+
+
+    .card{
+        padding:14px;
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+
+    .card h1{
+        font-size:22px;
+    }
+
+
+    .card h3{
+        font-size:12px;
+    }
+
+
+
+    /* Charts */
+
+    .charts-grid{
+        grid-template-columns:1fr;
+        gap:15px;
+    }
+
+
+    .panel{
+        padding:15px;
+        border-radius:16px;
+    }
+
+
+    .panel-head{
+        flex-wrap:wrap;
+        gap:10px;
+    }
+
+
+    .chart-wrapper,
+    .chart-wrapper-donut{
+        height:230px;
+        width:100%;
+        max-width:100%;
+    }
+
+
+
+    /* Table convert to mobile cards */
+
+    .panel table,
+    .panel thead,
+    .panel tbody,
+    .panel th,
+    .panel td,
+    .panel tr{
+        display:block;
+        width:100%;
+    }
+
+
+    .panel thead{
+        display:none;
+    }
+
+
+    .panel tbody tr{
+        background:#f8fafc;
+        border-radius:14px;
+        padding:12px;
+        margin-bottom:12px;
+    }
+
+
+    .panel td{
+        display:flex;
+        justify-content:space-between;
+        padding:8px;
+        background:none;
+        font-size:13px;
+        border:none;
+    }
+
+
+    .panel td::before{
+        content:attr(data-label);
+        font-weight:700;
+        color:#64748b;
+    }
+
+
+
+    /* Doctor Cards */
+
+    .doctor-status{
+        grid-template-columns:1fr;
+    }
+
+
+    .doctor-item-top{
+        flex-wrap:wrap;
+    }
+
+
+    .status-dot{
+        margin-left:0;
+        width:100%;
+    }
+
+}
+
+
+
+/* ================= SMALL MOBILE ================= */
+
+@media(max-width:480px){
+
+
+    .kpi-row{
+        grid-template-columns:1fr;
+    }
+
+
+    .header h1{
+        font-size:22px;
+    }
+
+
+    .panel-head h2{
+        font-size:16px;
+    }
+
+
+    .chart-wrapper,
+    .chart-wrapper-donut{
+        height:200px;
+    }
+
+}
+@media (max-width:600px){
+
+    /* KPI Cards 2 in one line */
+    .kpi-row{
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
+    }
+
+    .card{
+        padding:15px;
+        gap:10px;
+    }
+
+    .icon{
+        width:45px;
+        height:45px;
+        font-size:22px;
+    }
+
+    .card h1{
+        font-size:22px;
+    }
+
+}
 </style>

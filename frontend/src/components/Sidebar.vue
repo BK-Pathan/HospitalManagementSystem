@@ -1,12 +1,23 @@
 <script setup>
 
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
 import api from "../api/axios";
 
 const role = computed(() => localStorage.getItem("role"));
 
 const router = useRouter();
+
+// Mobile drawer state (UI-only, no backend / data change)
+const isMobileOpen = ref(false);
+
+const toggleMobile = () => {
+    isMobileOpen.value = !isMobileOpen.value;
+};
+
+const closeMobile = () => {
+    isMobileOpen.value = false;
+};
 
 // Logout function
 const logout = async()=>{
@@ -187,10 +198,42 @@ return [];
 
 <template>
 
-<div class="sidebar">
+<!-- Mobile Hamburger -->
+<!-- Mobile Arrow Toggle -->
+
+<button
+class="sidebar-arrow"
+:class="{ hide: isMobileOpen }"
+@click="toggleMobile"
+>
+
+    <span>
+        {{ isMobileOpen ? '‹' : '›' }}
+    </span>
+
+</button>
+
+
+<!-- Overlay -->
+<div
+class="sidebar-overlay"
+v-if="isMobileOpen"
+@click="closeMobile"
+></div>
+
+
+
+
+<!-- Sidebar -->
+
+<div 
+class="sidebar" 
+:class="{ open:isMobileOpen }"
+>
 
 
     <div class="brand">
+
 
         <div class="logo-icon">
             🏥
@@ -198,6 +241,7 @@ return [];
 
 
         <div>
+
             <h2>
                 Hospital
             </h2>
@@ -205,11 +249,27 @@ return [];
             <p>
                 Management System
             </p>
+
         </div>
+
+
+
+        <!-- ONLY CLOSE BUTTON -->
+        <button 
+        class="close-btn"
+        @click="closeMobile"
+        >
+            ✕
+        </button>
+
 
     </div>
 
 
+
+
+
+    <p class="menu-label">Main Menu</p>
 
 
     <div class="menu">
@@ -225,12 +285,13 @@ return [];
 
         class="menu-item"
 
+        @click="closeMobile"
+
         >
 
-            <span>
-                {{item.name}}
-            </span>
+            <!-- <span class="menu-item__dot"></span> -->
 
+            <span class="menu-item__text">{{item.name}}</span>
 
         </router-link>
 
@@ -240,17 +301,20 @@ return [];
 
 
 
+
     <button
     class="logout"
     @click="logout"
     >
 
-        🚪 Logout
+        <span class="logout-icon">🚪</span> Logout
 
     </button>
 
 
+
 </div>
+
 
 </template>
 
@@ -261,29 +325,32 @@ return [];
 
 .sidebar{
 
+    --accent-a:#38bdf8;
+    --accent-b:#2563eb;
+
     width:270px;
+
     height:100vh;
+    min-height:100vh;
 
     position:fixed;
     left:0;
     top:0;
+    bottom:0;
 
     z-index:100;
 
     display:flex;
-
     flex-direction:column;
 
-
-    overflow-x:hidden !important;   /* add this */
-    overflow-y:hidden;
+    overflow:hidden;
 
     background:
-
     linear-gradient(
-        180deg,
-        rgba(15,23,42,.95),
-        rgba(30,64,175,.95)
+        165deg,
+        #0b1220 0%,
+        #0f1f3d 45%,
+        #17347a 100%
     );
 
     backdrop-filter:blur(20px);
@@ -292,13 +359,17 @@ return [];
 
     padding:25px 18px;
 
-    border-right:1px solid rgba(255,255,255,.15);
+    border-right:1px solid rgba(255,255,255,.1);
+
+    box-sizing:border-box;
 
     box-shadow:
-    10px 0 40px rgba(15,23,42,.15);
+    14px 0 45px rgba(2,6,23,.35);
+
+    transition:
+    transform .35s cubic-bezier(.4,0,.2,1);
 
 }
-
 
 
 /* =========================
@@ -314,11 +385,13 @@ return [];
 
     gap:15px;
 
-    padding-bottom:28px;
+    padding-bottom:24px;
 
     border-bottom:
 
-    1px solid rgba(255,255,255,.15);
+    1px solid rgba(255,255,255,.1);
+
+    position:relative;
 
 }
 
@@ -327,11 +400,11 @@ return [];
 .logo-icon{
 
 
-    width:58px;
+    width:56px;
 
-    height:58px;
+    height:56px;
 
-    border-radius:18px;
+    border-radius:16px;
 
 
     display:flex;
@@ -341,7 +414,7 @@ return [];
     justify-content:center;
 
 
-    font-size:30px;
+    font-size:28px;
 
 
     background:
@@ -349,15 +422,25 @@ return [];
 
     linear-gradient(
         135deg,
-        #38bdf8,
-        #2563eb
+        var(--accent-a),
+        var(--accent-b)
     );
 
 
     box-shadow:
 
-    0 10px 30px rgba(37,99,235,.45);
+    0 10px 24px rgba(37,99,235,.5),
+    inset 0 1px 0 rgba(255,255,255,.25);
 
+    transition:transform .3s ease;
+
+
+}
+
+
+.brand:hover .logo-icon{
+
+    transform:scale(1.05) rotate(-3deg);
 
 }
 
@@ -365,13 +448,21 @@ return [];
 
 .brand h2{
 
-    font-size:24px;
+    font-size:22px;
 
     font-weight:800;
 
     margin:0;
 
-    letter-spacing:.5px;
+    letter-spacing:.4px;
+
+    background:linear-gradient(90deg,#ffffff,#cfe4ff);
+
+    -webkit-background-clip:text;
+
+    background-clip:text;
+
+    color:transparent;
 
 }
 
@@ -379,11 +470,63 @@ return [];
 
 .brand p{
 
-    margin-top:4px;
+    margin-top:3px;
 
-    font-size:12px;
+    font-size:11.5px;
 
-    color:#bfdbfe;
+    color:#93c5fd;
+
+    letter-spacing:.02em;
+
+}
+
+
+.close-btn{
+
+    display:none;
+
+    position:absolute;
+
+    top:0;
+
+    right:0;
+
+
+    width:32px;
+
+    height:32px;
+
+
+    align-items:center;
+
+    justify-content:center;
+
+
+    background:rgba(255,255,255,.08);
+
+
+    border:1px solid rgba(255,255,255,.12);
+
+    border-radius:9px;
+
+
+    color:white;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+
+}
+
+
+.close-btn:hover{
+
+    background:rgba(255,255,255,.18);
+
+    transform:rotate(90deg);
 
 }
 
@@ -396,22 +539,39 @@ return [];
 ========================= */
 
 
-.menu{
+.menu-label{
 
-    margin-top:35px;
+    margin:24px 0 10px 4px;
+
+    font-size:10.5px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.12em;
+        min-height:0;   /* important */
+
+    color:rgba(255,255,255,.35);
+
+}
+
+
+.menu{
 
     display:flex;
 
     flex-direction:column;
 
-    gap:12px;
+    gap:6px;
 
+    flex:1;
 
-    flex:1;              /* available space lega */
+    min-height:0;
 
-    overflow-y:auto;     /* menu scroll hoga */
+    overflow-y:auto;
 
-    overflow-x:hidden;   /* add this */
+    overflow-x:hidden;
 
     padding-right:5px;
 
@@ -428,30 +588,62 @@ return [];
 
     align-items:center;
 
-
-    padding:14px 16px;
-
-
-    border-radius:14px;
+    gap:10px;
 
 
-    color:#e0f2fe;
+    padding:13px 14px;
+
+
+    border-radius:12px;
+
+
+    color:#cbd8f0;
 
 
     text-decoration:none;
 
 
-    font-size:15px;
+    font-size:14.5px;
 
 
     font-weight:500;
 
 
-    transition:.35s;
+    transition:.3s ease;
 
 
     overflow:hidden;
 
+
+}
+
+
+.menu-item__dot{
+
+    width:6px;
+
+    height:6px;
+
+    border-radius:50%;
+
+    background:currentColor;
+
+    opacity:.35;
+
+    flex-shrink:0;
+
+    transition:.3s ease;
+
+}
+
+
+.menu-item__text{
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 
 }
 
@@ -477,7 +669,7 @@ return [];
 
         90deg,
 
-        rgba(255,255,255,.18),
+        rgba(255,255,255,.12),
 
         transparent
 
@@ -487,7 +679,7 @@ return [];
     opacity:0;
 
 
-    transition:.35s;
+    transition:.3s;
 
 
 }
@@ -507,11 +699,18 @@ return [];
 .menu-item:hover{
 
 
-    transform:translateX(6px);
+    transform:translateX(5px);
 
 
-    color:white;
+    color:rgb(17, 70, 113);
 
+
+}
+
+
+.menu-item:hover .menu-item__dot{
+
+    opacity:.8;
 
 }
 
@@ -524,10 +723,10 @@ return [];
 .router-link-active{
 
 
-    background:white;
+    background:linear-gradient(135deg,#ffffff,#eef4ff);
 
 
-    color:#2563eb;
+    color:var(--accent-b);
 
 
     font-weight:700;
@@ -536,8 +735,17 @@ return [];
     box-shadow:
 
 
-    0 12px 30px rgba(0,0,0,.18);
+    0 10px 26px rgba(2,6,23,.35);
 
+
+}
+
+
+.router-link-active .menu-item__dot{
+
+    background:var(--accent-b);
+
+    opacity:1;
 
 }
 
@@ -561,50 +769,44 @@ return [];
 
 .logout{
 
- flex-shrink:0;
+    flex-shrink:0;
 
-    margin-top:20px;
+    margin-top:auto;
 
+    display:flex;
 
-    padding:15px;
+    align-items:center;
 
+    justify-content:center;
 
-    border:none;
+    gap:8px;
 
+    padding:14px;
 
-    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
 
+    border-radius:13px;
 
     cursor:pointer;
 
-
-    font-size:15px;
-
+    font-size:14.5px;
 
     font-weight:700;
 
-
-
     background:
 
+    rgba(255,255,255,.06);
 
-    rgba(255,255,255,.95);
+    color:#fecaca;
 
+    transition:.3s;
 
-
-    color:#2563eb;
-
-
-
-    transition:.35s;
+}
 
 
+.logout-icon{
 
-    box-shadow:
-
-
-    0 10px 25px rgba(0,0,0,.15);
-
+    font-size:15px;
 
 }
 
@@ -629,10 +831,15 @@ return [];
 
     color:white;
 
+    border-color:transparent;
+
 
     transform:
 
     translateY(-3px);
+
+
+    box-shadow:0 12px 26px rgba(220,38,38,.35);
 
 
 }
@@ -648,7 +855,7 @@ return [];
 
 .menu::-webkit-scrollbar{
 
-    width:6px;
+    width:5px;
 
 }
 
@@ -667,8 +874,8 @@ return [];
 
     linear-gradient(
         180deg,
-        #38bdf8,
-        #2563eb
+        var(--accent-a),
+        var(--accent-b)
     );
 
 
@@ -677,18 +884,244 @@ return [];
 }
 
 
-.sidebar::-webkit-scrollbar-thumb{
+
+/* =========================
+        MOBILE TOGGLE
+========================= */
+/* 
+
+.mobile-toggle{
+
+    display:none;
+
+    position:fixed;
+
+    top:16px;
+
+    left:16px;
+
+    z-index:110;
+
+    width:38px;
+
+    height:38px;
+
+    border-radius:13px;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    background:linear-gradient(135deg,#0f172a,#1e40af);
+
+    box-shadow:0 10px 26px rgba(2,6,23,.4);
+
+    cursor:pointer;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:5px;
+
+    transition:transform .25s ease, box-shadow .25s ease, opacity .25s ease;
+
+}
+
+
+.mobile-toggle:hover{
+
+    transform:scale(1.06);
+
+    box-shadow:0 12px 30px rgba(2,6,23,.5);
+
+}
+
+
+.mobile-toggle span{
+
+    width:20px;
+
+    height:2px;
+
+    background:white;
+
+    border-radius:5px;
+
+    display:block;
+
+}
+
+
+.mobile-toggle.hide{
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transform:scale(.8);
+
+}
+
+
+
+.sidebar-overlay{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(2,6,23,.6);
+
+    backdrop-filter:blur(3px);
+
+    z-index:99;
+
+}
+ */
+
+ /* =========================
+      MOBILE ARROW TOGGLE
+========================= */
+
+.sidebar-arrow{
+
+    display:none;
+
+    position:fixed;
+
+    left:0;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+
+    width:34px;
+
+    height:70px;
+
+
+    z-index:120;
+
+
+    border:none;
+
+    outline:none;
+
+
+    cursor:pointer;
+
+
+    border-radius:0 20px 20px 0;
+
+
+    display:none;
+
+
+    align-items:center;
+
+    justify-content:center;
 
 
     background:
 
-    rgba(255,255,255,.3);
+    linear-gradient(
+        145deg,
+        #0f172a,
+        #2563eb
+    );
 
 
-    border-radius:20px;
+    color:white;
+
+
+    font-size:32px;
+
+
+    font-weight:700;
+
+
+    box-shadow:
+
+    0 15px 35px rgba(2,6,23,.45);
+
+
+    transition:
+
+    .35s ease;
+
+}
+
+
+
+.sidebar-arrow:hover{
+
+
+    width:44px;
+
+
+    background:
+
+    linear-gradient(
+        145deg,
+        #2563eb,
+        #06b6d4
+    );
 
 
 }
+
+
+
+.sidebar-arrow span{
+
+
+    line-height:1;
+
+
+    margin-top:-4px;
+
+
+}
+
+
+
+
+
+/* =========================
+        OVERLAY
+========================= */
+
+
+.sidebar-overlay{
+
+
+    display:none;
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    background:
+
+    rgba(2,6,23,.55);
+
+
+    backdrop-filter:blur(4px);
+
+
+    z-index:99;
+
+
+}
+
+
 
 
 
@@ -697,62 +1130,138 @@ return [];
 ========================= */
 
 
-@media(max-width:900px){
+@media(max-width:1024px){
+
+    .sidebar{
+
+        width:270px;
+
+        height:100vh;
+
+        min-height:100vh;
+
+        transform:translateX(-100%);
+
+    }
 
 
-.sidebar{
+    .sidebar.open{
+
+        transform:translateX(0);
+
+    }
 
 
-    width:220px;
+    .sidebar-arrow{
+
+        display:flex;
+
+    }
 
 
-}
+    .sidebar-overlay{
+
+        display:block;
+
+    }
 
 
-.brand h2{
+    .close-btn{
 
+        display:flex;
 
-    font-size:18px;
-
-
-}
-
-
-.brand p{
-
-
-    display:none;
-
-
-}
-
-
-.menu-item{
-
-
-    font-size:14px;
-
-
-    padding:12px;
-
-
-}
-
-
-.logo-icon{
-
-
-    width:48px;
-
-    height:48px;
-
-    font-size:24px;
-
+    }
 
 }
 
 
+
+@media(max-width:768px){
+
+    .sidebar{
+
+        width:260px;
+
+        height:100vh;
+
+        min-height:100vh;
+
+        padding:22px 16px;
+
+    }
+
+
+    .brand h2{
+
+        font-size:20px;
+
+    }
+
+
+    .menu-item{
+
+        padding:12px 13px;
+
+        font-size:14px;
+
+    }
+
 }
 
 
+
+@media(max-width:420px){
+
+    .sidebar{
+
+        width:82vw;
+
+        height:100vh;
+
+        min-height:100vh;
+
+        padding:20px 15px;
+
+    }
+
+
+    .logo-icon{
+
+        width:48px;
+
+        height:48px;
+
+        font-size:24px;
+
+    }
+
+
+    .brand h2{
+
+        font-size:18px;
+
+    }
+
+
+    .sidebar-arrow{
+
+        width:30px;
+
+        height:62px;
+
+        font-size:28px;
+
+    }
+
+}
+.sidebar-arrow.hide{
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transform:
+    translate(-20px,-50%);
+
+}
 </style>

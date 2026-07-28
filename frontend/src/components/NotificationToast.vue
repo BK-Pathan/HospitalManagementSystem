@@ -124,5 +124,69 @@ transform:translateX(0);
 
 }
 
+/* ================= RESPONSIVE ================= */
 
+@media(max-width:600px){
+
+    .toast{
+
+        top:15px;
+        right:15px;
+
+        width:calc(100% - 30px);
+
+        padding:16px;
+
+        border-radius:12px;
+
+    }
+
+
+    .toast h4{
+
+        font-size:15px;
+
+    }
+
+
+    .toast p{
+
+        font-size:13px;
+
+        line-height:1.5;
+
+    }
+
+}
+
+
+
+@media(max-width:380px){
+
+    .toast{
+
+        top:10px;
+        right:10px;
+
+        width:calc(100% - 20px);
+
+        padding:14px;
+
+    }
+
+
+    .toast h4{
+
+        font-size:14px;
+
+    }
+
+
+    .toast p{
+
+        font-size:12px;
+
+    }
+
+}
 </style>

@@ -428,20 +428,20 @@ color:var(--muted);
 
 
 .header-actions{
-
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:nowrap;
 }
-
 
 
 
 .total-card{
 
+    flex:1;
+    min-width:120px;
+    padding:12px;
 background:var(--white);
 
 padding:14px 25px;
@@ -484,6 +484,10 @@ color:var(--primary);
 
 
 .export{
+     padding:12px 14px;
+    min-width:80px;
+    white-space:nowrap;
+    font-size:13px;
 
 border:none;
 
@@ -789,37 +793,279 @@ padding:40px;
 
 
 
-@media(max-width:800px){
+/* ===========================================
+   LARGE TABLETS
+=========================================== */
 
+@media (max-width: 1024px){
+
+.patients-container{
+    padding:20px;
+}
 
 .page-header{
-
-flex-direction:column;
-
-align-items:flex-start;
-
-gap:20px;
-
+    flex-direction:column;
+    align-items:flex-start;
+    gap:18px;
 }
-
 
 .header-actions{
-
-flex-wrap:wrap;
-
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
 }
 
+.total-card,
+.export{
+    width:100%;
+}
 
 .patients-grid{
-
-grid-template-columns:1fr;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+}
 
 }
 
 
+/* ===========================================
+   TABLETS
+=========================================== */
+
+@media (max-width:768px){
+
+.patients-container{
+    padding:16px;
+}
+
+/* Header */
+
+.page-header{
+    gap:16px;
+    margin-bottom:18px;
+}
+
+.eyebrow{
+    font-size:11px;
+}
+
+.page-header h2{
+    font-size:24px;
+    line-height:1.2;
+}
+
+.page-header p{
+    font-size:14px;
+}
+
+/* Actions */
+
+.header-actions{
+    grid-template-columns:1fr;
+}
+
+.total-card{
+    padding:14px;
+}
+
+.total-card strong{
+    font-size:24px;
+}
+
+.export{
+    padding:13px;
+    font-size:14px;
+}
+
+/* Search */
+
+.search-box{
+    padding:12px 14px;
+    margin-bottom:18px;
+}
+
+.search-box input{
+    font-size:14px;
+}
+
+/* Cards */
+
+.patients-grid{
+    grid-template-columns:1fr;
+    gap:16px;
+}
+
+.patient-card{
+    padding:18px;
+    border-radius:18px;
+}
+
+.patient-top{
+    gap:12px;
+    padding-bottom:14px;
+}
+
+.avatar{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    font-size:18px;
+}
+
+.patient-top h3{
+    font-size:17px;
+}
+
+.patient-top p{
+    font-size:12px;
+    word-break:break-word;
+}
+
+.patient-info{
+    gap:12px;
+}
+
+.patient-info strong{
+    word-break:break-word;
+}
 
 }
 
 
+/* ===========================================
+   SMALL PHONES
+=========================================== */
 
+@media (max-width:480px){
+
+.patients-container{
+    padding:12px;
+}
+
+.page-header h2{
+    font-size:20px;
+}
+
+.page-header p{
+    font-size:13px;
+}
+
+.header-actions{
+    gap:10px;
+}
+
+.total-card{
+    padding:12px;
+}
+
+.total-card span{
+    font-size:11px;
+}
+
+.total-card strong{
+    font-size:22px;
+}
+
+.export{
+    width:100%;
+    padding:12px;
+    font-size:13px;
+}
+
+.search-box{
+    padding:10px 12px;
+}
+
+.search-box input{
+    font-size:13px;
+}
+
+.patient-card{
+    padding:16px;
+}
+
+.patient-top{
+    align-items:flex-start;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    font-size:16px;
+}
+
+.patient-top h3{
+    font-size:16px;
+}
+
+.patient-top p{
+    font-size:11px;
+}
+
+.patient-info span{
+    font-size:10px;
+}
+
+.patient-info strong{
+    font-size:13px;
+}
+
+.role,
+.completed,
+.pending{
+    font-size:11px !important;
+    padding:4px 10px;
+}
+
+}
+
+
+/* ===========================================
+   EXTRA SMALL DEVICES (320px)
+=========================================== */
+
+@media (max-width:360px){
+
+.page-header h2{
+    font-size:18px;
+}
+
+.patient-card{
+    padding:14px;
+}
+
+.avatar{
+    width:38px;
+    height:38px;
+}
+
+.patient-top h3{
+    font-size:15px;
+}
+
+.export{
+    font-size:12px;
+}
+
+}
+
+@media (max-width:480px){
+
+.header-actions{
+    display:flex;
+    gap:8px;
+    align-items:stretch;
+}
+
+.total-card{
+    flex:1;
+}
+
+.export{
+    min-width:70px;
+    padding:10px 12px;
+    font-size:12px;
+}
+
+}
 </style>

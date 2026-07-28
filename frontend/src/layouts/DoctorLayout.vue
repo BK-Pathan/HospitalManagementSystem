@@ -1,10 +1,36 @@
 <script setup>
 
+import { watch, nextTick } from "vue";
+import { useRoute } from "vue-router";
+
 import Sidebar from "../components/Sidebar.vue";
 import Navbar from "../components/Navbar.vue";
+import CommonFooter from "../components/Footer.vue";
+
+
+const route = useRoute();
+
+
+watch(
+    () => route.fullPath,
+    async () => {
+
+        await nextTick();
+
+        const content = document.querySelector(".content");
+
+        if(content){
+            content.scrollTo({
+                top:0,
+                behavior:"instant"
+            });
+        }
+
+    }
+);
+
 
 </script>
-
 
 <template>
 
@@ -25,7 +51,7 @@ import Navbar from "../components/Navbar.vue";
 
 
 <router-view/>
-
+<CommonFooter/>
 
 </div>
 

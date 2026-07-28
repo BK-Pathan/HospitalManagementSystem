@@ -50,11 +50,15 @@ import CommonFooter from "../components/Footer.vue";
 
 .layout{
 
+    width:100%;
+
     min-height:100vh;
 
     display:flex;
 
     background:#f8fafc;
+
+    overflow-x:hidden;
 
 }
 
@@ -62,7 +66,6 @@ import CommonFooter from "../components/Footer.vue";
 /* =====================
 MAIN
 ===================== */
-
 
 .main{
 
@@ -72,7 +75,13 @@ MAIN
 
     min-height:100vh;
 
-    transition:.3s;
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
 
 }
 
@@ -87,12 +96,13 @@ CONTENT
 
     padding:30px;
 
-    min-height:calc(100vh - 80px);
+    flex:1;
+
+    overflow-y:auto;
 
     background:#f8fafc;
 
 }
-
 
 
 

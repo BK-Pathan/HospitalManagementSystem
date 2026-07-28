@@ -994,46 +994,145 @@ font-weight:700;
 
 
 
+/* ===========================
+   Tablet (992px)
+=========================== */
+@media (max-width: 992px) {
 
+  .header{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
 
-@media(max-width:800px){
+  .badge{
+    align-self: flex-start;
+  }
 
+  .card{
+    padding: 22px;
+  }
 
-.header{
+  .form-grid{
+    grid-template-columns: 1fr;
+  }
 
-flex-direction:column;
+  .full{
+    grid-column: span 1;
+  }
 
-align-items:flex-start;
+  .card-head{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 
-gap:15px;
+  .save-btn{
+    width: 100%;
+  }
 
 }
 
 
+/* ===========================
+   Mobile (768px)
+=========================== */
+@media (max-width:768px){
 
-.form-grid{
+  .page{
+    padding: 10px;
+  }
 
-grid-template-columns:1fr;
+  .header h2{
+    font-size:24px;
+  }
+
+  .card{
+    padding:18px;
+    border-radius:16px;
+  }
+
+  .badge{
+    width:100%;
+    text-align:center;
+    padding:12px;
+  }
+
+  .table-wrapper{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  table{
+    min-width:700px;
+  }
+
+  td,
+  th{
+    white-space:nowrap;
+    font-size:13px;
+    padding:12px;
+  }
+
+  .patient{
+    gap:10px;
+  }
+
+  .avatar{
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    font-size:14px;
+  }
+
+  input,
+  select{
+    font-size:14px;
+    padding:12px;
+  }
+
+  .save-btn{
+    width:100%;
+    padding:14px;
+  }
 
 }
 
 
+/* ===========================
+   Small Mobile (480px)
+=========================== */
+@media (max-width:480px){
 
-.full{
+  .header h2{
+    font-size:20px;
+  }
 
-grid-column:auto;
+  .header p{
+    font-size:13px;
+  }
 
-}
+  .card{
+    padding:14px;
+  }
 
+  .card-head h3{
+    font-size:18px;
+  }
 
+  .field label{
+    font-size:12px;
+  }
 
-table{
+  input,
+  select{
+    padding:10px 12px;
+    font-size:13px;
+  }
 
-min-width:900px;
-
-}
-
-
+  .save-btn{
+    font-size:14px;
+  }
 
 }
 

@@ -335,6 +335,7 @@ const router = createRouter({
 
  routes,
 
+ 
 scrollBehavior(to){
 
 if(to.hash){
