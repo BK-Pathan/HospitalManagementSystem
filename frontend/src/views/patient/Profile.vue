@@ -5,6 +5,10 @@ import api from "../../api/axios";
 const profilecompleted = ref(false);
 
 
+const oldPassword = ref("");
+const newPassword = ref("");
+const confirmPassword = ref("");
+
 const name = ref("");
 const email = ref("");
 const age = ref("");
@@ -118,6 +122,98 @@ const saveProfile = async () => {
 };
 
 
+// =======================
+// Change Password
+// =======================
+
+const changePassword = async()=>{
+
+
+if(
+!oldPassword.value ||
+!newPassword.value ||
+!confirmPassword.value
+){
+
+window.notify(
+"Fill all password fields",
+"warning"
+);
+
+return;
+
+}
+
+
+
+if(
+newPassword.value !== confirmPassword.value
+){
+
+window.notify(
+"New passwords do not match",
+"error"
+);
+
+return;
+
+}
+
+
+
+try{
+
+
+const res = await api.put(
+
+"/auth/change-password",
+
+{
+
+oldPassword:oldPassword.value,
+
+newPassword:newPassword.value
+
+}
+
+);
+
+
+
+window.notify(
+res.data.message
+);
+
+
+
+oldPassword.value="";
+newPassword.value="";
+confirmPassword.value="";
+
+
+}
+catch(error){
+
+
+console.log(
+error.response?.data || error.message
+);
+
+
+window.notify(
+
+error.response?.data?.message ||
+"Password change failed",
+
+"error"
+
+);
+
+
+}
+
+
+};
 
 
 const getProfile = async()=>{
@@ -462,6 +558,80 @@ getProfile();
 
 
 
+<!-- =====================
+SECURITY
+===================== -->
+
+<h3 class="section-title">
+Security
+</h3>
+
+
+<div class="form-grid">
+
+
+<div class="field">
+
+<label>
+Current Password
+</label>
+
+<input
+class="form-input"
+type="password"
+v-model="oldPassword"
+placeholder="Enter current password"
+/>
+
+</div>
+
+
+
+<div class="field">
+
+<label>
+New Password
+</label>
+
+<input
+class="form-input"
+type="password"
+v-model="newPassword"
+placeholder="Enter new password"
+/>
+
+</div>
+
+
+
+<div class="field">
+
+<label>
+Confirm New Password
+</label>
+
+<input
+class="form-input"
+type="password"
+v-model="confirmPassword"
+placeholder="Confirm new password"
+/>
+
+</div>
+
+
+
+</div>
+
+
+<button
+class="save-btn"
+@click="changePassword"
+>
+
+Change Password
+
+</button>
 
 
         <div class="actions">

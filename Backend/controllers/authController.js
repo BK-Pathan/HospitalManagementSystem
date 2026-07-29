@@ -485,3 +485,154 @@ message:error.message
 }
 
 };  
+
+
+// Change Password
+
+exports.changePassword = async(req,res)=>{
+
+try{
+
+
+const {
+oldPassword,
+newPassword
+}=req.body;
+
+
+
+// Find user
+
+const user = await User.findById(req.user.id);
+
+
+
+if(!user){
+
+return res.status(404).json({
+
+message:"User not found"
+
+});
+
+}
+
+
+
+
+// Check old password
+
+const match = await bcrypt.compare(
+oldPassword,
+user.password
+);
+
+
+
+if(!match){
+
+return res.status(400).json({
+
+message:"Old password is incorrect"
+
+});
+
+}
+
+
+
+
+// Password validation
+
+if(newPassword.length < 8){
+
+return res.status(400).json({
+
+message:"Password must be at least 8 characters"
+
+});
+
+}
+
+
+if(!/[A-Z]/.test(newPassword)){
+
+return res.status(400).json({
+
+message:"Password must contain uppercase letter"
+
+});
+
+}
+
+
+if(!/[a-z]/.test(newPassword)){
+
+return res.status(400).json({
+
+message:"Password must contain lowercase letter"
+
+});
+
+}
+
+
+if(!/[0-9]/.test(newPassword)){
+
+return res.status(400).json({
+
+message:"Password must contain number"
+
+});
+
+}
+
+
+
+
+// Hash new password
+
+const hashedPassword = await bcrypt.hash(
+newPassword,
+10
+);
+
+
+
+// Update DB
+
+user.password = hashedPassword;
+
+
+await user.save();
+
+
+
+res.status(200).json({
+
+message:"Password changed successfully"
+
+});
+
+
+
+}
+catch(error){
+
+console.log(
+"CHANGE PASSWORD ERROR:",
+error
+);
+
+
+res.status(500).json({
+
+message:"Server error"
+
+});
+
+
+}
+
+
+};

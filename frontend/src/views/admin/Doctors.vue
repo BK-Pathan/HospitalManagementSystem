@@ -180,38 +180,70 @@ availability.value.splice(index,1);
 
 const saveDoctor = async()=>{
 
-
 try{
 
 
 const data={
 
 name:name.value,
+
 department:department.value,
 
+
 specialties:
+
 Array.isArray(specialties.value)
+
 ?
+
 specialties.value
+
 :
-specialties.value.split(","),
+
+specialties.value.split(",")
+.map(item=>item.trim()),
+
 
 qualifications:qualifications.value,
 
+
 experience:Number(experience.value),
 
+
 contactInformation:contactInformation.value,
+
 
 availability:availability.value
 
 };
 
 
-// sirf new doctor ke liye password
+
+// ADD DOCTOR
 if(!editMode.value){
-    data.email = email.value;
-    data.password = password.value;
+
+data.email=email.value;
+
+data.password=password.value;
+
 }
+
+
+
+// UPDATE DOCTOR
+else{
+
+
+// agar admin password change karna chahta hai
+if(password.value.trim()){
+
+data.password=password.value;
+
+}
+
+
+}
+
 
 
 if(editMode.value){
@@ -225,11 +257,13 @@ data
 
 );
 
+
 window.notify("Doctor Updated");
 
 
+}
 
-}else{
+else{
 
 
 await api.post(
@@ -239,6 +273,7 @@ await api.post(
 data
 
 );
+
 
 window.notify("Doctor Added");
 
@@ -253,7 +288,9 @@ getDoctors();
 
 
 
-}catch(error){
+}
+
+catch(error){
 
 console.log(
 error.response?.data || error.message
@@ -280,34 +317,46 @@ editMode.value=true;
 doctorId.value=doctor._id;
 
 
+
 name.value = doctor.name || "";
 
+
 department.value = doctor.department || "";
+
 
 specialties.value =
 doctor.specialties?.join(", ") || "";
 
+
 qualifications.value =
 doctor.qualifications || "";
 
+
 experience.value =
 doctor.experience || "";
+
 
 contactInformation.value =
 doctor.contactInformation || "";
 
 
-// email load
+
 email.value =
-doctor.user?.email || doctor.email || "";
+doctor.user?.email || "";
 
 
-// password empty rakho
-password.value = "";
+
+// password empty because old password show nahi karna
+password.value="";
+
 
 
 availability.value =
 doctor.availability || [];
+
+
+
+scrollToForm();
 
 
 };
@@ -694,12 +743,30 @@ getDoctors();
 
                 <label class="field">
                     <span>Doctor Email</span>
-                    <input v-model="email" placeholder="doctor@hospital.com" />
+          <input 
+
+v-model="email"
+
+placeholder="doctor@hospital.com"
+
+:disabled="editMode"
+
+/>
                 </label>
 
                 <label class="field">
                     <span>Doctor Password</span>
-                    <input v-model="password" placeholder="••••••••" type="password" />
+                   <input 
+v-model="password"
+
+:placeholder="
+editMode 
+? 'Enter new password (optional)' 
+: 'Doctor password'
+"
+
+type="password"
+/>
                 </label>
 
             </div>

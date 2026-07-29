@@ -7,6 +7,10 @@ import api from "../../api/axios";
 // ======================
 // States
 // ======================
+// Edit
+
+const editMode = ref(false);
+const patientId = ref(null);
 
 const patients = ref([]);
 
@@ -56,13 +60,10 @@ const createPatient = async()=>{
 try{
 
 
-const data = {
+const data={
+
 
 name:name.value,
-
-email:email.value,
-
-password:password.value,
 
 age:Number(age.value),
 
@@ -76,18 +77,73 @@ DescribeYourProblem:DescribeYourProblem.value,
 
 insuranceDetails:insuranceDetails.value
 
+
 };
 
 
 
-await api.post(
-"/admin/patient",
+// New Patient
+if(!editMode.value){
+
+
+data.email=email.value;
+
+data.password=password.value;
+
+
+}
+
+
+
+// Update Patient
+
+else{
+
+
+if(password.value.trim()){
+
+data.password=password.value;
+
+}
+
+
+}
+
+
+
+if(editMode.value){
+
+
+await api.put(
+
+`/admin/patient/${patientId.value}`,
+
 data
+
 );
 
 
+window.notify("Patient Updated Successfully");
+
+
+}
+
+else{
+
+
+await api.post(
+
+"/admin/patient",
+
+data
+
+);
+
 
 window.notify("Patient Created Successfully");
+
+
+}
 
 
 
@@ -98,6 +154,7 @@ getPatients();
 
 
 }
+
 catch(error){
 
 console.log(
@@ -106,8 +163,68 @@ error.response?.data || error.message
 
 }
 
+
 };
 
+const editPatient=(patient)=>{
+
+
+editMode.value=true;
+
+
+patientId.value=patient._id;
+
+
+
+name.value =
+patient.user?.name || "";
+
+
+
+email.value =
+patient.user?.email || "";
+
+
+
+age.value =
+patient.age || "";
+
+
+
+gender.value =
+patient.gender || "";
+
+
+
+contactInformation.value =
+patient.contactInformation || "";
+
+
+
+medicalHistory.value =
+patient.medicalHistory || "";
+
+
+
+DescribeYourProblem.value =
+patient.DescribeYourProblem || "";
+
+
+
+insuranceDetails.value =
+patient.insuranceDetails || "";
+
+
+
+// old password show nahi karna
+password.value="";
+
+
+
+scrollToForm();
+
+
+};
 
 
 
@@ -117,15 +234,31 @@ error.response?.data || error.message
 
 const clearForm=()=>{
 
+
 name.value="";
+
 email.value="";
+
 password.value="";
+
 age.value="";
+
 gender.value="";
+
 contactInformation.value="";
+
 medicalHistory.value="";
+
 DescribeYourProblem.value="";
+
 insuranceDetails.value="";
+
+
+
+editMode.value=false;
+
+patientId.value=null;
+
 
 };
 
@@ -258,6 +391,10 @@ getPatients();
                         Medical History
                     </th>
 
+                    <th>
+ Actions
+</th>
+
                 </tr>
 
             </thead>
@@ -329,7 +466,16 @@ getPatients();
                     {{patient.medicalHistory || "N/A"}}
                 </td>
 
+<td>
 
+<button
+class="edit-btn"
+@click="editPatient(patient)"
+>
+✏ Edit
+</button>
+
+</td>
 
             </tr>
 
@@ -357,9 +503,9 @@ getPatients();
 
             <div>
 
-                <h3>
-                    Add New Patient
-                </h3>
+         <h3>
+{{editMode ? "Update Patient" : "Add New Patient"}}
+</h3>
 
                 <p>
                     Register a new patient account
@@ -404,10 +550,15 @@ getPatients();
                     Email
                 </label>
 
-                <input
-                v-model="email"
-                placeholder="Email address"
-                />
+               <input
+
+v-model="email"
+
+placeholder="Email address"
+
+:disabled="editMode"
+
+/>
 
             </div>
 
@@ -420,11 +571,19 @@ getPatients();
                     Password
                 </label>
 
-                <input
-                v-model="password"
-                type="password"
-                placeholder="Password"
-                />
+              <input
+
+v-model="password"
+
+type="password"
+
+:placeholder="
+editMode 
+? 'Enter new password (optional)'
+: 'Password'
+"
+
+/>
 
             </div>
 
@@ -545,14 +704,29 @@ getPatients();
 
 
 
-        <button
-        class="save-btn"
-        @click="createPatient"
-        >
+<button
+class="save-btn"
+@click="createPatient"
+>
 
-            + Create Patient
+{{editMode ? "Update Patient" : "+ Create Patient"}}
 
-        </button>
+</button>
+
+
+<button
+
+v-if="editMode"
+
+class="cancel-btn"
+
+@click="clearForm"
+
+>
+
+Cancel
+
+</button>
 
 
 

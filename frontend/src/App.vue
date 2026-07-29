@@ -35,7 +35,10 @@ const toast = ref(null);
 
 
 // sound
-const audio = new Audio("/sound.mp3");
+const audio = new Audio();
+
+audio.src="/sound.mp3";
+audio.preload="auto";
 
 
 

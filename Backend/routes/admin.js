@@ -20,7 +20,9 @@ const {
     doctorPerformance,
     createPatient,
     doctorAvailabilityStatus,
-    requestReschedule
+    requestReschedule,
+    updateUserPassword,
+    updatePatient
 } = require("../controllers/adminController");
 
 // Dashboard Statistics
@@ -120,6 +122,20 @@ router.post(
 auth,
 role("admin"),
 createPatient
+);
+
+router.put(
+"/patient/:id",
+auth,
+role("admin"),
+updatePatient
+);
+
+router.put(
+"/users/password",
+auth,
+role("admin"),
+updateUserPassword
 );
 
 router.get(

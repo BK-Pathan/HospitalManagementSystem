@@ -8,7 +8,8 @@ register,
 login,
 logout,
 getProfile,
-updateProfile
+updateProfile,
+changePassword
 
 } = require('../controllers/authController');
 
@@ -43,6 +44,11 @@ getProfile
 );
 
 
+router.put(
+"/change-password",
+authMiddleware,
+changePassword
+);
 
 router.put(
 "/profile",

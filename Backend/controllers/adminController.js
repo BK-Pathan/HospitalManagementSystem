@@ -1625,3 +1625,296 @@ message:error.message
 
 };
 
+
+
+// Update User Password (Admin)
+exports.updateUserPassword = async(req,res)=>{
+
+try{
+
+
+const {userId,password}=req.body;
+
+
+
+if(!userId || !password){
+
+return res.status(400).json({
+
+message:"User id and password required"
+
+});
+
+}
+
+
+
+// Password validation
+
+if(password.length < 8){
+
+return res.status(400).json({
+
+message:"Password must be at least 8 characters"
+
+});
+
+}
+
+
+
+
+// Hash new password
+
+const hashedPassword = await bcrypt.hash(
+password,
+10
+);
+
+
+
+
+// Update
+
+const user = await User.findByIdAndUpdate(
+
+userId,
+
+{
+password:hashedPassword
+},
+
+{
+new:true
+}
+
+);
+
+
+
+if(!user){
+
+return res.status(404).json({
+
+message:"User not found"
+
+});
+
+}
+
+
+
+res.status(200).json({
+
+message:"Password updated successfully"
+
+});
+
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+
+res.status(500).json({
+
+message:"Server error"
+
+});
+
+
+}
+
+
+};
+
+// ======================
+// Update Patient
+// ======================
+
+exports.updatePatient = async(req,res)=>{
+
+try{
+
+
+const {
+name,
+email,
+password,
+age,
+gender,
+contactInformation,
+medicalHistory,
+DescribeYourProblem,
+insuranceDetails
+
+}=req.body;
+
+
+
+const patient = await Patient.findById(req.params.id);
+
+
+
+if(!patient){
+
+return res.status(404).json({
+message:"Patient not found"
+});
+
+}
+
+
+
+// Update Patient Profile
+
+patient.age = age ?? patient.age;
+
+patient.gender = gender ?? patient.gender;
+
+patient.contactInformation =
+contactInformation
+?
+xss(contactInformation)
+:
+patient.contactInformation;
+
+
+patient.medicalHistory =
+medicalHistory
+?
+xss(medicalHistory)
+:
+patient.medicalHistory;
+
+
+patient.DescribeYourProblem =
+DescribeYourProblem
+?
+xss(DescribeYourProblem)
+:
+patient.DescribeYourProblem;
+
+
+patient.insuranceDetails =
+insuranceDetails
+?
+xss(insuranceDetails)
+:
+patient.insuranceDetails;
+
+
+
+await patient.save();
+
+
+
+
+// Update User Account
+
+if(patient.user){
+
+
+const user = await User.findById(patient.user);
+
+
+if(user){
+
+
+if(name){
+
+user.name = xss(name);
+
+}
+
+
+
+if(email && email !== user.email){
+
+
+const existingUser = await User.findOne({
+
+email,
+
+_id:{
+$ne:user._id
+}
+
+});
+
+
+if(existingUser){
+
+return res.status(400).json({
+
+message:"Email already exists"
+
+});
+
+}
+
+
+user.email=email;
+
+
+}
+
+
+
+// Admin password change
+
+if(password){
+
+
+user.password =
+await bcrypt.hash(password,10);
+
+
+}
+
+
+
+await user.save();
+
+
+}
+
+
+}
+
+
+
+
+res.json({
+
+message:"Patient updated successfully",
+
+patient
+
+});
+
+
+
+}
+catch(error){
+
+
+console.log(
+"Update Patient Error:",
+error
+);
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+};
