@@ -1,6 +1,6 @@
 <script setup>
 
-import { watch, nextTick } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import Sidebar from "../components/Sidebar.vue";
@@ -10,20 +10,17 @@ import CommonFooter from "../components/Footer.vue";
 
 const route = useRoute();
 
+const content = ref(null);
+
 
 watch(
-    () => route.fullPath,
-    async () => {
+    () => route.path,
+    () => {
 
-        await nextTick();
+        if(content.value){
 
-        const content = document.querySelector(".content");
+            content.value.scrollTop = 0;
 
-        if(content){
-            content.scrollTo({
-                top:0,
-                behavior:"instant"
-            });
         }
 
     }
@@ -32,35 +29,41 @@ watch(
 
 </script>
 
-<template>
 
+<template>
 
 <div class="layout">
 
 
-<Sidebar/>
+    <!-- Sidebar -->
+
+    <Sidebar />
 
 
-<div class="main">
+    <!-- Main Area -->
+
+    <div class="main">
 
 
-<Navbar/>
+        <!-- Navbar -->
+
+        <Navbar />
 
 
-<div class="content">
+        <!-- Page Content -->
+
+<main class="content" ref="content">
+
+    <router-view />
+    <CommonFooter/>
+
+</main>
 
 
-<router-view/>
-<CommonFooter/>
+    </div>
+
 
 </div>
-
-
-</div>
-
-
-</div>
-
 
 </template>
 
@@ -71,66 +74,117 @@ watch(
 
 .layout{
 
-display:flex;
+    width:100%;
 
-min-height:100vh;
+    min-height:100vh;
 
-background:var(--bg);
+    display:flex;
+
+    background:#f8fafc;
+
+    overflow-x:hidden;
+
+}
+
+
+/* =====================
+MAIN
+===================== */
+
+.main{
+
+    margin-left:270px;
+
+    width:calc(100% - 270px);
+
+    min-height:100vh;
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
 
 }
 
 
 
+/* =====================
+CONTENT
+===================== */
+
+
+.content{
+
+    padding:30px;
+
+    flex:1;
+
+    overflow-y:auto;
+
+    background:#f8fafc;
+
+}
+
+
+
+/* =====================
+TABLET
+===================== */
+
+
+@media(max-width:1000px){
 
 
 .main{
 
-flex:1;
+    margin-left:220px;
 
-background:#f8fafc;
-
-margin-left:270px;
-
-min-height:100vh;
+    width:calc(100% - 220px);
 
 }
 
 
+.content{
+
+    padding:20px;
+
+}
+
+
+}
+
+
+
+/* =====================
+MOBILE
+===================== */
+
+
+@media(max-width:700px){
+
+
+.main{
+
+    margin-left:0;
+
+    width:100%;
+
+}
 
 
 
 .content{
 
-padding:30px;
-
-min-height:calc(100vh - 70px);
-
-background:#f8fafc;
-
-}
-
-
-
-
-
-@media(max-width:900px){
-
-
-.main{
-
-margin-left:220px;
-
-}
-
-
-.content{
-
-padding:20px;
+    padding:15px;
 
 }
 
 
 }
+
 
 
 </style>

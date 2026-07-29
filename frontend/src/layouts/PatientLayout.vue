@@ -1,33 +1,63 @@
 <script setup>
 
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
 import Sidebar from "../components/Sidebar.vue";
 import Navbar from "../components/Navbar.vue";
 import CommonFooter from "../components/Footer.vue";
+
+
+const route = useRoute();
+
+const content = ref(null);
+
+
+watch(
+    () => route.path,
+    () => {
+
+        if(content.value){
+
+            content.value.scrollTop = 0;
+
+        }
+
+    }
+);
+
+
 </script>
 
 
 <template>
 
-
 <div class="layout">
 
 
-    <Sidebar/>
+    <!-- Sidebar -->
 
+    <Sidebar />
+
+
+    <!-- Main Area -->
 
     <div class="main">
 
 
-        <Navbar/>
+        <!-- Navbar -->
+
+        <Navbar />
 
 
-        <div class="content">
+        <!-- Page Content -->
 
+<main class="content" ref="content">
 
-            <router-view/>
-<CommonFooter/>
+    <router-view />
+    <CommonFooter/>
 
-        </div>
+</main>
 
 
     </div>
@@ -35,9 +65,7 @@ import CommonFooter from "../components/Footer.vue";
 
 </div>
 
-
 </template>
-
 
 
 
@@ -46,13 +74,22 @@ import CommonFooter from "../components/Footer.vue";
 
 .layout{
 
+    width:100%;
+
     min-height:100vh;
+
+    display:flex;
+
+    background:#f8fafc;
+
+    overflow-x:hidden;
 
 }
 
 
-
-/* Sidebar ke liye space */
+/* =====================
+MAIN
+===================== */
 
 .main{
 
@@ -62,26 +99,43 @@ import CommonFooter from "../components/Footer.vue";
 
     min-height:100vh;
 
-    background:var(--bg);
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
 
 }
 
 
+
+/* =====================
+CONTENT
+===================== */
 
 
 .content{
 
     padding:30px;
 
-    min-height:calc(100vh - 80px);
+    flex:1;
+
+    overflow-y:auto;
+
+    background:#f8fafc;
 
 }
 
 
 
-/* Mobile */
+/* =====================
+TABLET
+===================== */
 
-@media(max-width:900px){
+
+@media(max-width:1000px){
 
 
 .main{
@@ -93,7 +147,44 @@ import CommonFooter from "../components/Footer.vue";
 }
 
 
+.content{
+
+    padding:20px;
+
 }
+
+
+}
+
+
+
+/* =====================
+MOBILE
+===================== */
+
+
+@media(max-width:700px){
+
+
+.main{
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+
+
+.content{
+
+    padding:15px;
+
+}
+
+
+}
+
 
 
 </style>

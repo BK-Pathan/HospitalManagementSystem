@@ -620,7 +620,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* ---------- Stat cards ---------- */
+/* ---------- Stat cards (Premium) ---------- */
 
 .cards {
   display: grid;
@@ -629,60 +629,94 @@ onMounted(() => {
 }
 
 .stat-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--white);
-  padding: 22px;
-  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  padding: 24px 22px;
+  border-radius: 20px;
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 20px -8px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  transition: transform .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s cubic-bezier(.22,1,.36,1);
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  opacity: 0;
+  transition: opacity .3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 20px 30px -12px rgba(15, 23, 42, 0.16);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
 }
 
 .stat-icon {
+  position: relative;
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(20, 184, 166, .12);
-  color: var(--primary);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.5),
+              0 6px 14px -6px rgba(0,0,0,.15);
+  transition: transform .3s ease;
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.08) rotate(-2deg);
 }
 
 .stat-icon svg {
   width: 24px;
   height: 24px;
+  position: relative;
+  z-index: 1;
 }
 
-.stat-icon--patients { background: rgba(20, 184, 166, .12); color: var(--primary); }
-.stat-icon--pending { background: rgba(234, 179, 8, .14); color: #ca8a04; }
-.stat-icon--confirmed { background: rgba(59, 130, 246, .14); color: #2563eb; }
-.stat-icon--completed { background: rgba(34, 197, 94, .14); color: #16a34a; }
-.stat-icon--cancelled { background: rgba(239, 68, 68, .14); color: #dc2626; }
-.stat-icon--rating { background: rgba(234, 179, 8, .14); color: #ca8a04; }
-.stat-icon--reviews { background: rgba(20, 184, 166, .12); color: var(--primary); }
+.stat-icon--patients  { background: linear-gradient(135deg, rgba(20,184,166,.18), rgba(20,184,166,.06)); color: var(--primary); }
+.stat-icon--pending   { background: linear-gradient(135deg, rgba(234,179,8,.20), rgba(234,179,8,.06)); color: #ca8a04; }
+.stat-icon--confirmed { background: linear-gradient(135deg, rgba(59,130,246,.20), rgba(59,130,246,.06)); color: #2563eb; }
+.stat-icon--completed { background: linear-gradient(135deg, rgba(34,197,94,.20), rgba(34,197,94,.06)); color: #16a34a; }
+.stat-icon--cancelled { background: linear-gradient(135deg, rgba(239,68,68,.20), rgba(239,68,68,.06)); color: #dc2626; }
+.stat-icon--rating    { background: linear-gradient(135deg, rgba(234,179,8,.20), rgba(234,179,8,.06)); color: #ca8a04; }
+.stat-icon--reviews   { background: linear-gradient(135deg, rgba(20,184,166,.18), rgba(20,184,166,.06)); color: var(--primary); }
 
 .stat-body h3 {
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .03em;
-  margin: 0 0 6px;
+  letter-spacing: .05em;
+  margin: 0 0 8px;
 }
 
 .stat-body h1 {
   color: var(--text);
-  font-size: 28px;
+  font-size: 29px;
+  font-weight: 700;
   margin: 0;
   line-height: 1;
+  letter-spacing: -.02em;
 }
 
 .stat-body h1 .unit {
@@ -858,26 +892,224 @@ onMounted(() => {
   height: 280px;
 }
 
-@media (max-width: 1100px) {
-  .analytics-grid {
-    grid-template-columns: 1fr;
+/* ==========================
+   Large Laptop
+========================== */
+@media (max-width: 1400px) {
+
+  .cards{
+    grid-template-columns: repeat(4,1fr);
+    gap:18px;
   }
+
+  .stat-card{
+    padding:20px;
+  }
+
 }
 
-@media (max-width: 1000px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
+/* ==========================
+   Laptop
+========================== */
+
+@media (max-width:1200px){
+
+  .cards{
+    grid-template-columns:repeat(3,1fr);
   }
+
+  .analytics-grid{
+    grid-template-columns:1fr;
+  }
+
+  .chart-wrap--bar,
+  .chart-wrap--doughnut{
+    height:320px;
+  }
+
 }
 
-@media (max-width: 600px) {
-  .cards {
-    grid-template-columns: 1fr;
+/* ==========================
+   Tablet
+========================== */
+
+@media (max-width:992px){
+
+  .page-title{
+    font-size:26px;
   }
 
-  .page-header {
-    align-items: flex-start;
+  .cards{
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
   }
+
+  .stat-card{
+    padding:18px;
+  }
+
+  .stat-body h1{
+    font-size:24px;
+  }
+
+  .table-card{
+    padding:10px 16px 20px;
+  }
+
+  .appointments-table{
+    min-width:700px;
+  }
+
+}
+
+/* ==========================
+   Mobile
+========================== */
+
+@media (max-width:768px){
+
+  .dashboard-page{
+    padding:0;
+  }
+
+  .page-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:24px;
+  }
+
+  .page-title{
+    font-size:24px;
+  }
+
+  .date-pill{
+    width:100%;
+    justify-content:center;
+  }
+
+  .cards{
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+  }
+
+  .stat-card{
+    padding:16px;
+    gap:12px;
+    border-radius: 16px;
+  }
+
+  .stat-body h3{
+    font-size:11px;
+  }
+
+  .stat-body h1{
+    font-size:22px;
+  }
+
+  .stat-icon{
+    width:42px;
+    height:42px;
+    border-radius: 12px;
+  }
+
+  .stat-icon svg{
+    width:20px;
+    height:20px;
+  }
+
+  .section-head{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:6px;
+  }
+
+  .chart-card{
+    padding:18px;
+  }
+
+  .chart-wrap--bar{
+    height:260px;
+  }
+
+  .chart-wrap--doughnut{
+    height:240px;
+  }
+
+}
+
+/* ==========================
+   Small Mobile
+========================== */
+
+@media (max-width:480px){
+
+  .page-title{
+    font-size:21px;
+  }
+
+  .eyebrow{
+    font-size:11px;
+  }
+
+  .date-pill{
+    font-size:13px;
+    padding:9px 14px;
+  }
+
+  .stat-card{
+    gap:14px;
+    padding:16px;
+    border-radius: 14px;
+  }
+
+  .stat-icon{
+    width:44px;
+    height:44px;
+  }
+
+  .stat-icon svg{
+    width:20px;
+    height:20px;
+  }
+
+  .stat-body h3{
+    font-size:12px;
+  }
+
+  .stat-body h1{
+    font-size:22px;
+  }
+
+  .table-card{
+    padding:8px 12px 16px;
+  }
+
+  .appointments-table td,
+  .appointments-table th{
+    padding:14px 10px;
+    font-size:13px;
+  }
+
+  .avatar{
+    width:30px;
+    height:30px;
+    font-size:11px;
+  }
+
+  .status{
+    font-size:11px;
+    padding:5px 10px;
+  }
+
+  .chart-wrap--bar{
+    height:230px;
+  }
+
+  .chart-wrap--doughnut{
+    height:220px;
+  }
+
 }
 
 </style>

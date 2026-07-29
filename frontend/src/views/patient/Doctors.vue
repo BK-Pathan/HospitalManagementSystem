@@ -230,604 +230,492 @@ const accentFor = (name) => {
 
 <style scoped>
 
-.page{
+.page {
+  --clinical-navy: #0F2A43;
+  --clinical-teal: #0D9488;
+  --clinical-teal-light: #CCFBF1;
+  --clinical-bg: #F4F7FA;
+  --clinical-surface: #FFFFFF;
+  --clinical-border: #E2E8F0;
+  --clinical-text: #1E293B;
+  --clinical-text-muted: #64748B;
+  --clinical-amber: #D97706;
+  --clinical-amber-light: #FEF3C7;
+  --clinical-green: #16A34A;
+  --clinical-green-light: #DCFCE7;
+  --clinical-blue: #2563EB;
+  --clinical-blue-light: #DBEAFE;
+  --clinical-purple: #7C3AED;
+  --clinical-purple-light: #EDE9FE;
+  --clinical-indigo: #4F46E5;
+  --clinical-indigo-light: #E0E7FF;
 
-    --clinical-navy:#0F2A43;
-    --clinical-teal:#0D9488;
-    --clinical-teal-light:#CCFBF1;
-    --clinical-bg:#F4F7FA;
-    --clinical-surface:#FFFFFF;
-    --clinical-border:#E2E8F0;
-    --clinical-text:#1E293B;
-    --clinical-text-muted:#64748B;
-    --clinical-amber:#D97706;
-    --clinical-amber-light:#FEF3C7;
-    --clinical-green:#16A34A;
-    --clinical-green-light:#DCFCE7;
-    --clinical-blue:#2563EB;
-    --clinical-blue-light:#DBEAFE;
-    --clinical-purple:#7C3AED;
-    --clinical-purple-light:#EDE9FE;
-    --clinical-indigo:#4F46E5;
-    --clinical-indigo-light:#E0E7FF;
-
-    min-height:100%;
-
-    padding:28px;
-
-    background:var(--clinical-bg);
-
-    font-family:-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
-
-    color:var(--clinical-text);
-
+  min-height: 100%;
+  padding: 20px 24px;
+  background: var(--clinical-bg);
+  font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+  color: var(--clinical-text);
 }
 
+/* ---------- Header ---------- */
 
-
-.header{
-
-    display:flex;
-
-    align-items:flex-end;
-
-    justify-content:space-between;
-
-    margin-bottom:26px;
-
-    gap:16px;
-
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-
-.eyebrow{
-
-    font-size:12px;
-
-    font-weight:700;
-
-    letter-spacing:.08em;
-
-    text-transform:uppercase;
-
-    color:var(--clinical-teal);
-
-    margin:0 0 6px;
-
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--clinical-teal);
+  margin: 0 0 6px;
 }
 
-
-.header h2{
-
-    color:var(--clinical-navy);
-
-    font-size:28px;
-
-    font-weight:700;
-
-    margin:0;
-
+.header h2 {
+  color: var(--clinical-navy);
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -.01em;
 }
 
-
-
-.header .subtitle{
-
-    color:var(--clinical-text-muted);
-
-    margin-top:6px;
-
-    font-size:14px;
-
+.header .subtitle {
+  color: var(--clinical-text-muted);
+  margin-top: 6px;
+  font-size: 14px;
 }
 
-
-.count-badge{
-
-    font-size:13px;
-
-    font-weight:600;
-
-    color:var(--clinical-teal);
-
-    background:var(--clinical-teal-light);
-
-    padding:6px 14px;
-
-    border-radius:999px;
-
-    white-space:nowrap;
-
+.count-badge {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--clinical-teal);
+  background: var(--clinical-teal-light);
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
+/* ---------- Doctor grid ---------- */
 
-
-
-.doctor-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-
-    gap:20px;
-
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
 
+/* ---------- Doctor card (Premium) ---------- */
 
+.doctor-card {
+  --card-accent: var(--clinical-teal);
+  --card-accent-light: var(--clinical-teal-light);
 
-.doctor-card{
-
-    --card-accent:var(--clinical-teal);
-    --card-accent-light:var(--clinical-teal-light);
-
-    position:relative;
-
-    display:flex;
-
-    flex-direction:column;
-
-    background:var(--clinical-surface);
-
-    border:1px solid var(--clinical-border);
-
-    border-radius:18px;
-
-    padding:22px;
-
-    box-shadow:0 1px 3px rgba(15,42,67,.05);
-
-    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-
-    overflow:hidden;
-
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  border: 1px solid var(--clinical-border);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow:
+    0 1px 2px rgba(15, 42, 67, 0.04),
+    0 8px 20px -10px rgba(15, 42, 67, 0.08);
+  transition: transform .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s cubic-bezier(.22,1,.36,1),
+              border-color .3s ease;
+  overflow: hidden;
 }
 
-
-.doctor-card::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-
-    left:0;
-
-    right:0;
-
-    height:4px;
-
-    background:var(--card-accent);
-
+.doctor-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--card-accent), var(--card-accent));
 }
 
-
-.doctor-card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:0 16px 32px rgba(15,42,67,.12);
-
-    border-color:var(--card-accent);
-
+.doctor-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 1px 2px rgba(15, 42, 67, 0.04),
+    0 20px 34px -14px rgba(15, 42, 67, 0.18);
+  border-color: var(--card-accent);
 }
 
+.accent--teal   { --card-accent: var(--clinical-teal);   --card-accent-light: var(--clinical-teal-light); }
+.accent--blue   { --card-accent: var(--clinical-blue);   --card-accent-light: var(--clinical-blue-light); }
+.accent--purple { --card-accent: var(--clinical-purple); --card-accent-light: var(--clinical-purple-light); }
+.accent--indigo { --card-accent: var(--clinical-indigo); --card-accent-light: var(--clinical-indigo-light); }
+.accent--amber  { --card-accent: var(--clinical-amber);  --card-accent-light: var(--clinical-amber-light); }
+.accent--green  { --card-accent: var(--clinical-green);  --card-accent-light: var(--clinical-green-light); }
 
-.accent--teal{ --card-accent:var(--clinical-teal); --card-accent-light:var(--clinical-teal-light); }
-.accent--blue{ --card-accent:var(--clinical-blue); --card-accent-light:var(--clinical-blue-light); }
-.accent--purple{ --card-accent:var(--clinical-purple); --card-accent-light:var(--clinical-purple-light); }
-.accent--indigo{ --card-accent:var(--clinical-indigo); --card-accent-light:var(--clinical-indigo-light); }
-.accent--amber{ --card-accent:var(--clinical-amber); --card-accent-light:var(--clinical-amber-light); }
-.accent--green{ --card-accent:var(--clinical-green); --card-accent-light:var(--clinical-green-light); }
-
-
-
-.card-top{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:14px;
-
-    margin-bottom:14px;
-
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
-
-.avatar{
-
-    flex-shrink:0;
-
-    width:52px;
-
-    height:52px;
-
-    border-radius:14px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:var(--card-accent);
-
-    color:#fff;
-
-    font-size:16px;
-
-    font-weight:700;
-
-    letter-spacing:.02em;
-
+.avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  box-shadow: 0 6px 14px -4px color-mix(in srgb, var(--card-accent) 60%, transparent);
 }
 
-
-
-.doctor-identity{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:6px;
-
-    min-width:0;
-
+.doctor-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
-
-.doctor-name{
-
-    font-size:16px;
-
-    font-weight:700;
-
-    color:var(--clinical-navy);
-
-    margin:0;
-
-    white-space:nowrap;
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
+.doctor-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--clinical-navy);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-
-.dept-pill{
-
-    display:inline-block;
-
-    width:fit-content;
-
-    padding:3px 10px;
-
-    border-radius:999px;
-
-    background:var(--card-accent-light);
-
-    color:var(--card-accent);
-
-    font-weight:700;
-
-    font-size:11px;
-
-    text-transform:uppercase;
-
-    letter-spacing:.03em;
-
+.dept-pill {
+  display: inline-block;
+  width: fit-content;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--card-accent-light);
+  color: var(--card-accent);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
 }
 
-
-.specialties{
-
-    color:var(--clinical-text-muted);
-
-    font-size:13px;
-
-    margin:0 0 14px;
-
-    line-height:1.5;
-
+.specialties {
+  color: var(--clinical-text-muted);
+  font-size: 13px;
+  margin: 0 0 14px;
+  line-height: 1.5;
 }
 
-
-
-.stat-row{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:6px;
-
-    margin-bottom:16px;
-
+.stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
 }
 
-
-.stat{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    font-size:13px;
-
-    color:var(--clinical-text);
-
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--clinical-text);
 }
 
-.stat-icon{
-
-    font-size:13px;
-
+.stat-icon {
+  font-size: 13px;
 }
 
-
-.card-divider{
-
-    height:1px;
-
-    background:var(--clinical-border);
-
-    margin-bottom:16px;
-
+.card-divider {
+  height: 1px;
+  background: var(--clinical-border);
+  margin-bottom: 16px;
 }
 
-
-.availability-block{
-
-    margin-bottom:18px;
-
-    flex-grow:1;
-
+.availability-block {
+  margin-bottom: 18px;
+  flex-grow: 1;
 }
 
-.availability-label{
-
-    font-size:11px;
-
-    font-weight:700;
-
-    text-transform:uppercase;
-
-    letter-spacing:.04em;
-
-    color:var(--clinical-text-muted);
-
-    margin:0 0 10px;
-
+.availability-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--clinical-text-muted);
+  margin: 0 0 10px;
 }
 
-
-.no-data{
-
-    color:var(--clinical-text-muted);
-
-    font-style:italic;
-
-    font-size:13px;
-
+.no-data {
+  color: var(--clinical-text-muted);
+  font-style: italic;
+  font-size: 13px;
 }
 
-
-
-
-.availability{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:8px;
-
+.availability {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-
-
-.time-slot{
-
-    background:var(--card-accent-light);
-
-    color:var(--card-accent);
-
-    padding:6px 10px;
-
-    border-radius:8px;
-
-    font-size:12px;
-
-    font-weight:600;
-
+.time-slot {
+  background: var(--card-accent-light);
+  color: var(--card-accent);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-
-.time-slot__day{
-
-    font-weight:700;
-
-    margin-right:5px;
-
+.time-slot__day {
+  font-weight: 700;
+  margin-right: 5px;
 }
 
-
-.more-slots{
-
-    display:flex;
-
-    align-items:center;
-
-    padding:6px 10px;
-
-    border-radius:8px;
-
-    border:1px dashed var(--clinical-border);
-
-    color:var(--clinical-text-muted);
-
-    font-size:12px;
-
-    font-weight:600;
-
+.more-slots {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--clinical-border);
+  color: var(--clinical-text-muted);
+  font-size: 12px;
+  font-weight: 600;
 }
 
+/* ---------- Action buttons (Premium) ---------- */
 
-
-.action-buttons{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:8px;
-
-    margin-top:auto;
-
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
 }
-
 
 .book-btn,
-.profile-btn{
-
-    padding:11px 16px;
-
-    border:none;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    font-weight:700;
-
-    font-size:13px;
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:8px;
-
-    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-
+.profile-btn {
+  padding: 11px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform .18s cubic-bezier(.22,1,.36,1),
+              box-shadow .18s ease,
+              filter .18s ease,
+              background .18s ease;
 }
-
 
 .book-btn svg,
-.profile-btn svg{
-
-    width:15px;
-
-    height:15px;
-
+.profile-btn svg {
+  width: 15px;
+  height: 15px;
 }
 
-
-
-.book-btn{
-
-    color:white;
-
-    background:var(--card-accent);
-
+.book-btn {
+  color: white;
+  background: var(--card-accent);
+  box-shadow: 0 6px 14px -4px color-mix(in srgb, var(--card-accent) 50%, transparent);
 }
 
-
-.profile-btn{
-
-    background:var(--clinical-surface);
-
-    color:var(--clinical-navy);
-
-    border:1px solid var(--clinical-border);
-
+.profile-btn {
+  background: var(--clinical-surface);
+  color: var(--clinical-navy);
+  border: 1px solid var(--clinical-border);
 }
-
-
 
 .book-btn:hover,
-.profile-btn:hover{
+.profile-btn:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+  box-shadow: 0 10px 20px -8px rgba(15, 42, 67, .18);
+}
 
-    transform:translateY(-2px);
+.book-btn:active,
+.profile-btn:active {
+  transform: translateY(-1px);
+}
 
-    box-shadow:0 8px 16px rgba(15,42,67,.12);
+/* ---------- Empty state ---------- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 70px 20px;
+  color: var(--clinical-text-muted);
+  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  border: 1px solid var(--clinical-border);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(15, 42, 67, 0.04),
+    0 8px 20px -10px rgba(15, 42, 67, 0.08);
+}
+
+.empty-state svg {
+  width: 36px;
+  height: 36px;
+  opacity: .6;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ==========================
+   Large Laptop
+========================== */
+@media (max-width: 1400px) {
+
+  .page {
+    padding: 20px 22px;
+  }
 
 }
 
+/* ==========================
+   Laptop
+========================== */
+@media (max-width: 1200px) {
 
-.empty-state{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:12px;
-
-    padding:70px 20px;
-
-    color:var(--clinical-text-muted);
-
-    background:var(--clinical-surface);
-
-    border:1px solid var(--clinical-border);
-
-    border-radius:18px;
+  .doctor-grid {
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  }
 
 }
 
+/* ==========================
+   Tablet
+========================== */
+@media (max-width: 992px) {
 
-.empty-state svg{
+  .page {
+    padding: 18px;
+  }
 
-    width:36px;
+  .header h2 {
+    font-size: 23px;
+  }
 
-    height:36px;
-
-    opacity:.6;
-
-}
-
-
-.empty-state p{
-
-    margin:0;
-
-    font-size:14px;
-
-}
-
-
-@media(max-width:640px){
-
-    .page{
-        padding:16px;
-    }
-
-    .header{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-    }
-
-    .doctor-grid{
-
-        grid-template-columns:1fr;
-
-    }
+  .doctor-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
 
 }
 
+/* ==========================
+   Mobile
+========================== */
+@media (max-width: 768px) {
+
+  .page {
+    padding: 14px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .header h2 {
+    font-size: 21px;
+  }
+
+  .doctor-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .doctor-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .avatar {
+    width: 46px;
+    height: 46px;
+    font-size: 14px;
+  }
+
+  .doctor-name {
+    font-size: 15px;
+  }
+
+}
+
+/* ==========================
+   Small Mobile
+========================== */
+@media (max-width: 480px) {
+
+  .page {
+    padding: 10px;
+  }
+
+  .header h2 {
+    font-size: 19px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+  }
+
+  .count-badge {
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+
+  .doctor-card {
+    padding: 14px;
+  }
+
+  .card-top {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .specialties {
+    font-size: 12.5px;
+  }
+
+  .time-slot,
+  .more-slots {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  .book-btn,
+  .profile-btn {
+    padding: 10px 14px;
+    font-size: 12.5px;
+  }
+
+}
 
 </style>

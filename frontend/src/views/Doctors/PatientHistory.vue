@@ -505,8 +505,8 @@ View Prescription
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: transform .15s ease;
+  box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.08);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 
 .back-btn svg {
@@ -515,7 +515,8 @@ View Prescription
 }
 
 .back-btn:hover {
-  transform: translateX(-2px);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 10px -3px rgba(15, 23, 42, 0.12);
 }
 
 .eyebrow {
@@ -531,9 +532,10 @@ View Prescription
   font-size: 30px;
   color: var(--text);
   margin: 0;
+  letter-spacing: -.01em;
 }
 
-/* ---------- Stat cards ---------- */
+/* ---------- Stat cards (Premium) ---------- */
 
 .stats {
   display: grid;
@@ -543,19 +545,43 @@ View Prescription
 }
 
 .card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--white);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
   padding: 22px;
   border-radius: 18px;
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  transition: transform .25s ease;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 20px -8px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  transition: transform .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s cubic-bezier(.22,1,.36,1);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  opacity: 0;
+  transition: opacity .3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 16px 28px -10px rgba(15, 23, 42, 0.16);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .card-icon {
@@ -566,12 +592,13 @@ View Prescription
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(20, 184, 166, .12);
+  background: linear-gradient(135deg, rgba(20,184,166,.18), rgba(20,184,166,.06));
   color: var(--primary);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.5);
 }
 
 .card-icon--muted {
-  background: rgba(100, 116, 139, .12);
+  background: linear-gradient(135deg, rgba(100,116,139,.18), rgba(100,116,139,.06));
   color: var(--muted);
 }
 
@@ -592,8 +619,10 @@ View Prescription
 .card h1 {
   color: var(--text);
   font-size: 28px;
+  font-weight: 700;
   margin: 0;
   line-height: 1;
+  letter-spacing: -.02em;
 }
 
 .card-value {
@@ -617,6 +646,8 @@ View Prescription
   justify-content: space-between;
   margin-top: 34px;
   margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .section-title {
@@ -631,13 +662,15 @@ View Prescription
   font-weight: 500;
 }
 
-/* ---------- Table card ---------- */
+/* ---------- Table card (Premium) ---------- */
 
 .table-card {
-  background: var(--white);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
   padding: 10px 24px 24px;
-  border-radius: 18px;
-  box-shadow: var(--shadow);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 20px -8px rgba(15, 23, 42, 0.08);
   border: 1px solid var(--border);
   overflow-x: auto;
 }
@@ -651,12 +684,13 @@ View Prescription
   color: var(--muted);
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .05em;
   font-weight: 700;
   text-align: left;
   padding: 16px 12px;
   border-bottom: 1px solid var(--border);
   background: transparent;
+  white-space: nowrap;
 }
 
 .history-table td {
@@ -665,6 +699,10 @@ View Prescription
   border-bottom: 1px solid var(--border);
   font-size: 14px;
   vertical-align: middle;
+}
+
+.history-table tbody tr {
+  transition: background .2s ease;
 }
 
 .history-table tbody tr:last-child td {
@@ -677,6 +715,7 @@ View Prescription
 
 .muted-cell {
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .patient-cell {
@@ -684,12 +723,13 @@ View Prescription
   align-items: center;
   gap: 10px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .avatar {
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -698,11 +738,15 @@ View Prescription
   color: #fff;
   font-size: 12px;
   font-weight: 700;
+  box-shadow: 0 4px 10px -3px rgba(20, 184, 166, .5);
 }
 
 .avatar--muted {
   background: linear-gradient(135deg, #94a3b8, #64748b);
+  box-shadow: 0 4px 10px -3px rgba(100, 116, 139, .4);
 }
+
+/* ---------- Status badges ---------- */
 
 .status {
   display: inline-block;
@@ -713,14 +757,15 @@ View Prescription
   text-transform: capitalize;
   background: rgba(20, 184, 166, .15);
   color: var(--primary);
+  white-space: nowrap;
 }
 
-.status--pending { background: rgba(234, 179, 8, .15); color: #ca8a04; }
+.status--pending   { background: rgba(234, 179, 8, .15); color: #ca8a04; }
 .status--confirmed { background: rgba(37, 99, 235, .15); color: #2563eb; }
 .status--completed { background: rgba(34, 197, 94, .15); color: #16a34a; }
 .status--cancelled { background: rgba(239, 68, 68, .15); color: #dc2626; }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons (Premium) ---------- */
 
 .icon-btn {
   display: inline-flex;
@@ -732,7 +777,10 @@ View Prescription
   cursor: pointer;
   font-weight: 600;
   font-size: 13px;
-  transition: transform .15s ease, box-shadow .15s ease;
+  white-space: nowrap;
+  transition: transform .18s cubic-bezier(.22,1,.36,1),
+              box-shadow .18s ease,
+              filter .18s ease;
 }
 
 .icon-btn svg {
@@ -741,13 +789,14 @@ View Prescription
 }
 
 .icon-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 18px -6px rgba(0, 0, 0, .2);
 }
 
 .primary-btn {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
+  box-shadow: 0 4px 10px -3px rgba(20, 184, 166, .4);
 }
 
 .secondary-btn {
@@ -779,10 +828,207 @@ View Prescription
   font-size: 14px;
 }
 
-@media (max-width: 700px) {
-  .stats {
-    grid-template-columns: 1fr;
+/* ==========================
+   Large Laptop
+========================== */
+@media (max-width: 1400px) {
+
+  .table-card {
+    padding: 10px 20px 20px;
   }
+   .history-table th,
+  .history-table td{
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+
+  .icon-btn{
+    padding:7px 10px;
+    font-size:12px;
+  }
+
+
+  .patient-cell{
+    gap:6px;
+  }
+
+
+}
+
+/* ==========================
+   Laptop
+========================== */
+@media (max-width: 1200px) {
+
+  .icon-btn {
+    padding: 8px 12px;
+    font-size: 12.5px;
+  }
+   .table-card {
+    overflow-x: auto;
+  }
+
+  .history-table {
+    min-width: 900px;
+  }
+
+}
+
+/* ==========================
+   Tablet
+========================== */
+@media (max-width: 992px) {
+
+  .page-title {
+    font-size: 26px;
+  }
+
+  .table-card {
+    padding: 10px 16px 18px;
+    border-radius: 16px;
+  }
+
+  .history-table {
+    min-width: 700px;
+  }
+
+}
+
+/* ==========================
+   Mobile
+========================== */
+@media (max-width: 768px) {
+
+  .history-page {
+    padding: 0;
+  }
+
+  .page-header {
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+ .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .card-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .card h3 {
+    font-size: 11px;
+  }
+
+  .card h1 {
+    font-size: 20px;
+  }
+
+  .card-value {
+    font-size: 14px;
+  }
+
+  .section-head {
+    margin-top: 26px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .table-card {
+    padding: 8px 12px 16px;
+    border-radius: 14px;
+  }
+
+  .history-table {
+    min-width: 640px;
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+
+  .status {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .icon-btn {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .icon-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+}
+
+/* ==========================
+   Small Mobile
+========================== */
+@media (max-width: 480px) {
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+  }
+
+  .back-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px;
+  }
+
+  .card h1 {
+    font-size: 22px;
+  }
+
+  .history-table {
+    min-width: 560px;
+  }
+
+  .icon-btn {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+
 }
 
 </style>
