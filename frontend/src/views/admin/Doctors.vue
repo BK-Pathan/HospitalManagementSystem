@@ -131,8 +131,7 @@ if(
 !startTime.value ||
 !endTime.value
 ){
-
-alert("Please fill availability");
+window.notify("Please fill availability");
 
 return;
 
@@ -226,8 +225,7 @@ data
 
 );
 
-
-alert("Doctor Updated");
+window.notify("Doctor Updated");
 
 
 
@@ -242,8 +240,7 @@ data
 
 );
 
-
-alert("Doctor Added");
+window.notify("Doctor Added");
 
 
 }
@@ -329,7 +326,7 @@ await api.delete(
 
 );
 
-alert("Doctor Deleted");
+window.notify("Doctor Deleted");
 
 getDoctors();
 

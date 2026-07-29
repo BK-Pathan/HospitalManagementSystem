@@ -100,7 +100,7 @@ catch(error){
 
 console.log(error);
 
-alert("Unable to update status");
+window.notify("Unable to update status");
 
 }
 
@@ -128,8 +128,7 @@ cancelReason:cancelReason.value
 );
 
 
-
-alert("Appointment cancelled successfully");
+window.notify("Appointment cancelled successfully");
 
 
 
@@ -152,7 +151,7 @@ error.response?.data || error.message
 );
 
 
-alert("Cancel failed");
+window.notify("Cancel failed");
 
 
 }

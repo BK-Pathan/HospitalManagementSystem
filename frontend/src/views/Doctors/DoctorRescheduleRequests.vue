@@ -151,7 +151,7 @@ await api.put(
 
 
 
-alert(
+window.notify(
 "Appointment approved"
 );
 
@@ -167,7 +167,7 @@ await getHistory();
 catch(error){
 
 
-alert(
+window.notify(
 
 error.response?.data?.message ||
 "Approve failed"
@@ -217,7 +217,7 @@ await api.put(
 
 
 
-alert(
+window.notify(
 "Request rejected"
 );
 
@@ -233,7 +233,7 @@ await getHistory();
 catch(error){
 
 
-alert(
+window.notify(
 
 error.response?.data?.message ||
 "Reject failed"

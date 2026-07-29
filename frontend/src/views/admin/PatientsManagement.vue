@@ -87,7 +87,7 @@ data
 
 
 
-alert("Patient Created Successfully");
+window.notify("Patient Created Successfully");
 
 
 

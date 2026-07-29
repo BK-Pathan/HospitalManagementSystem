@@ -216,7 +216,7 @@ patient.value
 if(!patient.value){
 
 
-alert(
+window.notify(
 "Patient loading..."
 );
 
@@ -281,7 +281,7 @@ res.data
 
 
 
-alert(
+window.notify(
 "Prescription saved successfully"
 );
 

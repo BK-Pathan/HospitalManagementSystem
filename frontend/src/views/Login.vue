@@ -98,27 +98,38 @@ const login = async()=>{
 
         // Redirect
 
-        if(userRole === "admin"){
+// Redirect
 
+if(userRole === "admin"){
 
-            router.push("/admin");
+    window.notify(
+        `Welcome Admin ,  ${user.name}`,
+        "success"
+    );
 
+    router.push("/admin");
 
-        }
-        else if(userRole === "doctor"){
+}
+else if(userRole === "doctor"){
 
+    window.notify(
+        `Welcome Dr ,  ${user.name}`  ,
+        "success"
+    );
 
-            router.push("/doctor");
+    router.push("/doctor");
 
+}
+else{
 
-        }
-        else{
+    window.notify(
+        `Welcome,  ${user.name}`,
+        "success"
+    );
 
+    router.push("/patient");
 
-            router.push("/patient");
-
-
-        }
+}
 
 
 
@@ -138,10 +149,12 @@ const login = async()=>{
         if(error.response){
 
 
+window.notify(
+    error.response.data.message || "Login failed",
+    "error"
+);
 
-            errorMessage.value =
-            error.response.data.message ||
-            "Login failed";
+errorMessage.value="";
 
 
 
@@ -149,8 +162,10 @@ const login = async()=>{
         else{
 
 
-            errorMessage.value =
-            "Backend server not reachable";
+           window.notify(
+        "Backend server not reachable",
+        "error"
+    );
 
 
         }

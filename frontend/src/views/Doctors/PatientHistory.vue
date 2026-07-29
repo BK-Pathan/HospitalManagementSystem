@@ -70,7 +70,7 @@ console.log(error);
 
 if(error.response?.status === 403){
 
-alert(
+window.notify(
 error.response.data.message
 );
 
@@ -82,7 +82,7 @@ router.back();
 
 if(error.response?.status === 400){
 
-alert(
+window.notify(
 "Invalid patient id"
 );
 

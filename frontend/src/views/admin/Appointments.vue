@@ -157,8 +157,7 @@ reason
 );
 
 
-
-alert("Appointment cancelled");
+window.notify("Appointment cancelled");
 
 
 getAppointments();

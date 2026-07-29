@@ -99,7 +99,7 @@ const uploadImage = async()=>{
 if(!selectedImage.value){
 
 
-alert(
+window.notify(
 "Please select image first"
 );
 
@@ -142,9 +142,7 @@ headers:{
 
 );
 
-
-
-alert(
+window.notify(
 res.data.message
 );
 
@@ -196,7 +194,7 @@ const res = await api.delete(
 
 
 
-alert(
+window.notify(
 res.data.message
 );
 
@@ -254,9 +252,7 @@ email:profile.value.email
 
 );
 
-
-
-alert(
+window.notify(
 res.data.message
 );
 

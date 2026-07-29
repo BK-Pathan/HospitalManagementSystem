@@ -75,7 +75,7 @@ const submitReschedule = async()=>{
 if(!selectedDate.value || !selectedTime.value){
 
 
-alert(
+window.notify(
 "Please select date and time"
 );
 
@@ -106,7 +106,7 @@ newTime:selectedTime.value
 
 
 
-alert(
+window.notify(
 "Reschedule request sent successfully"
 );
 
@@ -137,7 +137,7 @@ error.response?.data || error
 
 
 
-alert(
+window.notify(
 
 error.response?.data?.message ||
 "Slot already booked"
@@ -297,7 +297,7 @@ const openFeedback = (appointment)=>{
     if(appointment.status !== "completed"){
 
 
-        alert(
+      window.notify(
 
             "Please complete your appointment first before giving feedback"
 
@@ -371,7 +371,7 @@ const submitFeedback = async()=>{
 
 
 
-        alert(
+      window.notify  (
 
             "Feedback submitted successfully"
 

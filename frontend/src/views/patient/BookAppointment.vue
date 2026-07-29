@@ -81,7 +81,7 @@ appointmentDateTime:appointmentDateTime.value
 console.log(res.data);
 
 
-alert("Appointment booked successfully");
+window.notify("Appointment booked successfully");
 
 
 }catch(error){
@@ -90,7 +90,7 @@ alert("Appointment booked successfully");
 console.log(error.response?.data || error.message);
 
 
-alert(
+window.notify(
 error.response?.data?.message ||
 "Error booking appointment"
 );

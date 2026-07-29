@@ -80,7 +80,7 @@ const uploadImage = async()=>{
 
 if(!selectedImage.value){
 
-alert("Select image first");
+window.notify("Select image first");
 
 return;
 
@@ -121,7 +121,7 @@ headers:{
 
 
 
-alert(
+window.notify(
 "Profile image updated"
 );
 
@@ -165,7 +165,7 @@ await api.delete(
 
 
 
-alert(
+window.notify(
 "Image removed"
 );
 
@@ -202,7 +202,7 @@ const addAvailability = () => {
 
 if (!day.value || !startTime.value || !endTime.value) {
 
-alert("Fill all fields");
+window.notify("Fill all fields");
 
 return;
 
@@ -292,7 +292,7 @@ availability:availability.value,
 
 
 
-alert(
+window.notify(
 "Profile Saved"
 );
 

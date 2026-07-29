@@ -34,7 +34,7 @@ const handleImage = (event) => {
 const uploadImage = async () => {
 
   if (!selectedImage.value) {
-    alert("Select image first");
+    window.notify("Select image first");
     return;
   }
 
@@ -54,7 +54,7 @@ const uploadImage = async () => {
       }
     );
 
-    alert("Profile image updated");
+   window.notify ("Profile image updated");
 
     getProfile();
 
@@ -75,7 +75,7 @@ const removeImage = async () => {
 
     profileImage.value = "";
 
-    alert("Profile image removed");
+    window.notify("Profile image removed");
 
   } catch (error) {
 
@@ -101,7 +101,7 @@ const saveProfile = async () => {
 
     });
 
-    alert("Profile Updated Successfully");
+ window.notify   ("Profile Updated Successfully");
 
     profileExists.value = true;
 

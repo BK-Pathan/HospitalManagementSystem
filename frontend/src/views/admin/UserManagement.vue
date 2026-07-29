@@ -58,7 +58,7 @@ const changeRole = async(userId)=>{
         );
 
 
-        alert(res.data.message);
+        window.notify(res.data.message);
 
 
         getUsers();
@@ -69,7 +69,7 @@ const changeRole = async(userId)=>{
 
         console.log(error);
 
-        alert(
+window.notify(
             error.response?.data?.message || 
             "Role update failed"
         );

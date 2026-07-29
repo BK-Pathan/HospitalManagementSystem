@@ -3,7 +3,33 @@
 import {ref,onMounted,onUnmounted} from "vue";
 import socket from "./socket";
 import NotificationToast from "./components/NotificationToast.vue";
+import Toast from "./components/Toast.vue";
 
+
+const showToast = ref(false);
+const toastMessage = ref("");
+const toastType = ref("success");
+
+
+const notify=(message,type="success")=>{
+
+toastMessage.value = message;
+toastType.value = type;
+
+showToast.value=true;
+
+
+setTimeout(()=>{
+
+showToast.value=false;
+
+},3000);
+
+
+}
+
+
+window.notify = notify;
 
 const toast = ref(null);
 
@@ -165,6 +191,14 @@ handleNotification
 
 
 <router-view/>
+
+
+
+<Toast
+:show="showToast"
+:message="toastMessage"
+:type="toastType"
+/>
 
 
 <NotificationToast

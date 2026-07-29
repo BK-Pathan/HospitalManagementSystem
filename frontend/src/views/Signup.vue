@@ -45,11 +45,13 @@ const signup = async()=>{
         console.log(res.data);
 
 
+      window.notify(
+            "Signup successful",
+            "success"
+        );
 
-        alert("Signup successful");
 
-
-        router.push("/");
+        router.push("/login");
 
 
     }
@@ -74,8 +76,11 @@ const signup = async()=>{
             if(error.response.status === 429){
 
 
-                errorMessage.value =
-                error.response.data.message;
+                             window.notify(
+                    error.response.data.message,
+                    "warning"
+                );
+
 
 
             }
@@ -83,9 +88,11 @@ const signup = async()=>{
             else{
 
 
-                errorMessage.value =
-                error.response.data.message ||
-                "Signup failed";
+            
+                window.notify(
+                    error.response.data.message ||
+                    "Signup failed",
+                    "error")
 
 
             }
