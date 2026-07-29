@@ -2,8 +2,15 @@ const Doctor = require('../models/doctor');
 const Patient = require('../models/patient');
 const Appointment = require('../models/appointment');
 const Feedback = require('../models/feedback');
+// Prevent Regex Injection
+const escapeRegex = (text)=>{
 
+return text.replace(
+/[.*+?^${}()|[\]\\]/g,
+"\\$&"
+);
 
+};
 exports.dashboardStats = async(req,res)=>{
 
 try{
@@ -223,14 +230,19 @@ message:error.message
 // ======================
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
+const xss = require("xss");
 
+
+// ======================
+// Create Doctor
+// ======================
 
 exports.createDoctor = async(req,res)=>{
 
 try{
 
 
-const {
+let {
 name,
 email,
 password,
@@ -244,24 +256,145 @@ availability
 
 
 
-// Check email already exists
+// ======================
+// Required Fields
+// ======================
 
-const existingUser = await User.findOne({
-    email
-});
-
-
-if(existingUser){
+if(
+!name ||
+!email ||
+!password
+){
 
 return res.status(400).json({
-message:"Email already exists"
+
+message:"Name, email and password are required"
+
 });
 
 }
 
 
 
-// Create login user
+// ======================
+// XSS Sanitize
+// ======================
+
+name = xss(name.trim());
+
+email = email.trim().toLowerCase();
+
+department = department 
+? xss(department)
+: "";
+
+qualifications =
+qualifications
+? xss(qualifications)
+: "";
+
+contactInformation =
+contactInformation
+? xss(contactInformation)
+: "";
+
+
+
+if(Array.isArray(specialties)){
+
+specialties =
+specialties.map(item=>xss(item));
+
+}else{
+
+specialties=[];
+
+}
+
+
+
+
+// ======================
+// Email Validation
+// ======================
+
+if(!validator.isEmail(email)){
+
+
+return res.status(400).json({
+
+message:"Invalid email format"
+
+});
+
+}
+
+
+
+
+
+// ======================
+// Password Security
+// ======================
+
+if(password.length < 8){
+
+return res.status(400).json({
+
+message:"Password must be at least 8 characters"
+
+});
+
+}
+
+
+
+const strongPassword =
+/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+
+
+
+if(!strongPassword.test(password)){
+
+
+return res.status(400).json({
+
+message:
+"Password must contain uppercase, lowercase, number and special character"
+
+});
+
+}
+
+
+
+
+// ======================
+// Existing Email
+// ======================
+
+const existingUser =
+await User.findOne({
+email
+});
+
+
+if(existingUser){
+
+return res.status(400).json({
+
+message:"Email already exists"
+
+});
+
+}
+
+
+
+
+// ======================
+// Create Login User
+// ======================
 
 const user = await User.create({
 
@@ -269,7 +402,8 @@ name,
 
 email,
 
-password:await bcrypt.hash(password,10),
+password:
+await bcrypt.hash(password,12),
 
 role:"doctor"
 
@@ -278,7 +412,11 @@ role:"doctor"
 
 
 
-// Create doctor profile
+
+
+// ======================
+// Create Doctor Profile
+// ======================
 
 const doctor = await Doctor.create({
 
@@ -303,6 +441,7 @@ availability
 
 
 
+
 res.status(201).json({
 
 message:"Doctor created successfully",
@@ -312,11 +451,27 @@ doctor
 });
 
 
+
 }
 catch(error){
 
 
-console.log(error);
+console.log(
+"Create Doctor Error:",
+error
+);
+
+
+if(error.code===11000){
+
+return res.status(400).json({
+
+message:"Email already exists"
+
+});
+
+}
+
 
 
 res.status(500).json({
@@ -370,14 +525,14 @@ message:"Doctor not found"
 
 // Update Doctor Profile
 
-doctor.name = name || doctor.name;
-doctor.department = department || doctor.department;
+doctor.name = name ? xss(name) : doctor.name;
+doctor.department = department ? xss(department) : doctor.department;
 
 doctor.specialties =
-specialties || doctor.specialties;
+specialties ? xss(specialties) :doctor.specialties;
 
 doctor.qualifications =
-qualifications || doctor.qualifications;
+qualifications ? xss(qualifications) : doctor.qualifications;
 
 doctor.experience =
 experience || doctor.experience;
@@ -531,7 +686,12 @@ exports.getAllDoctors = async (req, res) => {
 try {
 
 
-const search = req.query.search || "";
+let search = req.query.search || "";
+
+
+// Regex Injection Protection
+search = escapeRegex(search.trim());
+
 
 
 // Pagination
@@ -544,9 +704,17 @@ const skip = (page - 1) * limit;
 
 
 
-const filter = {
 
-$or: [
+let filter = {};
+
+
+// Agar search hai tab filter lagao
+
+if(search){
+
+filter = {
+
+$or:[
 
 {
 name:{
@@ -556,23 +724,37 @@ $options:"i"
 },
 
 {
+department:{
+$regex:search,
+$options:"i"
+}
+},
+
+
+{
 specialties:{
 $regex:search,
 $options:"i"
 }
 }
 
+
 ]
 
 };
 
+}
 
 
-// Doctors
+
 
 const doctors = await Doctor.find(filter)
-// const doctors = await Doctor.find(filter)
-.populate("user","email")
+
+.populate(
+"user",
+"email"
+)
+
 .sort({
 experience:-1
 })
@@ -583,7 +765,6 @@ experience:-1
 
 
 
-// Total doctors count
 
 const total = await Doctor.countDocuments(filter);
 
@@ -597,13 +778,21 @@ total,
 
 currentPage:page,
 
-totalPages:Math.ceil(total / limit)
+totalPages:
+Math.ceil(total / limit)
 
 });
 
 
 
-}catch(error){
+}
+catch(error){
+
+
+console.log(
+"Get Doctors Error:",
+error
+);
 
 
 res.status(500).json({
@@ -618,39 +807,95 @@ message:error.message
 };
 
 
-
 // ======================
 // View All Patients
 // ======================
 
-exports.getAllPatients = async (req, res) => {
-  try {
-    const search = req.query.search || "";
+exports.getAllPatients = async(req,res)=>{
 
-    const patients = await Patient.find()
-      .populate({
-        path: "user",
-        match: {
-          role: "patient",
-          name: {
-            $regex: search,
-            $options: "i",
-          },
-        },
-        select: "name email role",
-      });
+try{
 
-    const filteredPatients = patients.filter(
-      (patient) => patient.user !== null
-    );
 
-    res.json(filteredPatients);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
+let search = req.query.search || "";
+
+
+// Regex Injection Protection
+
+search = escapeRegex(search.trim());
+
+
+
+let matchQuery = {
+
+role:"patient"
+
 };
+
+
+
+if(search){
+
+matchQuery.name = {
+
+$regex:search,
+
+$options:"i"
+
+};
+
+}
+
+
+
+
+const patients = await Patient.find()
+
+.populate({
+
+path:"user",
+
+match:matchQuery,
+
+select:"name email role"
+
+});
+
+
+
+
+const filteredPatients = patients.filter(
+
+(patient)=>patient.user !== null
+
+);
+
+
+
+res.json(filteredPatients);
+
+
+
+}
+catch(error){
+
+
+console.log(
+"Get Patients Error:",
+error
+);
+
+
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+
+}
+
+};;
 
 
 
@@ -974,13 +1219,20 @@ message:error.message
 // ======================
 // Create Patient By Admin
 // ======================
+const validator = require("validator");
+// const bcrypt = require("bcrypt");
+
+// ======================
+// Create Patient By Admin
+// ======================
 
 exports.createPatient = async(req,res)=>{
 
 try{
 
 
-const {
+let {
+
 name,
 email,
 password,
@@ -990,15 +1242,149 @@ contactInformation,
 medicalHistory,
 DescribeYourProblem,
 insuranceDetails
+
 }=req.body;
 
 
 
-// check existing user
 
-const existingUser = await User.findOne({
-email
+
+// ======================
+// Required Fields
+// ======================
+
+if(
+!name ||
+!email ||
+!password
+){
+
+return res.status(400).json({
+
+message:"Name, email and password are required"
+
 });
+
+}
+
+
+
+
+
+// ======================
+// XSS Sanitize
+// ======================
+
+name = xss(name.trim());
+
+email = email.trim().toLowerCase();
+
+
+
+contactInformation =
+contactInformation
+?
+xss(contactInformation)
+:"";
+
+
+
+medicalHistory =
+medicalHistory
+?
+xss(medicalHistory)
+:"";
+
+
+
+DescribeYourProblem =
+DescribeYourProblem
+?
+xss(DescribeYourProblem)
+:"";
+
+
+
+insuranceDetails =
+insuranceDetails
+?
+xss(insuranceDetails)
+:"";
+
+
+
+
+
+
+
+// ======================
+// Email Validation
+// ======================
+
+if(!validator.isEmail(email)){
+
+
+return res.status(400).json({
+
+message:"Invalid email format"
+
+});
+
+}
+
+
+
+
+
+// ======================
+// Password Security
+// ======================
+
+if(password.length < 8){
+
+return res.status(400).json({
+
+message:"Password must be at least 8 characters"
+
+});
+
+}
+
+
+
+
+const strongPassword =
+/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+
+
+
+if(!strongPassword.test(password)){
+
+
+return res.status(400).json({
+
+message:
+"Password must contain uppercase, lowercase, number and special character"
+
+});
+
+}
+
+
+
+
+
+// ======================
+// Check Existing User
+// ======================
+
+const existingUser =
+await User.findOne({
+
+email
+
+});
+
 
 
 if(existingUser){
@@ -1013,7 +1399,11 @@ message:"Email already exists"
 
 
 
-// create user
+
+
+// ======================
+// Create User
+// ======================
 
 const user = await User.create({
 
@@ -1021,7 +1411,8 @@ name,
 
 email,
 
-password:await bcrypt.hash(password,10),
+password:
+await bcrypt.hash(password,12),
 
 role:"patient"
 
@@ -1030,7 +1421,13 @@ role:"patient"
 
 
 
-// create patient profile
+
+
+
+// ======================
+// Create Patient Profile
+// ======================
+
 
 const patient = await Patient.create({
 
@@ -1055,6 +1452,9 @@ profilecompleted:true
 
 
 
+
+
+
 res.status(201).json({
 
 message:"Patient created successfully",
@@ -1064,11 +1464,28 @@ patient
 });
 
 
+
 }
 catch(error){
 
 
-console.log(error);
+console.log(
+"Create Patient Error:",
+error
+);
+
+
+
+if(error.code===11000){
+
+return res.status(400).json({
+
+message:"Email already exists"
+
+});
+
+}
+
 
 
 res.status(500).json({

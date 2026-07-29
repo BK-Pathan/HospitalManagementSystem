@@ -7,29 +7,124 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 
 
-// Create HTTP Server
+// ==============================
+// Login Rate Limiter
+// ==============================
+const loginLimiter = rateLimit({
+
+    windowMs: 30 * 60 * 1000, // 30 minutes
+
+    max:3,
+
+
+    message:{
+        message:"Too many login attempts. Try again later."
+    },
+
+
+    handler:(req,res)=>{
+
+
+        const retryAfter =
+        Math.ceil(
+            (req.rateLimit.resetTime - Date.now()) / 1000
+        );
+
+
+        res.setHeader(
+            "Retry-After",
+            retryAfter
+        );
+
+
+        res.status(429).json({
+
+            message:
+            `Account temporarily locked. Try again after ${Math.ceil(retryAfter / 60)} minutes.`
+
+        });
+
+
+    },
+
+
+    standardHeaders:true,
+
+    legacyHeaders:false,
+
+
+    skipSuccessfulRequests:true
+
+});
+
+// ==============================
+// Signup Rate Limiter
+// ==============================
+
+
+const signupLimiter = rateLimit({
+
+    windowMs: 25 * 60 * 1000, // 15 minutes
+
+
+    max: 3,
+
+
+    handler:(req,res)=>{
+
+
+        const retryAfter =
+        Math.ceil(
+            (req.rateLimit.resetTime - Date.now()) / 1000
+        );
+
+
+        res.status(429).json({
+
+            message:
+            `Too many signup attempts. Try again after ${Math.ceil(retryAfter / 60)} minutes.`
+
+        });
+
+
+    },
+
+
+    standardHeaders:true,
+
+    legacyHeaders:false
+
+
+});
+
+// ==============================
+// HTTP SERVER
+// ==============================
+
 const server = http.createServer(app);
 
 
-// Socket.IO Setup
+// ==============================
+// SOCKET.IO
+// ==============================
+
 const io = new Server(server, {
 
-    cors: {
-        origin: "http://localhost:5173",
-        credentials: true
+    cors:{
+        origin:"http://localhost:5173",
+        credentials:true
     }
 
 });
 
 
-
-// Socket Connection
-
-io.on("connection", (socket) => {
+io.on("connection",(socket)=>{
 
 
     console.log(
@@ -40,8 +135,7 @@ io.on("connection", (socket) => {
 
     socket.on(
         "joinRoom",
-        (userId) => {
-
+        (userId)=>{
 
             socket.join(userId);
 
@@ -51,7 +145,6 @@ io.on("connection", (socket) => {
                 userId
             );
 
-
         }
     );
 
@@ -59,18 +152,24 @@ io.on("connection", (socket) => {
 });
 
 
-// Controllers ke liye access
 global.io = io;
 
-// Middleware
 
+
+// ==============================
+// MIDDLEWARE
+// ==============================
+
+app.use(helmet());
 app.use(express.json());
+
 
 app.use(express.static("public"));
 
+
 app.use(
     express.urlencoded({
-        extended: true
+        extended:true
     })
 );
 
@@ -88,12 +187,17 @@ app.use(cookieParser());
 
 
 
+// ==============================
+// ROUTES IMPORT
+// ==============================
 
-// Routes Import
 
+const authRouter = require("./routes/auth");
 
 const indexRoute = require("./routes/index");
 const patientRoutes = require("./routes/patients");
+
+const userRouter = require("./routes/user");
 
 const servicesRouter = require("./routes/services");
 const appointmentsRouter = require("./routes/appointments");
@@ -104,27 +208,19 @@ const contactRouter = require("./routes/contact");
 const facilitiesRouter = require("./routes/facilities");
 const newsRouter = require("./routes/news");
 
-
-const authRouter = require("./routes/auth");
-const userRouter = require("./routes/user");
-
-
 const adminRoutes = require("./routes/admin");
 
 const doctorRoutes = require("./routes/doctorRoutes");
 
 const prescriptionRoutes = require("./routes/prescriptionRoutes");
 
-
 const patientProfileRoutes = require("./routes/patientProfileRoutes");
 
 const publicRoutes = require("./routes/publicDoc");
 
-
 const feedbackRoutes = require("./routes/feedbackRoutes");
 
 const userRoutes = require("./routes/userProfileRoutes");
-
 
 const notificationRoutes = require("./routes/notificationRoutes");
 
@@ -134,42 +230,57 @@ const admissionRoutes=require("./routes/admissionRoutes");
 
 
 
-// Routes Setup
+
+// ==============================
+// ROUTES SETUP
+// ==============================
 
 
-app.use("/auth", authRouter);
+// Apply limiter ONLY on login
+
+app.use(
+    "/auth/login",
+    loginLimiter
+);
+
+
+// Signup Protection
+
+app.use(
+    "/auth/register",
+    signupLimiter
+);
+
+
+app.use(
+    "/auth",
+    authRouter
+);
+
 
 
 app.use("/users", userRouter);
 
 
-
 app.use("/", indexRoute);
-
 
 
 app.use("/services", servicesRouter);
 
 
-
 app.use("/appointments", appointmentsRouter);
-
 
 
 app.use("/about", aboutRouter);
 
 
-
 app.use("/contact", contactRouter);
-
 
 
 app.use("/facilities", facilitiesRouter);
 
 
-
 app.use("/news", newsRouter);
-
 
 
 app.use("/prescription", prescriptionRoutes);
@@ -177,9 +288,13 @@ app.use("/prescription", prescriptionRoutes);
 
 app.use("/api/rooms",roomRoutes);
 
+
 app.use("/api/beds",bedRoutes);
 
+
 app.use("/api/admissions",admissionRoutes);
+
+
 
 app.use("/users", userRoutes);
 
@@ -192,18 +307,12 @@ app.use(
 
 
 
-
-// Admin Routes
-
 app.use(
     "/admin",
     adminRoutes
 );
 
 
-
-
-// Doctor Routes
 
 app.use(
     "/doctor",
@@ -212,17 +321,12 @@ app.use(
 
 
 
-
-// Patient Profile Routes
-
 app.use(
     "/patient",
     patientProfileRoutes
 );
 
 
-
-// Patient Appointment Routes
 
 app.use(
     "/patient",
@@ -231,16 +335,12 @@ app.use(
 
 
 
-// Feedback Routes
-
 app.use(
     "/feedback",
     feedbackRoutes
 );
 
 
-
-// Public Access
 
 app.use(
     "/api",
@@ -250,21 +350,23 @@ app.use(
 
 
 
-
-// Database Connection
+// ==============================
+// DATABASE
+// ==============================
 
 connectDB();
 
 
 
 
-
-// Server Start
+// ==============================
+// SERVER START
+// ==============================
 
 const port = process.env.PORT || 3000;
 
 
-server.listen(port, () => {
+server.listen(port,()=>{
 
 
     console.log(

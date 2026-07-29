@@ -14,46 +14,105 @@ const password = ref("");
 const role = ref("patient");
 
 
+// Error Message
+const errorMessage = ref("");
+
+
+
 const signup = async()=>{
 
 
-try{
+    errorMessage.value = "";
 
 
-const res = await api.post("/auth/register",{
-
-name:name.value,
-email:email.value,
-password:password.value,
-role:role.value
-
-});
+    try{
 
 
-console.log(res.data);
+        const res = await api.post("/auth/register",{
+
+            name:name.value,
+
+            email:email.value,
+
+            password:password.value,
+
+            role:role.value
+
+        });
 
 
-alert("Signup successful");
+
+        console.log(res.data);
 
 
-router.push("/");
+
+        alert("Signup successful");
+
+
+        router.push("/");
+
+
+    }
+
+
+    catch(error){
+
+
+        console.log(
+            "FULL ERROR:",
+            error
+        );
+
+
+
+        if(error.response){
+
+
+
+            // Rate limit error
+
+            if(error.response.status === 429){
+
+
+                errorMessage.value =
+                error.response.data.message;
+
+
+            }
+
+            else{
+
+
+                errorMessage.value =
+                error.response.data.message ||
+                "Signup failed";
+
+
+            }
+
+
+
+        }
+
+        else{
+
+
+            errorMessage.value =
+            "Backend server not reachable";
+
+
+        }
+
+
+
+    }
 
 
 }
-catch(error){
 
-console.log(error.response.data);
-
-alert(error.response.data.message);
-
-}
-
-
-}
 
 
 </script>
-
 
 
 <template>
@@ -106,7 +165,8 @@ alert(error.response.data.message);
           <label>Email</label>
           <input
             v-model="email"
-            placeholder="Enter your email"
+            placeholder="abc@gmail.com"  
+
           />
         </div>
 
@@ -115,7 +175,7 @@ alert(error.response.data.message);
           <input
             type="password"
             v-model="password"
-            placeholder="Enter password"
+            placeholder="uppercase,lowercase,number"
           />
         </div>
 
@@ -125,9 +185,16 @@ alert(error.response.data.message);
           <select v-model="role">
             <option value="patient">Patient</option>
             <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
+            <!-- <option value="admin">Admin</option> -->
           </select>
         </div>
+
+        <p
+v-if="errorMessage"
+class="error-message"
+>
+{{ errorMessage }}
+</p>
 
         <button class="signup-btn" @click="signup">
           Create Account
@@ -995,6 +1062,28 @@ select{
 
 }
 
+
+}
+
+.error-message{
+
+    margin-bottom:20px;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+    border:1px solid #fecaca;
+
+    text-align:center;
+
+    font-weight:600;
+
+    font-size:14px;
 
 }
 

@@ -14,148 +14,150 @@ const password = ref("");
 const role = ref("patient");
 
 
+// Error Message
+const errorMessage = ref("");
+
+
 
 const login = async()=>{
 
 
-try{
+    // clear previous error
+    errorMessage.value = "";
 
 
-const res = await api.post("/auth/login",{
+    try{
 
-    email: email.value,
-    password: password.value,
-    role: role.value
 
-});
+        const res = await api.post("/auth/login",{
 
 
+            email: email.value,
 
-console.log(
-"LOGIN RESPONSE:",
-res.data
-);
+            password: password.value,
 
+            role: role.value
 
 
-const user = res.data.user;
+        });
 
-const userRole = user.role;
 
 
+        console.log(
+            "LOGIN RESPONSE:",
+            res.data
+        );
 
-// Save User Data
 
-localStorage.setItem(
-    "user",
-    JSON.stringify(user)
-);
 
+        const user = res.data.user;
 
 
-// Save Role
+        const userRole = user.role;
 
-localStorage.setItem(
-    "role",
-    userRole
-);
 
 
+        // Save User
 
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
 
 
-// =============================
-// SOCKET CONNECTION
-// =============================
 
+        // Save Role
 
-socket.connect();
+        localStorage.setItem(
+            "role",
+            userRole
+        );
 
 
 
-socket.emit(
-    "joinRoom",
-    user.id
-);
+        // Socket
 
+        socket.connect();
 
 
-console.log(
-"Socket Room Joined:",
-user.id
-);
 
+        socket.emit(
+            "joinRoom",
+            user.id
+        );
 
 
 
+        console.log(
+            "Socket Room Joined:",
+            user.id
+        );
 
 
-// Redirect According To Role
 
 
-if(userRole === "admin"){
+        // Redirect
 
+        if(userRole === "admin"){
 
-    router.push("/admin");
 
+            router.push("/admin");
 
-}
 
+        }
+        else if(userRole === "doctor"){
 
-else if(userRole === "doctor"){
 
+            router.push("/doctor");
 
-    router.push("/doctor");
 
+        }
+        else{
 
-}
 
+            router.push("/patient");
 
-else{
 
+        }
 
-    router.push("/patient");
 
 
-}
 
+    }
+    catch(error){
 
 
-}
-catch(error){
 
+        console.log(
+            "FULL ERROR:",
+            error
+        );
 
 
-console.log(
-"FULL ERROR:",
-error
-);
 
+        if(error.response){
 
 
 
-if(error.response){
+            errorMessage.value =
+            error.response.data.message ||
+            "Login failed";
 
 
-alert(
-error.response.data.message
-);
 
+        }
+        else{
 
-}
-else{
 
+            errorMessage.value =
+            "Backend server not reachable";
 
-alert(
-"Backend server not reachable"
-);
 
+        }
 
-}
 
 
-
-}
+    }
 
 
 
@@ -164,7 +166,6 @@ alert(
 
 
 </script>
-
 
 
 <template>
@@ -291,14 +292,21 @@ alert(
 
             </div>
 
+<p
+v-if="errorMessage"
+class="error-message"
+>
+{{ errorMessage }}
+</p>
 
 
+<button 
+class="login-btn"
+@click="login">
 
-            <button class="login-btn" @click="login">
+Login
 
-                Login
-
-            </button>
+</button>
 
 
 
@@ -1224,6 +1232,28 @@ select{
 }
 
 
+
+}
+
+.error-message{
+
+    margin-bottom:20px;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+    border:1px solid #fecaca;
+
+    text-align:center;
+
+    font-weight:600;
+
+    font-size:14px;
 
 }
 </style>

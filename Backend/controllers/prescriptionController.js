@@ -3,7 +3,8 @@ const Doctor = require("../models/doctor");
 const Patient = require("../models/patient");
 const Appointment = require("../models/appointment");
 const Notification = require("../models/notification");
-
+const xss = require("xss");
+const validator = require("validator");
 
 
 
@@ -33,13 +34,97 @@ message:"Doctor not found"
 
 
 
-const appointment = await Appointment.findById(
-req.body.appointment
-);
+
+const {
+appointment,
+medicines,
+instructions,
+notes
+
+}=req.body;
 
 
 
-if(!appointment){
+
+// ======================
+// Required Validation
+// ======================
+
+if(
+!appointment ||
+!medicines
+){
+
+return res.status(400).json({
+
+message:"Appointment and medicines are required"
+
+});
+
+}
+
+
+
+
+
+// ======================
+// Sanitize Input
+// ======================
+
+
+const cleanMedicines = Array.isArray(medicines)
+
+?
+
+medicines.map(item=>({
+
+name:xss(item.name || ""),
+
+dosage:xss(item.dosage || ""),
+
+duration:xss(item.duration || "")
+
+}))
+
+:
+
+[];
+
+
+
+
+const cleanInstructions =
+instructions
+?
+xss(instructions)
+:
+"";
+
+
+
+const cleanNotes =
+notes
+?
+xss(notes)
+:
+"";
+
+
+
+
+
+
+// ======================
+// Check Appointment
+// ======================
+
+
+const appointmentData =
+await Appointment.findById(appointment);
+
+
+
+if(!appointmentData){
 
 return res.status(404).json({
 
@@ -52,19 +137,43 @@ message:"Appointment not found"
 
 
 
+// ======================
+// Authorization Check
+// Doctor only own appointment
+// ======================
+
+
+if(
+appointmentData.doctor.toString()
+!== doctor._id.toString()
+
+){
+
+return res.status(403).json({
+
+message:"You cannot create prescription for this appointment"
+
+});
+
+}
+
+
+
+
+
 const prescription = await Prescription.create({
 
-patient:appointment.patient,
+patient:appointmentData.patient,
 
 doctor:doctor._id,
 
-appointment:appointment._id,
+appointment:appointmentData._id,
 
-medicines:req.body.medicines,
+medicines:cleanMedicines,
 
-instructions:req.body.instructions,
+instructions:cleanInstructions,
 
-notes:req.body.notes
+notes:cleanNotes
 
 });
 
@@ -72,13 +181,11 @@ notes:req.body.notes
 
 
 
-// ===============================
-// SEND NOTIFICATION TO PATIENT
-// ===============================
 
+// Notification
 
 const patient = await Patient.findById(
-appointment.patient
+appointmentData.patient
 )
 .populate("user");
 
@@ -89,24 +196,12 @@ doctor._id
 )
 .populate("user");
 
-console.log(
-"PATIENT:",
-patient
-);
-
-
-console.log(
-"DOCTOR:",
-doctorData
-);
 
 
 
-if(patient && patient.user && doctorData.user){
+if(patient?.user && doctorData?.user){
 
 
-
-// Save Notification
 
 await Notification.create({
 
@@ -114,7 +209,7 @@ user:patient.user._id,
 
 sender:req.user.id,
 
-appointment:appointment._id,
+appointment:appointmentData._id,
 
 type:"prescription",
 
@@ -123,23 +218,14 @@ title:"New Prescription Added",
 message:
 `Dr. ${doctorData.user.name} added a new prescription for you`,
 
-redirectUrl:
-"/patient/prescriptions"
+redirectUrl:"/patient/prescriptions"
 
 });
 
 
 
 
-
-// Real Time Notification
-
 if(global.io){
-
-console.log(
-"EMIT TO PATIENT ROOM:",
-patient.user._id.toString()
-);
 
 
 global.io
@@ -163,10 +249,13 @@ redirectUrl:"/patient/prescriptions"
 
 );
 
+
 }
 
 
 }
+
+
 
 
 
@@ -183,6 +272,7 @@ prescription
 }
 catch(error){
 
+
 console.log(
 "CREATE PRESCRIPTION ERROR:",
 error
@@ -194,6 +284,7 @@ res.status(500).json({
 message:error.message
 
 });
+
 
 }
 
@@ -341,9 +432,30 @@ exports.getPatientPrescriptions = async(req,res)=>{
 try{
 
 
+const doctor = await Doctor.findOne({
+
+user:req.user.id
+
+});
+
+
+if(!doctor){
+
+return res.status(404).json({
+
+message:"Doctor not found"
+
+});
+
+}
+
+
+
 const prescriptions = await Prescription.find({
 
-patient:req.params.patientId
+patient:req.params.patientId,
+
+doctor:doctor._id
 
 })
 
@@ -389,6 +501,7 @@ createdAt:-1
 res.json(prescriptions);
 
 
+
 }
 catch(error){
 
@@ -410,11 +523,32 @@ exports.getPatientAllPrescriptions = async(req,res)=>{
 
 try{
 
+
+const patient = await Patient.findOne({
+
+user:req.user.id
+
+});
+
+
+if(!patient){
+
+return res.status(404).json({
+
+message:"Patient not found"
+
+});
+
+}
+
+
+
 const prescriptions = await Prescription.find({
 
-patient:req.params.patientId
+patient:patient._id
 
 })
+
 
 .populate({
 
@@ -427,6 +561,7 @@ select:"name email"
 
 })
 
+
 .populate({
 
 path:"appointment",
@@ -435,6 +570,7 @@ select:"appointmentDateTime status"
 
 })
 
+
 .sort({
 
 createdAt:-1
@@ -442,7 +578,9 @@ createdAt:-1
 });
 
 
+
 res.json(prescriptions);
+
 
 
 }
@@ -455,5 +593,6 @@ message:error.message
 });
 
 }
+
 
 };

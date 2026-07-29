@@ -7,15 +7,24 @@ import api from "../../api/axios";
 
 const route = useRoute();
 const router = useRouter();
+
+
 const totalVisits = ref(0);
 
 const lastVisit = ref(null);
+
 
 const myAppointments = ref([]);
 
 const otherAppointments = ref([]);
 
+const previousPrescriptions = ref([]);
 
+
+
+// ============================
+// Get Patient History
+// ============================
 
 const getHistory = async()=>{
 
@@ -29,61 +38,79 @@ const res = await api.get(
 
 
 
-console.log(res.data);
+console.log(
+"Patient History:",
+res.data
+);
 
 
 
-myAppointments.value = res.data.myAppointments;
-
-
-otherAppointments.value = res.data.otherAppointments;
+myAppointments.value =
+res.data.myAppointments || [];
 
 
 
-}catch(error){
+otherAppointments.value =
+res.data.otherAppointments || [];
+
+
+
+previousPrescriptions.value =
+res.data.previousPrescriptions || [];
+
+
+
+}
+catch(error){
 
 
 console.log(error);
 
 
+
+if(error.response?.status === 403){
+
+alert(
+error.response.data.message
+);
+
+router.back();
+
 }
 
+
+
+if(error.response?.status === 400){
+
+alert(
+"Invalid patient id"
+);
+
+router.back();
+
+}
+
+
+
+}
 
 
 };
 
+
+
+
+
+// ============================
+// View Prescription
+// ============================
+
 const viewPrescription = (item)=>{
 
 
-console.log(
-"Selected Appointment For Prescription:",
-item
-);
-
-
-
-const patientId = item.patient?._id;
-
-
-
-console.log(
-"Patient ID:",
-patientId
-);
-
-
-
-if(!patientId){
-
-
-console.log(
-"Patient ID not found"
-);
-
-
-return;
-
-}
+const patientId =
+item.patient?._id ||
+route.params.patientId;
 
 
 
@@ -92,8 +119,17 @@ router.push(
 );
 
 
-
 };
+
+
+
+
+
+
+// ============================
+// Patient Stats
+// ============================
+
 
 const getPatientStats = async()=>{
 
@@ -105,13 +141,6 @@ const res = await api.get(
 
 `/doctor/patient-stats/${route.params.patientId}`
 
-);
-
-
-
-console.log(
-"Patient Stats:",
-res.data
 );
 
 
@@ -136,29 +165,51 @@ console.log(error);
 
 };
 
+
+
+
+
 onMounted(()=>{
 
+
 getHistory();
+
 getPatientStats();
+
 
 });
 
 
-// Display-only helper (no backend / data change)
 
-const initials = (name) => {
-  if (!name || name === "N/A") return "?";
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n) => n[0]?.toUpperCase())
-    .join("");
+
+
+// Avatar initials
+
+const initials = (name)=>{
+
+
+if(!name || name==="N/A")
+
+return "?";
+
+
+return name
+
+.split(" ")
+
+.filter(Boolean)
+
+.slice(0,2)
+
+.map(n=>n[0]?.toUpperCase())
+
+.join("");
+
 };
 
 
-</script>
 
+</script>
 
 
 <template>
@@ -367,6 +418,8 @@ Write Prescription
   <h2 class="section-title">Previous Doctors History</h2>
   <span class="section-count" v-if="otherAppointments.length">{{ otherAppointments.length }} records</span>
 </div>
+
+
 
 
 

@@ -25,13 +25,48 @@ exports.register = async (req, res) => {
             });
         }
 
+      // Password Security Check
 
-        // Password length check
-        if (password.length < 6) {
-            return res.status(400).json({
-                message: "Password must be at least 6 characters"
-            });
-        }
+if(password.length < 8){
+
+    return res.status(400).json({
+        message:"Password must be at least 8 characters"
+    });
+
+}
+
+
+// Uppercase check
+
+if(!/[A-Z]/.test(password)){
+
+    return res.status(400).json({
+        message:"Password must contain at least one uppercase letter"
+    });
+
+}
+
+
+// Lowercase check
+
+if(!/[a-z]/.test(password)){
+
+    return res.status(400).json({
+        message:"Password must contain at least one lowercase letter"
+    });
+
+}
+
+
+// Number check
+
+if(!/[0-9]/.test(password)){
+
+    return res.status(400).json({
+        message:"Password must contain at least one number"
+    });
+
+}
 
 
         // Check existing user
@@ -99,70 +134,275 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  try {
-    console.log("LOGIN BODY:", req.body);
 
-    const { email, password, role } = req.body;
+try {
 
-    // 1. Email check
-    const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
+console.log("LOGIN BODY:", req.body);
 
-    // 2. Role check
-    if (user.role !== role) {
-      return res.status(400).json({
-        message: "Invalid role",
-      });
-    }
 
-    // 3. Password check
-    const match = await bcrypt.compare(password, user.password);
 
-    if (!match) {
-      return res.status(400).json({
-        message: "Invalid password",
-      });
-    }
+let {
+email,
+password,
+role
+}=req.body;
 
-    // 4. Generate JWT
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      }
-    );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      maxAge: 86400000,
-    });
 
-    res.status(200).json({
-      message: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    console.log(error);
+// ==========================
+// Prevent Mongo Injection
+// ==========================
 
-    res.status(500).json({
-      error: error.message,
-    });
-  }
+if(
+typeof email !== "string" ||
+typeof password !== "string" ||
+typeof role !== "string"
+){
+
+return res.status(400).json({
+
+message:"Invalid input"
+
+});
+
+}
+
+
+// Detect Mongo operators inside string
+
+if(
+email.includes("$") ||
+email.includes("{") ||
+email.includes("}") ||
+password.includes("$") ||
+password.includes("{") ||
+password.includes("}")
+){
+
+return res.status(400).json({
+
+message:"Invalid characters"
+
+});
+
+}
+
+
+
+
+email = email
+.trim()
+.toLowerCase();
+
+
+
+
+// ==========================
+// Email Validation
+// ==========================
+
+const emailRegex =
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+if(!emailRegex.test(email)){
+
+
+return res.status(400).json({
+
+message:"Invalid email format"
+
+});
+
+
+}
+
+
+
+
+
+// ==========================
+// Role Validation
+// ==========================
+
+const allowedRoles=[
+"patient",
+"doctor",
+"admin"
+];
+
+
+if(!allowedRoles.includes(role)){
+
+
+return res.status(400).json({
+
+message:"Invalid role"
+
+});
+
+}
+
+
+
+
+// ==========================
+// Find User
+// ==========================
+
+const user = await User.findOne({
+
+email:email
+
+});
+
+
+
+if(!user){
+
+
+return res.status(401).json({
+
+message:"Invalid credentials"
+
+});
+
+
+}
+
+
+
+
+// ==========================
+// Role Check
+// ==========================
+
+if(user.role !== role){
+
+
+return res.status(401).json({
+
+message:"Invalid credentials"
+
+});
+
+}
+
+
+
+
+// ==========================
+// Password
+// ==========================
+
+const match =
+await bcrypt.compare(
+password,
+user.password
+);
+
+
+
+if(!match){
+
+
+return res.status(401).json({
+
+message:"Invalid credentials"
+
+});
+
+
+}
+
+
+
+
+
+// ==========================
+// JWT
+// ==========================
+
+const token = jwt.sign(
+
+{
+id:user._id,
+role:user.role
+},
+
+process.env.JWT_SECRET,
+
+{
+expiresIn:"1d"
+}
+
+);
+
+
+
+
+
+res.cookie(
+"token",
+token,
+{
+
+httpOnly:true,
+
+secure:false,
+
+sameSite:"strict",
+
+maxAge:86400000
+
+}
+
+);
+
+
+
+
+
+res.status(200).json({
+
+message:"Login successful",
+
+user:{
+
+id:user._id,
+
+name:user.name,
+
+email:user.email,
+
+role:user.role
+
+}
+
+});
+
+
+
+}
+catch(error){
+
+console.log(
+"LOGIN ERROR:",
+error
+);
+
+
+res.status(500).json({
+
+message:"Server error"
+
+});
+
+
+}
+
+
 };
 
 exports.logout = (req,res)=>{
