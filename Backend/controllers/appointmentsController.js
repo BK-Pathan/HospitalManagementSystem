@@ -330,10 +330,10 @@ exports.getDoctorRescheduleRequests = async(req,res)=>{
 try{
 
 
-console.log(
-"LOGIN DOCTOR:",
-req.user.id
-);
+// console.log(
+// "LOGIN DOCTOR:",
+// req.user.id
+// );
 
 
 
@@ -385,10 +385,10 @@ populate:{
 
 
 
-console.log(
-"REQUESTS:",
-requests
-);
+// console.log(
+// "REQUESTS:",
+// requests
+// );
 
 
 

@@ -45,10 +45,10 @@ audio.preload="auto";
 const handleNotification = (data)=>{
 
 
-console.log(
-"GLOBAL NOTIFICATION:",
-data
-);
+// console.log(
+// "GLOBAL NOTIFICATION:",
+// data
+// );
 
 
 // show toast
@@ -71,9 +71,9 @@ toast.value=null;
 audio.play()
 .then(()=>{
 
-console.log(
-"Notification sound played"
-);
+// console.log(
+// "Notification sound played"
+// );
 
 })
 .catch(error=>{
@@ -133,10 +133,10 @@ localStorage.getItem("user")
 if(user){
 
 
-console.log(
-"CURRENT USER:",
-user
-);
+// console.log(
+// "CURRENT USER:",
+// user
+// );
 
 
 
@@ -147,10 +147,10 @@ user._id
 
 
 
-console.log(
-"JOIN REQUEST SENT:",
-user._id
-);
+// console.log(
+// "JOIN REQUEST SENT:",
+// user._id
+// );
 
 
 }

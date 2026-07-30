@@ -8,10 +8,10 @@ socket.on(
 (data)=>{
 
 
-console.log(
-"Global Notification:",
-data
-);
+// console.log(
+// "Global Notification:",
+// data
+// );
 
 
 
@@ -25,10 +25,10 @@ const audio = new Audio(
 audio.play()
 .catch(error=>{
 
-console.log(
-"Sound blocked:",
-error
-);
+// console.log(
+// "Sound blocked:",
+// error
+// );
 
 });
 

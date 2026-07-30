@@ -160,7 +160,7 @@ function handleScroll() {
 function goLogin(){
 
     closeMenu();
-    console.log("LOGIN CLICKED");
+    // console.log("LOGIN CLICKED");
 
 
     router.push("/login");

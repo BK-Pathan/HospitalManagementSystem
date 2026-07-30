@@ -10,8 +10,7 @@ RouterView
 } from "vue-router";
 
 import api from "../../api/axios";
-
-
+console.log("🔥 Patient Dashbaord FILE LOADED");
 const stats = ref({
 
 totalAppointments:0,
@@ -39,10 +38,10 @@ const res = await api.get(
 
 
 
-console.log(
-"FULL DASHBOARD RESPONSE:",
-res.data
-);
+// console.log(
+// "FULL DASHBOARD RESPONSE:",
+// res.data
+// );
 
 
 
@@ -63,10 +62,10 @@ stats.value = res.data;
 
 
 
-console.log(
-"FINAL STATS:",
-stats.value
-);
+// console.log(
+// "FINAL STATS:",
+// stats.value
+// );
 
 
 

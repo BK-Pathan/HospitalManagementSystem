@@ -11,7 +11,10 @@ const patients = ref([]);
 
 // Get all patients
 const getPatients = async()=>{
+
+    
     try{
+      
         const res = await api.get("/admin/patients");
         patients.value = res.data;
     }catch(error){

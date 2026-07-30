@@ -29,7 +29,7 @@ ChartJS.register(
   Legend,
   ArcElement
 );
-
+console.log("🔥 DOCTOR DASHBOARD FILE LOADED");
 
 // =====================
 // CHART DATA
@@ -170,7 +170,7 @@ const formattedDate = computed(() =>
 const getStats = async () => {
   try {
     const res = await api.get("/doctor/dashboard");
-    console.log("Dashboard Data:", res.data);
+    // console.log("Dashboard Data:", res.data);
     stats.value = res.data;
   } catch (error) {
     console.log("Dashboard Error:", error.response?.data || error.message);
@@ -185,7 +185,7 @@ const getStats = async () => {
 const getTodaysAppointments = async () => {
   try {
     const res = await api.get("/doctor/today-appointments");
-    console.log("Today's Appointments:", res.data);
+    // console.log("Today's Appointments:", res.data);
     todaysAppointments.value = res.data;
   } catch (error) {
     console.log("Today Error:", error.response?.data || error.message);
@@ -200,7 +200,7 @@ const getTodaysAppointments = async () => {
 const getUpcomingAppointments = async () => {
   try {
     const res = await api.get("/doctor/upcoming-appointments");
-    console.log("Upcoming:", res.data);
+    // console.log("Upcoming:", res.data);
     upcomingAppointments.value = res.data;
   } catch (error) {
     console.log("Upcoming Error:", error.response?.data || error.message);
@@ -215,7 +215,7 @@ const getUpcomingAppointments = async () => {
 const getAnalytics = async () => {
   try {
     const res = await api.get("/doctor/appointment-analytics");
-    console.log("Analytics Data:", res.data);
+    // console.log("Analytics Data:", res.data);
 
     chartData.value = {
       labels: [
@@ -254,7 +254,7 @@ const getAnalytics = async () => {
 const getFeedbackAnalytics = async () => {
   try {
     const res = await api.get("/doctor/feedback-analytics");
-    console.log("Feedback Analytics:", res.data);
+    // console.log("Feedback Analytics:", res.data);
 
     feedbackStats.value = {
       totalReviews: res.data.totalReviews || 0,

@@ -43,10 +43,10 @@ const login = async()=>{
 
 
 
-        console.log(
-            "LOGIN RESPONSE:",
-            res.data
-        );
+        // console.log(
+        //     "LOGIN RESPONSE:",
+        //     res.data
+        // );
 
 
 
@@ -88,10 +88,10 @@ const login = async()=>{
 
 
 
-        console.log(
-            "Socket Room Joined:",
-            user.id
-        );
+        // console.log(
+        //     "Socket Room Joined:",
+        //     user.id
+        // );
 
 
 

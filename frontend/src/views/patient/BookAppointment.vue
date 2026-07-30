@@ -5,6 +5,9 @@ import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
 
 
+console.log("🔥 book Appointment FILE LOADED");
+
+
 const route = useRoute();
 const router = useRouter();
 
@@ -274,11 +277,11 @@ return;
 }
 
 
-console.log("BOOK BUTTON CLICKED");
+// console.log("BOOK BUTTON CLICKED");
 
-console.log("Doctor ID:", route.params.doctorId);
+// console.log("Doctor ID:", route.params.doctorId);
 
-console.log("Date:", appointmentDateTime.value);
+// console.log("Date:", appointmentDateTime.value);
 
 
 booking.value = true;
@@ -299,7 +302,7 @@ appointmentDateTime:appointmentDateTime.value
 });
 
 
-console.log(res.data);
+// console.log(res.data);
 
 
 window.notify("Appointment booked successfully");

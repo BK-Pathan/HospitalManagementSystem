@@ -29,9 +29,9 @@ api.interceptors.response.use(
         if(error.response?.status === 401){
 
 
-            console.log(
-                "Session expired"
-            );
+            // console.log(
+            //     "Session expired"
+            // );
 
 
             localStorage.removeItem("user");

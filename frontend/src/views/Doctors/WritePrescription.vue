@@ -4,6 +4,7 @@ import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
 
+console.log("🔥 DOCTOR DASHBOARD FILE LOADED");
 
 const route = useRoute();
 const router = useRouter();
@@ -37,10 +38,10 @@ const getPatient = async()=>{
 try{
 
 
-console.log(
-"Fetching Patient History ID:",
-route.params.patientId
-);
+// console.log(
+// "Fetching Patient History ID:",
+// route.params.patientId
+// );
 
 
 
@@ -51,10 +52,10 @@ const res = await api.get(
 previousPrescriptions.value =
 res.data.previousPrescriptions || [];
 
-console.log(
-"Patient History Response:",
-res.data
-);
+// console.log(
+// "Patient History Response:",
+// res.data
+// );
 
 
 
@@ -71,10 +72,10 @@ res.data.myAppointments.length
 const appointment = res.data.myAppointments[0];
 
 
-console.log(
-"First Appointment:",
-appointment
-);
+// console.log(
+// "First Appointment:",
+// appointment
+// );
 
 
 
@@ -82,10 +83,10 @@ patient.value = appointment;
 
 
 
-console.log(
-"Patient Saved:",
-patient.value
-);
+// console.log(
+// "Patient Saved:",
+// patient.value
+// );
 
 
 }
@@ -102,10 +103,10 @@ const appointment = res.data.otherAppointments[0];
 patient.value = appointment;
 
 
-console.log(
-"Patient Saved From Other:",
-patient.value
-);
+// console.log(
+// "Patient Saved From Other:",
+// patient.value
+// );
 
 
 }
@@ -113,9 +114,9 @@ patient.value
 else{
 
 
-console.log(
-"No appointment found"
-);
+// console.log(
+// "No appointment found"
+// );
 
 
 }
@@ -157,10 +158,10 @@ frequency:""
 });
 
 
-console.log(
-"Medicines After Add:",
-medicines.value
-);
+// console.log(
+// "Medicines After Add:",
+// medicines.value
+// );
 
 
 };
@@ -180,10 +181,10 @@ const removeMedicine=(index)=>{
 medicines.value.splice(index,1);
 
 
-console.log(
-"Medicines After Remove:",
-medicines.value
-);
+// console.log(
+// "Medicines After Remove:",
+// medicines.value
+// );
 
 
 };
@@ -200,16 +201,16 @@ medicines.value
 const savePrescription = async()=>{
 
 
-console.log(
-"Save Button Clicked"
-);
+// console.log(
+// "Save Button Clicked"
+// );
 
 
 
-console.log(
-"Current Patient:",
-patient.value
-);
+// console.log(
+// "Current Patient:",
+// patient.value
+// );
 
 
 
@@ -256,10 +257,10 @@ notes.value
 
 
 
-console.log(
-"Sending Prescription Data:",
-data
-);
+// console.log(
+// "Sending Prescription Data:",
+// data
+// );
 
 
 
@@ -274,10 +275,10 @@ data
 
 
 
-console.log(
-"Prescription Save Response:",
-res.data
-);
+// console.log(
+// "Prescription Save Response:",
+// res.data
+// );
 
 
 
@@ -313,9 +314,9 @@ error.response?.data || error.message
 onMounted(()=>{
 
 
-console.log(
-"Component Mounted"
-);
+// console.log(
+// "Component Mounted"
+// );
 
 
 getPatient();

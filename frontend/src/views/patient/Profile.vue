@@ -4,6 +4,8 @@ import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 const profilecompleted = ref(false);
 
+console.log("🔥 Patient Profile FILE LOADED");
+
 
 const oldPassword = ref("");
 const newPassword = ref("");

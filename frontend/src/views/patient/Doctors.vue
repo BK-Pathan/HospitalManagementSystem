@@ -4,6 +4,7 @@ import {ref,onMounted} from "vue";
 import {useRouter} from "vue-router";
 import api from "../../api/axios";
 
+console.log("🔥 Doctors FILE LOADED");
 
 const doctors=ref([]);
 

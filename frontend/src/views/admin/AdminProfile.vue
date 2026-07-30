@@ -37,10 +37,10 @@ const res = await api.get(
 
 
 
-console.log(
-"Profile:",
-res.data
-);
+// console.log(
+// "Profile:",
+// res.data
+// );
 
 
 

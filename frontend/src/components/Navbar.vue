@@ -161,10 +161,10 @@ onMounted(() => {
     "notification",
     (data) => {
 
-      console.log(
-        "Realtime Notification:",
-        data
-      );
+      // console.log(
+      //   "Realtime Notification:",
+      //   data
+      // );
 
       notifications.value.unshift({
 

@@ -8,6 +8,7 @@ onMounted
 
 import api from "../../api/axios";
 
+console.log("🔥 Prescription History FILE LOADED");
 
 const prescriptions = ref([]);
 
@@ -25,15 +26,15 @@ const res = await api.get(
 "/prescription/my"
 );
 
-console.log(
-"Prescription API:",
-JSON.stringify(res.data,null,2)
-);
+// console.log(
+// "Prescription API:",
+// JSON.stringify(res.data,null,2)
+// );
 
-console.log(
-"My Prescriptions:",
-res.data
-);
+// console.log(
+// "My Prescriptions:",
+// res.data
+// );
 
 
 

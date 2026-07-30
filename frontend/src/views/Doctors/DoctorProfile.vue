@@ -3,6 +3,7 @@
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
 
+console.log("🔥 DOCTOR Profile FILE LOADED");
 
 const name = ref("");
 const department = ref("");
@@ -501,7 +502,7 @@ getProfile();
 <div class="profile-page">
 
 <div class="page-header">
-  <p class="eyebrow">Account</p>
+  <p class="eyebrow">✦ Account</p>
   <h2 class="page-title">Doctor Profile</h2>
 </div>
 
@@ -611,60 +612,90 @@ getProfile();
 
 
   <!-- =====================
-  IDENTITY / AVATAR (Desktop)
+  IDENTITY / AVATAR (Desktop, premium banner)
   ===================== -->
 
   <div class="identity-section">
 
-    <div class="doctor-avatar">
+    <div class="identity-banner"></div>
 
-      <img
-      v-if="profileImage"
-      :src="profileImage"
-      />
+    <div class="identity-row">
 
-      <span v-else>
-        {{
-          name
-          ?.replace(/^Dr\.?\s*/i, "")
-          ?.charAt(0)
-          ?.toUpperCase() || "D"
-        }}
-      </span>
+      <div class="doctor-avatar">
 
-    </div>
-
-    <div class="identity-info">
-      <h3>{{ name || "Your Name" }}</h3>
-      <p>{{ department || "No department set" }}</p>
-    </div>
-
-    <div class="identity-actions">
-
-      <label class="file-btn">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Choose Image
-        <input
-        type="file"
-        accept="image/*"
-        @change="handleImage"
+        <img
+        v-if="profileImage"
+        :src="profileImage"
         />
-      </label>
 
-      <button
-      class="primary-btn"
-      @click="uploadImage"
-      >
-      Upload
-      </button>
+        <span v-else>
+          {{
+            name
+            ?.replace(/^Dr\.?\s*/i, "")
+            ?.charAt(0)
+            ?.toUpperCase() || "D"
+          }}
+        </span>
 
-      <button
-      v-if="profileImage"
-      class="remove-btn"
-      @click="removeImage"
-      >
-      Remove
-      </button>
+      </div>
+
+      <div class="identity-info">
+        <h3>{{ name || "Your Name" }}</h3>
+        <p v-if="department" class="identity-dept">{{ department }}</p>
+        <p v-else class="identity-dept identity-dept--muted">No department set</p>
+        <p v-if="contactInformation" class="identity-contact">{{ contactInformation }}</p>
+      </div>
+
+      <div class="identity-actions">
+
+        <label class="file-btn">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Choose Image
+          <input
+          type="file"
+          accept="image/*"
+          @change="handleImage"
+          />
+        </label>
+
+        <button
+        class="primary-btn"
+        @click="uploadImage"
+        >
+        Upload
+        </button>
+
+        <button
+        v-if="profileImage"
+        class="remove-btn"
+        @click="removeImage"
+        >
+        Remove
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="identity-tiles">
+
+      <div class="hero-tile">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="hero-tile-value">{{ experience || "—" }}</span>
+        <span class="hero-tile-label">Experience</span>
+      </div>
+
+      <div class="hero-tile">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h9M4 12h16M4 17h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="hero-tile-value">{{ qualifications || "—" }}</span>
+        <span class="hero-tile-label">Qualification</span>
+      </div>
+
+      <div class="hero-tile">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="hero-tile-value">{{ availability.length }}</span>
+        <span class="hero-tile-label">Slots</span>
+      </div>
 
     </div>
 
@@ -675,7 +706,7 @@ getProfile();
   PROFILE FORM
   ===================== -->
 
-  <h3 class="section-title">Profile Information</h3>
+  <h3 class="section-title"><span class="section-icon">🪪</span> Profile Information</h3>
 
   <div class="form-grid">
 
@@ -786,7 +817,7 @@ getProfile();
   ===================== -->
 
   <h3 class="section-title">
-  Availability
+  <span class="section-icon">🗓️</span> Availability
   </h3>
 
 
@@ -914,7 +945,7 @@ SECURITY
 ===================== -->
 
 <h3 class="section-title">
-Security
+<span class="section-icon">🔒</span> Security
 </h3>
 
 
@@ -975,13 +1006,14 @@ placeholder="Confirm new password"
 </div>
 
 
+<div class="footer-actions">
+
 <button
-class="save-btn"
+class="save-btn password-btn"
 @click="changePassword"
 >
-
+<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
 Change Password
-
 </button>
 
 
@@ -992,6 +1024,8 @@ Change Password
   <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M17 21v-8H7v8M7 3v5h8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
   Save Profile
   </button>
+
+</div>
 
 
 </div>
@@ -1014,8 +1048,8 @@ Change Password
 
 .eyebrow {
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .04em;
+  font-weight: 700;
+  letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--primary);
   margin: 0 0 6px;
@@ -1024,8 +1058,9 @@ Change Password
 .page-title {
   color: var(--text);
   font-size: 30px;
+  font-weight: 800;
   margin: 0;
-  letter-spacing: -.01em;
+  letter-spacing: -.02em;
 }
 
 /* ---------- Profile card (Premium) ---------- */
@@ -1040,34 +1075,59 @@ Change Password
   border: 1px solid var(--border);
 }
 
-/* ---------- Identity ---------- */
+/* ---------- Identity (Desktop, premium banner) ---------- */
 
 .identity-section {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 30px;
+  background: #f8fafc;
+}
+
+.identity-banner {
+  height: 64px;
+  background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary) 55%, var(--secondary) 100%);
+}
+
+.identity-row {
   display: flex;
   align-items: center;
   gap: 22px;
   flex-wrap: wrap;
-  padding-bottom: 28px;
-  margin-bottom: 28px;
-  border-bottom: 1px solid var(--border);
+  padding: 0 22px 20px;
+  margin-top: -34px;
 }
 
 .identity-info {
   flex: 1;
   min-width: 160px;
+  padding-top: 38px;
 }
 
 .identity-info h3 {
   margin: 0 0 4px;
   color: var(--text);
   font-size: 19px;
+  font-weight: 800;
+}
+
+.identity-dept {
+  margin: 0 0 2px;
+  color: var(--primary);
+  font-size: 13px;
   font-weight: 700;
 }
 
-.identity-info p {
+.identity-dept--muted {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.identity-contact {
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .identity-actions {
@@ -1075,6 +1135,14 @@ Change Password
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  padding-top: 38px;
+}
+
+.identity-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 0 22px 22px;
 }
 
 .file-btn {
@@ -1085,7 +1153,7 @@ Change Password
   padding: 12px 18px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: #f8fafc;
+  background: #ffffff;
   color: var(--text);
   font-weight: 600;
   font-size: 14px;
@@ -1113,7 +1181,9 @@ Change Password
 .doctor-avatar {
   width: 88px;
   height: 88px;
+  min-width: 88px;
   border-radius: 50%;
+  padding: 3px;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
   display: flex;
@@ -1124,12 +1194,53 @@ Change Password
   overflow: hidden;
   flex-shrink: 0;
   box-shadow: 0 8px 18px -6px rgba(20, 184, 166, .5);
+  border: 3px solid #fff;
+  box-sizing: border-box;
 }
 
 .doctor-avatar img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   object-fit: cover;
+}
+
+/* ---------- Shared stat tiles (mobile hero + desktop identity) ---------- */
+
+.hero-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+}
+
+.hero-tile svg {
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+
+.hero-tile-value {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.hero-tile-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  font-weight: 700;
 }
 
 /* ---------- Mobile hero (reference-style, hidden on desktop) ---------- */
@@ -1142,42 +1253,41 @@ Change Password
 
 .section-title {
 
-   margin-top:20px !important;
+    display: inline-flex;
 
-    display:inline-flex;
+    align-items: center;
 
-    align-items:center;
+    gap: 8px;
 
-    gap:8px;
+    padding: 8px 18px;
 
-    padding:8px 18px;
+    margin: 24px 0 20px;
 
-    margin:0 0 20px;
+    color: var(--primary-dark);
 
-    color:#2563eb;
+    background: linear-gradient(135deg, rgba(20,184,166,.12), rgba(20,184,166,.06));
 
-    background:
-    linear-gradient(
-        135deg,
-        rgba(37,99,235,.12),
-        rgba(56,189,248,.18)
-    );
+    border: 1px solid rgba(20,184,166,.22);
 
-    border:1px solid rgba(37,99,235,.25);
+    border-radius: 50px;
 
-    border-radius:50px;
+    font-size: 15px;
 
-    font-size:15px;
+    font-weight: 700;
 
-    font-weight:700;
+    letter-spacing: .2px;
 
-    letter-spacing:.3px;
+    box-shadow: 0 8px 18px -10px rgba(20,184,166,.3);
 
-    box-shadow:
-    0 8px 20px rgba(37,99,235,.12);
+}
 
-    backdrop-filter:blur(10px);
+.section-title:first-of-type {
+  margin-top: 0;
+}
 
+.section-icon {
+  font-size: 15px;
+  line-height: 1;
 }
 
 .form-grid {
@@ -1213,11 +1323,12 @@ Change Password
   font-family: inherit;
   color: var(--text);
   box-sizing: border-box;
-  transition: border-color .2s ease, box-shadow .2s ease;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
 .form-input:focus {
   border-color: var(--secondary);
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(20, 184, 166, .15);
 }
 
@@ -1236,6 +1347,7 @@ Change Password
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  margin: 0 !important;
 }
 
 .add-slot-btn svg {
@@ -1245,7 +1357,6 @@ Change Password
 
 .primary-btn,
 .save-btn {
-  margin:15px;
   border: none;
   padding: 14px 20px;
   border-radius: 12px;
@@ -1257,6 +1368,10 @@ Change Password
   transition: transform .18s cubic-bezier(.22,1,.36,1),
               box-shadow .18s ease,
               filter .18s ease;
+}
+
+.primary-btn {
+  margin: 0;
 }
 
 .table-card {
@@ -1361,12 +1476,27 @@ Change Password
   font-size: 13px;
 }
 
+/* ---------- Footer actions (password + save, side by side) ---------- */
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
 .save-btn {
-  margin-top: 30px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  margin-top: 0;
   box-shadow: 0 10px 22px -8px rgba(20, 184, 166, .45);
+}
+
+.password-btn {
+  background: linear-gradient(135deg, var(--primary-dark), var(--text));
+  box-shadow: 0 10px 22px -8px rgba(15, 23, 42, .35);
 }
 
 .save-btn svg {
@@ -1445,6 +1575,14 @@ button:active {
 
   .add-slot-btn {
     grid-column: span 2;
+  }
+
+  .identity-row {
+    padding: 0 18px 18px;
+  }
+
+  .identity-tiles {
+    padding: 0 18px 18px;
   }
 
 }
@@ -1575,45 +1713,14 @@ button:active {
     margin-top: 18px;
   }
 
-  .hero-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 12px 6px;
-    border-radius: 14px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-  }
-
-  .hero-tile svg {
-    width: 18px;
-    height: 18px;
-    color: var(--primary);
-    margin-bottom: 2px;
-  }
-
-  .hero-tile-value {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-
-  .hero-tile-label {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .03em;
-    font-weight: 700;
-  }
-
   .section-title {
-    font-size: 15px;
-    margin-bottom: 16px;
+    font-size: 14px;
+    margin: 20px 0 16px;
+    padding: 7px 15px;
+  }
+
+  .section-title:first-of-type {
+    margin-top: 0;
   }
 
   .form-grid {
@@ -1643,10 +1750,15 @@ button:active {
     font-size: 13px;
   }
 
-  .save-btn {
+  .footer-actions {
+    flex-direction: column;
+    margin-top: 24px;
+  }
+
+  .save-btn,
+  .password-btn {
     width: 100%;
     justify-content: center;
-    margin-top: 24px;
   }
 
 }

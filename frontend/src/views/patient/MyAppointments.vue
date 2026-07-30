@@ -12,7 +12,7 @@ import {
     useRouter
 } from "vue-router";
 
-
+console.log("🔥 My Appointment FILE LOADED");
 
 const router = useRouter();
 
@@ -266,13 +266,13 @@ const getAppointments = async()=>{
 
 
 
-        console.log(
+        // console.log(
 
-            "Appointments:",
+        //     "Appointments:",
 
-            res.data
+        //     res.data
 
-        );
+        // );
 
 
 

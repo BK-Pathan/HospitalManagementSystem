@@ -8,6 +8,7 @@ import api from "../../api/axios";
 const feedbacks = ref([]);
 
 
+console.log("🔥 DOCTOR feedback FILE LOADED");
 
 const getFeedback = async()=>{
 
@@ -21,10 +22,10 @@ const res = await api.get(
 
 
 
-console.log(
-"Doctor Feedback:",
-res.data
-);
+// console.log(
+// "Doctor Feedback:",
+// res.data
+// );
 
 
 

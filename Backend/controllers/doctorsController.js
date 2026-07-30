@@ -153,15 +153,15 @@ message:error.message
 exports.dashboardStats = async (req, res) => {
   try {
 
-    console.log("========== DOCTOR DASHBOARD ==========");
-    console.log("Logged User:", req.user);
+    // console.log("========== DOCTOR DASHBOARD ==========");
+    // console.log("Logged User:", req.user);
 
     // Find doctor profile
     const doctor = await Doctor.findOne({
       user: req.user.id
     });
 
-    console.log("Doctor Profile:", doctor);
+    // console.log("Doctor Profile:", doctor);
 
     if (!doctor) {
       return res.status(404).json({
@@ -174,8 +174,8 @@ exports.dashboardStats = async (req, res) => {
       doctor: doctor._id
     });
 
-    console.log("Appointments Found:", allAppointments.length);
-    console.log(allAppointments);
+    // console.log("Appointments Found:", allAppointments.length);
+    // console.log(allAppointments);
 
     // Dashboard Stats
     const totalAppointments = allAppointments.length;
@@ -218,7 +218,7 @@ exports.dashboardStats = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5);
 
-    console.log("Recent Appointments:", recentAppointments);
+    // console.log("Recent Appointments:", recentAppointments);
 
     res.json({
       patients: totalPatients.length,
@@ -668,10 +668,10 @@ user:req.user.id
 });
 
 
-console.log(
-"Analytics Doctor:",
-doctor
-);
+// console.log(
+// "Analytics Doctor:",
+// doctor
+// );
 
 
 

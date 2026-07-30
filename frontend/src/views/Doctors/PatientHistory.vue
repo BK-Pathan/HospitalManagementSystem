@@ -4,6 +4,7 @@ import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
 
+console.log("🔥 DOCTOR DASHBOARD FILE LOADED");
 
 const route = useRoute();
 const router = useRouter();
@@ -19,6 +20,28 @@ const myAppointments = ref([]);
 const otherAppointments = ref([]);
 
 const previousPrescriptions = ref([]);
+
+
+// mobile-only UI state: which card rows are expanded (no backend impact)
+const expandedRows = ref([]);
+
+const toggleRow = (id) => {
+
+  const idx = expandedRows.value.indexOf(id);
+
+  if (idx === -1) {
+
+    expandedRows.value.push(id);
+
+  } else {
+
+    expandedRows.value.splice(idx, 1);
+
+  }
+
+};
+
+const isExpanded = (id) => expandedRows.value.includes(id);
 
 
 
@@ -38,10 +61,10 @@ const res = await api.get(
 
 
 
-console.log(
-"Patient History:",
-res.data
-);
+// console.log(
+// "Patient History:",
+// res.data
+// );
 
 
 
@@ -275,6 +298,8 @@ return name
 
 <div class="table-card">
 
+<!-- ===== Desktop / tablet table ===== -->
+
 <table class="history-table" v-if="myAppointments.length">
 
 
@@ -404,7 +429,82 @@ Write Prescription
 
 </table>
 
-<div class="empty-state" v-else>
+
+<!-- ===== Mobile expandable card list (reference-style) ===== -->
+
+<div class="mobile-list" v-if="myAppointments.length">
+
+  <div
+  v-for="item in myAppointments"
+  :key="item._id"
+  class="mobile-card"
+  :class="{ 'mobile-card--open': isExpanded(item._id) }"
+  >
+
+    <div
+    class="mobile-card-head"
+    @click="toggleRow(item._id)"
+    >
+
+      <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+
+      <div class="mobile-card-title">
+        <h4>{{ item.patient?.user?.name || "N/A" }}</h4>
+        <p>{{ item.patient?.user?.email || "N/A" }}</p>
+      </div>
+
+      <span :class="`status status--${item.status} mobile-status`">{{ item.status }}</span>
+
+      <span class="chevron" :class="{ 'chevron--open': isExpanded(item._id) }">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+
+    </div>
+
+    <transition name="expand">
+      <div class="mobile-card-body" v-if="isExpanded(item._id)">
+
+        <div class="detail-row">
+          <span class="detail-label">Age</span>
+          <span class="detail-value">{{ item.patient?.age || "N/A" }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Gender</span>
+          <span class="detail-value">{{ item.patient?.gender || "N/A" }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">{{ new Date(item.appointmentDateTime).toLocaleString() }}</span>
+        </div>
+
+        <div class="detail-row detail-row--full">
+          <span class="detail-label">Problem</span>
+          <p class="detail-value">{{ item.patient?.DescribeYourProblem || "N/A" }}</p>
+        </div>
+
+        <button
+        class="icon-btn primary-btn full-btn"
+        @click="
+          router.push(
+          `/doctor/write-prescription/${item.patient._id}/${item._id}`
+          )
+        "
+        >
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          Write Prescription
+        </button>
+
+      </div>
+    </transition>
+
+  </div>
+
+</div>
+
+
+<div class="empty-state" v-if="!myAppointments.length">
   <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
   <p>No appointments with this patient yet.</p>
 </div>
@@ -424,6 +524,8 @@ Write Prescription
 
 
 <div class="table-card">
+
+<!-- ===== Desktop / tablet table ===== -->
 
 <table class="history-table" v-if="otherAppointments.length">
 
@@ -513,7 +615,63 @@ View Prescription
 
 </table>
 
-<div class="empty-state" v-else>
+
+<!-- ===== Mobile expandable card list (reference-style) ===== -->
+
+<div class="mobile-list" v-if="otherAppointments.length">
+
+  <div
+  v-for="item in otherAppointments"
+  :key="item._id"
+  class="mobile-card"
+  :class="{ 'mobile-card--open': isExpanded('other-' + item._id) }"
+  >
+
+    <div
+    class="mobile-card-head"
+    @click="toggleRow('other-' + item._id)"
+    >
+
+      <span class="avatar avatar--muted">{{ initials(item.doctor?.name) }}</span>
+
+      <div class="mobile-card-title">
+        <h4>{{ item.doctor?.name || "N/A" }}</h4>
+        <p>{{ new Date(item.appointmentDateTime).toLocaleDateString() }}</p>
+      </div>
+
+      <span :class="`status status--${item.status} mobile-status`">{{ item.status }}</span>
+
+      <span class="chevron" :class="{ 'chevron--open': isExpanded('other-' + item._id) }">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+
+    </div>
+
+    <transition name="expand">
+      <div class="mobile-card-body" v-if="isExpanded('other-' + item._id)">
+
+        <div class="detail-row">
+          <span class="detail-label">Date &amp; Time</span>
+          <span class="detail-value">{{ new Date(item.appointmentDateTime).toLocaleString() }}</span>
+        </div>
+
+        <button
+        class="icon-btn secondary-btn full-btn"
+        @click="viewPrescription(item)"
+        >
+          <svg viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+          View Prescription
+        </button>
+
+      </div>
+    </transition>
+
+  </div>
+
+</div>
+
+
+<div class="empty-state" v-if="!otherAppointments.length">
   <svg viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
   <p>No history with other doctors.</p>
 </div>
@@ -858,6 +1016,12 @@ View Prescription
   border: 1px solid var(--border);
 }
 
+.full-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+}
+
 /* ---------- Empty state ---------- */
 
 .empty-state {
@@ -879,6 +1043,158 @@ View Prescription
 .empty-state p {
   margin: 0;
   font-size: 14px;
+}
+
+/* ---------- Mobile expandable card list (hidden on desktop) ---------- */
+
+.mobile-list {
+  display: none;
+}
+
+.mobile-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #f8fafc;
+  overflow: hidden;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.mobile-card + .mobile-card {
+  margin-top: 10px;
+}
+
+.mobile-card--open {
+  background: #ffffff;
+  border-color: rgba(20, 184, 166, .35);
+  box-shadow: 0 8px 20px -12px rgba(15, 23, 42, .18);
+}
+
+.mobile-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  cursor: pointer;
+}
+
+.mobile-card-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-card-title h4 {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-card-title p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-status {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 10.5px;
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  background: rgba(20, 184, 166, .12);
+  transition: transform .25s ease, background .25s ease;
+}
+
+.chevron svg {
+  width: 14px;
+  height: 14px;
+}
+
+.chevron--open {
+  transform: rotate(90deg);
+  background: var(--primary);
+  color: #fff;
+}
+
+.mobile-card-body {
+  padding: 4px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+  padding-top: 12px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.detail-row--full {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.detail-label {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+.detail-value {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+  margin: 0;
+}
+
+.detail-row--full .detail-value {
+  text-align: left;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* expand/collapse transition */
+
+.expand-enter-active,
+.expand-leave-active {
+  transition: max-height .25s ease, opacity .2s ease;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  max-height: 400px;
+  opacity: 1;
 }
 
 /* ==========================
@@ -949,7 +1265,7 @@ View Prescription
 }
 
 /* ==========================
-   Mobile
+   Mobile — switch table for expandable cards
 ========================== */
 @media (max-width: 768px) {
 
@@ -1008,39 +1324,19 @@ View Prescription
   }
 
   .table-card {
-    padding: 8px 12px 16px;
+    padding: 10px;
     border-radius: 14px;
+    overflow-x: visible;
   }
+
+  /* hide the desktop table, show the expandable card list instead */
 
   .history-table {
-    min-width: 640px;
+    display: none;
   }
 
-  .history-table th,
-  .history-table td {
-    padding: 12px 10px;
-    font-size: 13px;
-  }
-
-  .avatar {
-    width: 30px;
-    height: 30px;
-    font-size: 11px;
-  }
-
-  .status {
-    font-size: 11px;
-    padding: 5px 10px;
-  }
-
-  .icon-btn {
-    padding: 7px 10px;
-    font-size: 12px;
-  }
-
-  .icon-btn svg {
-    width: 13px;
-    height: 13px;
+  .mobile-list {
+    display: block;
   }
 
 }
@@ -1073,12 +1369,26 @@ View Prescription
     font-size: 22px;
   }
 
-  .history-table {
-    min-width: 560px;
+  .mobile-card-head {
+    padding: 11px 12px;
+    gap: 8px;
   }
 
-  .icon-btn {
-    padding: 6px 9px;
+  .mobile-card-title h4 {
+    font-size: 13px;
+  }
+
+  .mobile-card-title p {
+    font-size: 11px;
+  }
+
+  .mobile-status {
+    display: none;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
     font-size: 11px;
   }
 

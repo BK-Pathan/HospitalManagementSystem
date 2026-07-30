@@ -4,6 +4,7 @@ import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
 
+console.log("🔥 DOCTOR DASHBOARD FILE LOADED");
 
 const route = useRoute();
 const router = useRouter();
@@ -25,10 +26,10 @@ const getPrescriptions = async()=>{
 try{
 
 
-console.log(
-"Patient ID:",
-route.params.patientId
-);
+// console.log(
+// "Patient ID:",
+// route.params.patientId
+// );
 
 
 
@@ -40,10 +41,10 @@ const res = await api.get(
 
 
 
-console.log(
-"Prescription Response:",
-res.data
-);
+// console.log(
+// "Prescription Response:",
+// res.data
+// );
 
 
 

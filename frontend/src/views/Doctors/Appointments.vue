@@ -30,6 +30,7 @@ expandedCards.value = new Set(expandedCards.value);
 
 const isExpanded = (id)=> expandedCards.value.has(id);
 
+console.log("🔥 DOCTOR appointment FILE LOADED");
 
 
 // Get Appointments
@@ -63,10 +64,10 @@ if(found){
 selectedAppointment.value = found._id;
 
 
-console.log(
-"Opened Appointment:",
-found
-);
+// console.log(
+// "Opened Appointment:",
+// found
+// );
 
 }
 

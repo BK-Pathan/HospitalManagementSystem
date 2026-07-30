@@ -12,6 +12,7 @@ useRouter
 
 import api from "../../api/axios";
 
+console.log("🔥 Docotr Profile FILE LOADED");
 
 const route = useRoute();
 
@@ -46,10 +47,10 @@ const res = await api.get(
 
 
 
-console.log(
-"Doctor Profile:",
-res.data
-);
+// console.log(
+// "Doctor Profile:",
+// res.data
+// );
 
 
 

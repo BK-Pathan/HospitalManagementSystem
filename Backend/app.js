@@ -127,10 +127,10 @@ const io = new Server(server, {
 io.on("connection",(socket)=>{
 
 
-    console.log(
-        "New Socket Connected:",
-        socket.id
-    );
+    // console.log(
+    //     "New Socket Connected:",
+    //     socket.id
+    // );
 
 
     socket.on(
@@ -140,10 +140,10 @@ io.on("connection",(socket)=>{
             socket.join(userId);
 
 
-            console.log(
-                "User joined room:",
-                userId
-            );
+            // console.log(
+            //     "User joined room:",
+            //     userId
+            // );
 
         }
     );
