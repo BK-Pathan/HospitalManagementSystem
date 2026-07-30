@@ -33,6 +33,24 @@ const limit = 10;
 
 const status = ref("");
 
+// track which mobile cards are expanded
+const expandedCards = ref(new Set());
+
+const toggleCard = (id)=>{
+
+if(expandedCards.value.has(id)){
+    expandedCards.value.delete(id);
+}else{
+    expandedCards.value.add(id);
+}
+
+// re-trigger reactivity for Set
+expandedCards.value = new Set(expandedCards.value);
+
+};
+
+const isExpanded = (id)=> expandedCards.value.has(id);
+
 
 
 
@@ -255,6 +273,8 @@ v-model="status"
 
 <div class="card">
 
+
+<!-- ================= DESKTOP TABLE ================= -->
 
 <div class="table-wrapper">
 
@@ -578,6 +598,118 @@ No Appointments Found
 
 
 
+<!-- ================= MOBILE CARDS ================= -->
+
+<div class="mobile-list">
+
+    <div
+    v-for="(appointment,index) in appointments"
+    :key="appointment._id"
+    class="mobile-card"
+    >
+
+        <div
+        class="mobile-card-main"
+        @click="toggleCard(appointment._id)"
+        >
+
+            <div class="avatar">
+                👨‍⚕️
+            </div>
+
+            <div class="mobile-card-info">
+
+                <span class="mobile-card-name">
+                    {{ appointment.doctor?.name || "N/A" }}
+                </span>
+
+                <span class="mobile-card-role">
+                    {{ appointment.doctor?.department || "N/A" }}
+                </span>
+
+                <span class="mobile-card-email">
+                    {{ appointment.patient?.user?.name || "Not Booked" }}
+                </span>
+
+            </div>
+
+            <div class="mobile-card-side">
+
+                <span
+                class="status"
+                :class="appointment.status"
+                >
+                    {{ appointment.status }}
+                </span>
+
+                <button
+                class="chevron"
+                :class="{open:isExpanded(appointment._id)}"
+                >
+                    ›
+                </button>
+
+            </div>
+
+        </div>
+
+        <transition name="expand">
+
+        <div
+        v-if="isExpanded(appointment._id)"
+        class="mobile-card-details"
+        >
+
+            <div class="detail-row">
+                <span class="detail-label">Speciality</span>
+                <span class="detail-value">
+                    {{ appointment.doctor?.specialties?.join(", ") || "N/A" }}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Appointment Date</span>
+                <span class="detail-value">
+                    {{ formatDateTime(appointment.appointmentDateTime) }}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Cancel Reason</span>
+                <span class="detail-value">
+                    {{ appointment.cancelReason || "No cancellation" }}
+                </span>
+            </div>
+
+            <button
+            v-if="appointment.status !== 'cancelled'"
+            class="mobile-cancel-btn"
+            @click="cancelAppointment(appointment._id)"
+            >
+                Cancel Appointment
+            </button>
+
+            <span v-else class="already-cancelled">
+                Already Cancelled
+            </span>
+
+        </div>
+
+        </transition>
+
+    </div>
+
+    <div
+    v-if="appointments.length===0"
+    class="empty"
+    >
+        No Appointments Found
+    </div>
+
+</div>
+
+
+
 
 
 
@@ -739,31 +871,12 @@ v-for="page in totalPages"
 
 
 select{
-
-    appearance:none;
-
-    background:var(--white);
-
-    border:1px solid var(--border);
-
-    padding:13px 18px;
-
-    border-radius:var(--radius-md);
-
-    color:var(--text);
-
-    font-weight:600;
-
-    outline:none;
-
-    margin-bottom:22px;
-
-    cursor:pointer;
-
-    box-shadow:var(--shadow);
-
-    transition:.3s;
-
+    width:220px;
+    max-width:100%;
+    position:relative;
+    z-index:10;
+    padding: 10px;
+    margin-bottom:10px
 }
 
 
@@ -1069,6 +1182,7 @@ tbody td:last-child{
     font-weight:800;
 
     text-transform:capitalize;
+    white-space:nowrap;
 
 }
 
@@ -1165,6 +1279,290 @@ button:hover{
 
 
 
+/* ================= MOBILE CARD LIST (hidden on desktop) ================= */
+
+.mobile-list{
+
+    display:none;
+
+}
+
+
+.mobile-card{
+
+    background:var(--white);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:14px;
+
+    overflow:hidden;
+
+    transition:.3s;
+
+}
+
+
+.mobile-card-main{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:14px 16px;
+
+    cursor:pointer;
+
+}
+
+
+.mobile-card-main .avatar{
+
+    background:var(--gradient-teal);
+
+}
+
+
+.mobile-card-info{
+
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
+}
+
+
+.mobile-card-name{
+
+    font-weight:800;
+
+    font-size:15px;
+
+    color:var(--text);
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+
+.mobile-card-role{
+
+    font-size:12px;
+
+    font-weight:700;
+
+    color:var(--primary);
+
+}
+
+
+.mobile-card-email{
+
+    font-size:12px;
+
+    color:var(--muted);
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+
+.mobile-card-side{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-end;
+
+    gap:8px;
+
+    flex-shrink:0;
+
+}
+
+
+.chevron{
+
+    background:var(--surface-solid, #f3f4f6);
+
+    color:var(--muted);
+
+    border:none;
+
+    width:26px;
+
+    height:26px;
+
+    padding:0;
+
+    border-radius:50%;
+
+    font-size:16px;
+
+    font-weight:900;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transition:.3s;
+
+}
+
+
+.chevron.open{
+
+    transform:rotate(90deg);
+
+    background:var(--gradient-primary);
+
+    color:white;
+
+}
+
+
+.chevron:hover{
+
+    background:var(--gradient-primary);
+
+    color:white;
+
+    transform:none;
+
+}
+
+
+.chevron.open:hover{
+
+    transform:rotate(90deg);
+
+}
+
+
+.mobile-card-details{
+
+    padding:0 16px 16px;
+
+    border-top:1px solid var(--border);
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    padding-top:14px;
+
+}
+
+
+.detail-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:13px;
+
+}
+
+
+.detail-label{
+
+    color:var(--muted);
+
+    font-weight:600;
+
+}
+
+
+.detail-value{
+
+    color:var(--text-soft);
+
+    text-align:right;
+
+    font-weight:600;
+
+}
+
+
+.mobile-cancel-btn{
+
+    width:100%;
+
+    margin-top:4px;
+
+    padding:11px;
+
+    font-size:13px;
+
+}
+
+
+.already-cancelled{
+
+    display:block;
+
+    text-align:center;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    font-weight:700;
+
+    margin-top:4px;
+
+}
+
+
+/* expand transition */
+
+.expand-enter-active,
+.expand-leave-active{
+
+    transition:.25s ease;
+
+}
+
+
+.expand-enter-from,
+.expand-leave-to{
+
+    opacity:0;
+
+}
+
+
+
 /* ================= RESPONSIVE ================= */
 
 
@@ -1210,17 +1608,36 @@ button:hover{
 @media(max-width:600px){
 
 
-select{
+/* select{
 
     width:100%;
+
+} */
+
+select{
+
+        width:25%;
+
+        padding:12px 14px;
+
+        font-size:14px;
+
+        border-radius:14px;
+
+    }
+
+/* swap table for cards on mobile */
+
+.table-wrapper{
+
+    display:none;
 
 }
 
 
+.mobile-list{
 
-table{
-
-    min-width:1000px;
+    display:block;
 
 }
 
@@ -1376,4 +1793,3 @@ table{
 
 }
 </style>
-

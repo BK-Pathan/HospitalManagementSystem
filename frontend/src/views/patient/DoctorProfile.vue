@@ -16,8 +16,7 @@ import api from "../../api/axios";
 const route = useRoute();
 
 const router = useRouter();
-
-
+const relatedDoctors = ref([]);
 
 const doctor = ref(null);
 
@@ -27,6 +26,8 @@ const averageRating = ref(0);
 
 const loading = ref(true);
 
+// UI-only, not persisted to backend
+const isFavorite = ref(false);
 
 
 
@@ -63,7 +64,7 @@ res.data.feedbacks;
 averageRating.value =
 res.data.averageRating;
 
-
+relatedDoctors.value = res.data.relatedDoctors || [];
 
 }
 catch(error){
@@ -158,18 +159,87 @@ getDoctorProfile();
 
 
 
+    <!-- ===== MOBILE HERO (reference-style) ===== -->
+
+    <div class="mobile-hero">
+
+      <div class="mobile-hero-photo">
+
+<img
+:src="
+doctor.profileImage 
+? doctor.profileImage 
+: 'https://cdn-icons-png.flaticon.com/512/387/387561.png'
+"
+class="doctor-img"
+/>
+        <button class="hero-icon-btn hero-icon-btn--back" @click="router.back()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <button
+        class="hero-icon-btn hero-icon-btn--fav"
+        :class="{active:isFavorite}"
+        @click="isFavorite = !isFavorite"
+        >
+          <svg viewBox="0 0 24 24" :fill="isFavorite ? 'currentColor' : 'none'"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 5a5.5 5.5 0 0 1 9.5 7c-2.5 4.5-9.5 9-9.5 9z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+
+      </div>
+
+      <div class="mobile-hero-card">
+
+        <h1 class="mobile-hero-name">Dr. {{doctor.name}}</h1>
+
+        <p class="mobile-hero-role" v-if="doctor.specialties?.length">
+          {{doctor.specialties.join(", ")}}
+        </p>
+
+        <p class="mobile-hero-role" v-else>{{doctor.department}}</p>
+
+        <div class="mobile-stat-row">
+
+          <div class="mobile-stat">
+            <span class="mobile-stat-value">⭐ {{averageRating}}</span>
+            <span class="mobile-stat-label">Ratings</span>
+          </div>
+
+          <span class="mobile-stat-divider"></span>
+
+          <div class="mobile-stat">
+            <span class="mobile-stat-value">{{doctor.experience}}</span>
+            <span class="mobile-stat-label">Experience</span>
+          </div>
+
+          <span class="mobile-stat-divider"></span>
+
+          <div class="mobile-stat">
+            <span class="mobile-stat-value">{{feedbacks.length}}</span>
+            <span class="mobile-stat-label">Reviews</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    
+
 
     <div class="doctor-header">
 
 
       <div class="doctor-img-wrap">
-        <img
-
-        src="https://cdn-icons-png.flaticon.com/512/387/387561.png"
-
-        class="doctor-img"
-
-        />
+<img
+:src="
+doctor.profileImage 
+? doctor.profileImage 
+: 'https://cdn-icons-png.flaticon.com/512/387/387561.png'
+"
+class="doctor-img"
+/>
       </div>
 
 
@@ -427,6 +497,72 @@ getDoctorProfile();
 </div>
 
 
+<div 
+class="section related-section"
+v-if="relatedDoctors.length"
+>
+
+
+<h2>
+Related Doctors
+</h2>
+
+
+<div class="related-grid">
+
+
+<div
+v-for="doc in relatedDoctors"
+:key="doc._id"
+class="related-card"
+@click="router.push(`/patient/doctors/profile/${doc._id}`)"
+>
+
+
+<img
+:src="
+doc.profileImage 
+? doc.profileImage 
+: 'https://cdn-icons-png.flaticon.com/512/387/387561.png'
+"
+class="related-img"
+/>
+
+
+<div class="related-info">
+
+
+<h3>
+Dr. {{doc.name}}
+</h3>
+
+
+<p>
+{{doc.department}}
+</p>
+
+
+<span v-if="doc.specialties?.length">
+{{doc.specialties.join(', ')}}
+</span>
+
+
+<p>
+{{doc.experience}} Years Experience
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
 </template>
 
 
@@ -501,6 +637,12 @@ getDoctorProfile();
     0 8px 20px -10px rgba(15, 42, 67, 0.08);
 }
 
+/* ---------- Mobile hero (reference-style, hidden on desktop) ---------- */
+
+.mobile-hero {
+  display: none;
+}
+
 /* ---------- Doctor header ---------- */
 
 .doctor-header {
@@ -513,21 +655,27 @@ getDoctorProfile();
 }
 
 .doctor-img-wrap {
+  width: 112px;
+  height: 112px;
   padding: 4px;
   border-radius: 50%;
+  overflow: hidden;
   background: linear-gradient(135deg, var(--clinical-teal), var(--clinical-navy));
   box-shadow: 0 8px 18px -6px rgba(15, 42, 67, .4);
   flex-shrink: 0;
 }
 
+
 .doctor-img {
-  width: 104px;
-  height: 104px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center;
   display: block;
   border: 3px solid var(--clinical-surface);
 }
+
 
 .doctor-header-info {
   flex: 1;
@@ -850,7 +998,7 @@ getDoctorProfile();
 }
 
 /* ==========================
-   Mobile
+   Mobile (reference-style hero)
 ========================== */
 @media (max-width: 768px) {
 
@@ -859,24 +1007,140 @@ getDoctorProfile();
   }
 
   .profile-card {
-    padding: 18px;
+    padding: 0;
     border-radius: 16px;
+    overflow: hidden;
   }
+
+  /* hide desktop header row, show reference-style hero instead */
 
   .doctor-header {
+    display: none;
+  }
+
+  .mobile-hero {
+    display: block;
+  }
+
+  .mobile-hero-photo {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    background: linear-gradient(135deg, var(--clinical-navy), var(--clinical-teal));
+  }
+
+  .mobile-hero-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-icon-btn {
+    position: absolute;
+    top: 16px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,.92);
+    color: var(--clinical-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px -3px rgba(15,42,67,.25);
+  }
+
+  .hero-icon-btn svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .hero-icon-btn--back {
+    left: 16px;
+  }
+
+  .hero-icon-btn--fav {
+    right: 16px;
+  }
+
+  .hero-icon-btn--fav.active {
+    color: #dc2626;
+  }
+
+  .mobile-hero-card {
+    margin: -28px 14px 0;
+    position: relative;
+    background: var(--clinical-surface);
+    border: 1px solid var(--clinical-border);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 10px 24px -12px rgba(15,42,67,.18);
+  }
+
+  .mobile-hero-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--clinical-navy);
+  }
+
+  .mobile-hero-role {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--clinical-text-muted);
+  }
+
+  .mobile-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--clinical-border);
+  }
+
+  .mobile-stat {
+    flex: 1;
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    padding-bottom: 18px;
+    align-items: center;
+    gap: 2px;
   }
 
-  .doctor-img {
-    width: 84px;
-    height: 84px;
+  .mobile-stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--clinical-navy);
+    white-space: nowrap;
   }
 
-  .doctor-header h1 {
-    font-size: 21px;
+  .mobile-stat-label {
+    font-size: 11px;
+    color: var(--clinical-text-muted);
+  }
+
+  .mobile-stat-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--clinical-border);
+  }
+
+  .profile-card > .info-grid,
+  .profile-card > .section,
+  .profile-card > .book-btn--full {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+
+  .profile-card > .book-btn--full {
+    margin-bottom: 20px;
+    width: calc(100% - 28px);
+  }
+
+  .profile-card > .section:last-child {
+    padding-bottom: 20px;
   }
 
   .book-btn--header {
@@ -913,6 +1177,33 @@ getDoctorProfile();
 
 }
 
+.mobile-hero-photo {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--clinical-navy),
+    var(--clinical-teal)
+  );
+}
+
+
+.mobile-hero-photo .doctor-img {
+
+  width:100%;
+  height:100%;
+
+  border-radius:0;
+  border:none;
+
+  object-fit:cover;
+  object-position:10% 70%;
+
+  display:block;
+
+}
 /* ==========================
    Small Mobile
 ========================== */
@@ -922,8 +1213,16 @@ getDoctorProfile();
     padding: 10px;
   }
 
-  .profile-card {
-    padding: 14px;
+  .mobile-hero-photo {
+    height: 220px;
+  }
+
+  .mobile-hero-name {
+    font-size: 18px;
+  }
+
+  .mobile-stat-value {
+    font-size: 13px;
   }
 
   .doctor-header h1 {
@@ -972,6 +1271,116 @@ getDoctorProfile();
     padding: 12px 20px;
     font-size: 14px;
   }
+
+}
+
+.related-grid{
+
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:16px;
+
+}
+
+
+
+.related-card{
+
+background:white;
+
+border:1px solid var(--clinical-border);
+
+border-radius:16px;
+
+padding:16px;
+
+display:flex;
+
+gap:14px;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+
+
+.related-card:hover{
+
+transform:translateY(-3px);
+
+box-shadow:0 10px 20px -10px rgba(0,0,0,.2);
+
+}
+
+
+
+.related-img{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+
+
+.related-info h3{
+
+margin:0;
+
+font-size:16px;
+
+color:var(--clinical-navy);
+
+}
+
+
+
+.related-info p{
+
+margin:5px 0;
+
+font-size:13px;
+
+color:var(--clinical-text-muted);
+
+}
+
+
+
+.related-info span{
+
+font-size:12px;
+
+color:var(--clinical-teal);
+
+}
+
+
+
+@media(max-width:480px){
+
+.related-grid{
+
+grid-template-columns:1fr;
+
+}
+
+
+.related-card{
+
+padding:12px;
+
+}
+
 
 }
 

@@ -4,8 +4,9 @@ import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
 import api from "../api/axios";
 
-const role = computed(() => localStorage.getItem("role"));
-
+const role = computed(() => 
+    localStorage.getItem("role")?.toLowerCase()
+);
 const router = useRouter();
 
 // Mobile drawer state (UI-only, no backend / data change)
@@ -52,97 +53,97 @@ const menu = computed(()=>{
 if(currentRole=== "admin"){
 
 return [
+  {
+    heading: "🏠 Overview",
+    items: [
+      {
+        name: "📊 Dashboard",
+        path: "/admin"
+      }
+    ]
+  },
+  {
+    heading: "👥 User Management",
+    items: [
+      {
+        name: "👥 Users",
+        path: "/admin/users"
+      },
+      {
+        name: "👨‍⚕️ Doctors Profile & List",
+        path: "/admin/doctors"
+      },
 
-{
-name:"📊 Dashboard",
-path:"/admin"
-},
-
-{
-name:"👨‍⚕️ Doctors",
-path:"/admin/doctors"
-},
-
-{
-name:"🧑 Patients",
-path:"/admin/patients"
-},
-
-{
-name:"📅 Appointments",
-path:"/admin/appointments"
-},
-{
-name:"👥 Users",
-path:"/admin/users"
-},
-{
-    name:"🧑‍🤝‍🧑Patient Profile",
-    path:"/admin/patientprofile",
-},
-{
-name:"👤 Admin Profile",
-path:"/admin/profile"
-},
-// {
-//     name:"AdminRooms",
-//      path:"/admin/rooms",
-// },
-// {
-//      name:"AdminBeds",
-//       path:"/admin/beds",
-// },
-// {
-//     name:"AdminAdmissions",
-//      path:"/admin/admissions",
-// }
-
-
-]
+      {
+        name: "🧑‍🤝‍🧑 Patient Profile & List",
+        path: "/admin/patientprofile"
+      }
+    ]
+  },
+  {
+    heading: "📅 Appointments",
+    items: [
+      {
+        name: "📅 Appointments",
+        path: "/admin/appointments"
+      }
+    ]
+  },
+  {
+    heading: "⚙️ Account",
+    items: [
+      {
+        name: "👤 Admin Profile",
+        path: "/admin/profile"
+      }
+    ]
+  }
+];
 
 }
-
-
 
 if(currentRole==="patient"){
 
 return [
+    {
+        heading:"🏠 Overview",
+        items:[
+            {
+                name:"🏠 Dashboard",
+                path:"/patient"
+            }
+        ]
+    },
 
-{
-name:"🏠 Dashboard",
-path:"/patient"
-},
+    {
+        heading:"🏥 Medical",
+        items:[
+            {
+                name:"👨‍⚕️ Doctors",
+                path:"/patient/doctors"
+            },
+            {
+                name:"📅 My Appointments",
+                path:"/patient/appointments"
+            },
+            {
+                name:"💊 Prescription History",
+                path:"/patient/prescriptions"
+            }
+        ]
+    },
+        {
+        heading:"👤 Account",
+        items:[
+            {
+                name:"👤 Profile",
+                path:"/patient/profile"
+            }
+        ]
+    },
+];
 
-{
-name:"👤 Profile",
-path:"/patient/profile"
-},
-
-{
-name:"👨‍⚕️ Doctors",
-path:"/patient/doctors"
-},
-
-// {
-// name:"📅 Book Appointment",
-// path:"/patient/doctors"
-// },
-
-{
-name:"📅 My Appointments",
-path:"/patient/appointments"
-},
-{
-    name:"💊 Prescription History",
-    path:"/patient/prescriptions",
 }
-
-
-]
-
-}
-
-
 
 
 if(currentRole==="doctor"){
@@ -150,9 +151,19 @@ if(currentRole==="doctor"){
 return [
 
 {
+heading:"🏠 Overview",
+items:[
+{
 name:"🏠 Dashboard",
 path:"/doctor"
+}
+]
 },
+
+
+{
+heading:"📅 Management",
+items:[
 
 {
 name:"📅 Appointments",
@@ -160,35 +171,41 @@ path:"/doctor/appointments"
 },
 
 {
+name:"🔄 Reschedule Requests",
+path:"/doctor/reschedule-requests"
+}
+
+]
+
+},
+
+
+{
+heading:"👤 Account",
+items:[
+
+{
 name:"👤 Profile",
 path:"/doctor/profile"
 },
-{
-    name:"Feedback",
-    path:"/doctor/feedback"
-},
-{
-    name:"🔄 Reschedule Requests",
-    path:"/doctor/reschedule-requests"
-},
-// {
-//     name:"DoctorAdmissions",
-//     path:"/doctor/admissions",
-// }
 
+{
+name:"⭐ Feedback",
+path:"/doctor/feedback"
+}
 
+]
+
+}
 
 ]
 
 }
 
 
-
 return [];
 
-
 });
-
 
 
 </script>
@@ -269,34 +286,35 @@ class="sidebar"
 
 
 
-    <p class="menu-label">Main Menu</p>
+<p class="menu-label">Main Menu</p>
 
+<div class="menu">
 
-    <div class="menu">
+    <div
+        v-for="section in menu"
+        :key="section.heading"
+        class="menu-section"
+    >
 
+        <p class="menu-heading">
+            {{ section.heading }}
+        </p>
 
         <router-link
-
-        v-for="item in menu"
-
-        :key="item.path"
-
-        :to="item.path"
-
-        class="menu-item"
-
-        @click="closeMobile"
-
+            v-for="item in section.items"
+            :key="item.path"
+            :to="item.path"
+            class="menu-item"
+            @click="closeMobile"
         >
-
-            <!-- <span class="menu-item__dot"></span> -->
-
-            <span class="menu-item__text">{{item.name}}</span>
-
+            <span class="menu-item__text">
+                {{ item.name }}
+            </span>
         </router-link>
 
-
     </div>
+
+</div>
 
 
 
@@ -371,6 +389,17 @@ class="sidebar"
 
 }
 
+/* subtle premium texture overlay */
+.sidebar::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+    radial-gradient(circle at 15% 0%, rgba(56,189,248,.10), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(37,99,235,.12), transparent 50%);
+    pointer-events:none;
+}
+
 
 /* =========================
         BRAND
@@ -392,6 +421,8 @@ class="sidebar"
     1px solid rgba(255,255,255,.1);
 
     position:relative;
+
+    z-index:1;
 
 }
 
@@ -550,9 +581,12 @@ class="sidebar"
     text-transform:uppercase;
 
     letter-spacing:.12em;
-        min-height:0;   /* important */
+    min-height:0;
 
     color:rgba(255,255,255,.35);
+
+    position:relative;
+    z-index:1;
 
 }
 
@@ -574,6 +608,13 @@ class="sidebar"
     overflow-x:hidden;
 
     padding-right:5px;
+
+    position:relative;
+    z-index:1;
+
+    /* Firefox: thin + transparent by default */
+    scrollbar-width:thin;
+    scrollbar-color:transparent transparent;
 
 }
 
@@ -614,6 +655,8 @@ class="sidebar"
 
     overflow:hidden;
 
+
+    border-left:3px solid transparent;
 
 }
 
@@ -705,6 +748,9 @@ class="sidebar"
     color:rgb(17, 70, 113);
 
 
+    border-left-color:var(--accent-a);
+
+
 }
 
 
@@ -736,6 +782,9 @@ class="sidebar"
 
 
     0 10px 26px rgba(2,6,23,.35);
+
+
+    border-left-color:var(--accent-b);
 
 
 }
@@ -801,6 +850,9 @@ class="sidebar"
 
     transition:.3s;
 
+    position:relative;
+    z-index:1;
+
 }
 
 
@@ -849,7 +901,7 @@ class="sidebar"
 
 
 /* =========================
-        SCROLL
+    TRANSPARENT SCROLLBAR
 ========================= */
 
 
@@ -870,119 +922,38 @@ class="sidebar"
 
 .menu::-webkit-scrollbar-thumb{
 
-    background:
-
-    linear-gradient(
-        180deg,
-        var(--accent-a),
-        var(--accent-b)
-    );
-
+    background:transparent;
 
     border-radius:20px;
 
+    transition:background .25s ease;
+
+}
+
+
+/* thumb sirf hover / scroll ke waqt dikhega, halka transparent tone mein */
+.menu:hover::-webkit-scrollbar-thumb{
+
+    background:rgba(255,255,255,.18);
+
+}
+
+
+.menu::-webkit-scrollbar-thumb:hover{
+
+    background:rgba(255,255,255,.32);
+
+}
+
+
+/* Firefox hover state */
+.menu:hover{
+    scrollbar-color:rgba(255,255,255,.22) transparent;
 }
 
 
 
 /* =========================
-        MOBILE TOGGLE
-========================= */
-/* 
-
-.mobile-toggle{
-
-    display:none;
-
-    position:fixed;
-
-    top:16px;
-
-    left:16px;
-
-    z-index:110;
-
-    width:38px;
-
-    height:38px;
-
-    border-radius:13px;
-
-    border:1px solid rgba(255,255,255,.15);
-
-    background:linear-gradient(135deg,#0f172a,#1e40af);
-
-    box-shadow:0 10px 26px rgba(2,6,23,.4);
-
-    cursor:pointer;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:5px;
-
-    transition:transform .25s ease, box-shadow .25s ease, opacity .25s ease;
-
-}
-
-
-.mobile-toggle:hover{
-
-    transform:scale(1.06);
-
-    box-shadow:0 12px 30px rgba(2,6,23,.5);
-
-}
-
-
-.mobile-toggle span{
-
-    width:20px;
-
-    height:2px;
-
-    background:white;
-
-    border-radius:5px;
-
-    display:block;
-
-}
-
-
-.mobile-toggle.hide{
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transform:scale(.8);
-
-}
-
-
-
-.sidebar-overlay{
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(2,6,23,.6);
-
-    backdrop-filter:blur(3px);
-
-    z-index:99;
-
-}
- */
-
- /* =========================
       MOBILE ARROW TOGGLE
 ========================= */
 
@@ -1016,9 +987,6 @@ class="sidebar"
 
 
     border-radius:0 20px 20px 0;
-
-
-    display:none;
 
 
     align-items:center;
@@ -1263,5 +1231,21 @@ class="sidebar"
     transform:
     translate(-20px,-50%);
 
+}
+.menu-section{
+    margin-bottom:18px;
+    position:relative;
+    z-index:1;
+}
+
+.menu-heading{
+    font-size:11px;
+    font-weight:700;
+    color:#94a3b8;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin:12px 10px 8px;
+    padding-bottom:6px;
+    border-bottom:1px solid rgba(255,255,255,.06);
 }
 </style>

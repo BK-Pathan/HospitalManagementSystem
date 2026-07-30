@@ -288,250 +288,87 @@ getMyPrescriptions();
   >
 
 
-    <div class="header">
+    <!-- Patient group header (like reference: "PATIENT: Name") -->
+    <div class="patient-header">
 
-      <div class="header-info">
+      <span class="patient-label">PATIENT:</span>
+      <span class="patient-name">{{ item.patient?.user?.name || "Patient" }}</span>
 
-        <h3><span class="header-icon">👤</span> {{ item.patient?.user?.name || "Patient" }}</h3>
+      <span class="doctor-chip" v-if="item.doctor">
+        <span class="header-icon">👨‍⚕️</span> Dr. {{ item.doctor?.user?.name || item.doctor?.name || "Doctor" }}
+      </span>
 
-
-        <h3 class="doctor-line"><span class="header-icon">👨‍⚕️</span> Dr. {{ item.doctor?.user?.name || item.doctor?.name || "Doctor" }}</h3>
-
-
-        <div class="header-tags">
-
-          <!-- <span class="tag" v-if="item.doctor?.specialties">
-            specialties {{ item.doctor.specialties.join(", ") }}
-          </span> -->
+    </div>
 
 
-          <span class="tag tag--muted" v-if="item.doctor?.department">
-            Department : {{ item.doctor.department }}
-          </span>
+    <!-- Each medicine styled as its own row + info grid, like the reference cards -->
+    <div
+    v-for="med in item.medicines"
+    :key="med._id"
+    class="med-block"
+    >
 
+      <div class="med-row">
+
+        <div class="med-icon">💊</div>
+
+        <div class="med-info">
+          <p class="med-name">{{ med.name }}</p>
+          <p class="med-sub">{{ med.dosage || "-" }} · {{ med.frequency || "-" }}</p>
         </div>
 
+        <span class="status status--track">Completed</span>
 
       </div>
 
+      <div class="info-grid">
 
+        <div class="info-col">
+          <span class="info-label">date</span>
+          <span class="info-value">{{ new Date(item.createdAt).toLocaleDateString() }}</span>
+        </div>
 
+        <div class="info-col">
+          <span class="info-label">prescriber</span>
+          <span class="info-value">{{ item.doctor?.user?.name || item.doctor?.name || "N/A" }}</span>
+        </div>
 
-      <div class="date-box">
+        <div class="info-col" v-if="item.doctor?.department">
+          <span class="info-label">department</span>
+          <span class="info-value">{{ item.doctor.department }}</span>
+        </div>
 
-
-        <p>
-
-        📅
-
-        {{
-
-        new Date(item.createdAt)
-        .toLocaleDateString()
-
-        }}
-
-        </p>
-
-
-        <p>
-
-        ⏰
-
-        {{
-
-        new Date(item.createdAt)
-        .toLocaleTimeString(
-        "en-US",
-        {
-        hour:"2-digit",
-        minute:"2-digit"
-        }
-        )
-
-        }}
-
-        </p>
-
+        <div class="info-col" v-else-if="item.doctor?.experience">
+          <span class="info-label">experience</span>
+          <span class="info-value">{{ item.doctor.experience }} yrs</span>
+        </div>
 
       </div>
-
-
 
     </div>
 
 
-
-
-
-    <div class="section-divider"></div>
-
-
-
-
-
-    <h4 class="section-label">💊 Medicines</h4>
-
-
-
-
-    <table>
-
-
-      <thead>
-
-
-      <tr>
-
-      <th>
-      Medicine
-      </th>
-
-
-      <th>
-      Dosage
-      </th>
-
-
-      <th>
-      Frequency
-      </th>
-
-
-      </tr>
-
-
-      </thead>
-
-
-
-      <tbody>
-
-
-
-      <tr
-
-      v-for="med in item.medicines"
-
-      :key="med._id"
-
-      >
-
-
-      <td class="med-name">
-
-      {{ med.name }}
-
-      </td>
-
-
-
-      <td>
-
-      {{ med.dosage || "-" }}
-
-      </td>
-
-
-
-      <td>
-
-      {{ med.frequency || "-" }}
-
-      </td>
-
-
-
-      </tr>
-
-
-
-      </tbody>
-
-
-
-    </table>
-
-
-    <div class="appointment-info">
-
-      <h4>
-      📋 Appointment Information
-      </h4>
-
-
-      <p>
-      Status:
-      <span class="status">
-      Completed
-      </span>
-      </p>
-
-
-      <p v-if="item.doctor?.experience">
-
-      Dr's Experience: {{item.doctor.experience}} Years
-
-      </p>
-
-
-    </div>
-
-
+    <!-- Instructions & notes -->
     <div class="info">
 
+      <h4>📝 Instructions</h4>
+      <p>{{ item.instructions || "No instructions" }}</p>
 
-      <h4>
-
-      📝 Instructions
-
-      </h4>
-
-
-      <p>
-
-      {{ item.instructions || "No instructions" }}
-
-      </p>
-
-
-
-
-
-      <h4>
-
-      📌 Notes
-
-      </h4>
-
-
-      <p>
-
-      {{ item.notes || "No notes" }}
-
-      </p>
-
-
+      <h4>📌 Notes</h4>
+      <p>{{ item.notes || "No notes" }}</p>
 
     </div>
 
 
     <button
-
     class="download-btn"
-
     @click="downloadPDF(item)"
-
     >
-
-    ⬇️ Download PDF
-
+      ⬇️ Download PDF
     </button>
 
 
   </div>
-
-
 
 
 </div>
@@ -650,7 +487,7 @@ getMyPrescriptions();
   margin-bottom: 10px;
 }
 
-/* ---------- Prescription card (Premium) ---------- */
+/* ---------- Prescription card ---------- */
 
 .prescription-card {
   background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
@@ -670,167 +507,168 @@ getMyPrescriptions();
     0 16px 28px -12px rgba(15, 42, 67, 0.14);
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  flex-wrap: wrap;
-}
+/* ---------- Patient group header (reference: "PATIENT: Name") ---------- */
 
-.header-info h3 {
-  font-size: 17px;
-  color: var(--clinical-navy);
-  margin: 0 0 6px;
+.patient-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  overflow-wrap: break-word;
-}
-
-.doctor-line {
-  color: var(--clinical-teal) !important;
-}
-
-.header-icon {
-  font-size: 15px;
-}
-
-.header-tags {
-  display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 8px;
+  padding-bottom: 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--clinical-border);
 }
 
-.tag {
-  font-size: 12px;
+.patient-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  color: var(--clinical-text-muted);
+  text-transform: uppercase;
+}
+
+.patient-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--clinical-navy);
+}
+
+.doctor-chip {
+  margin-left: auto;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--clinical-teal);
   background: var(--clinical-teal-light);
   padding: 4px 10px;
   border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
-.tag--muted {
-  color: var(--clinical-text-muted);
-  background: var(--clinical-bg);
-  border: 1px solid var(--clinical-border);
-}
-
-.date-box {
-  text-align: right;
-  color: var(--clinical-text-muted);
-  font-weight: 600;
+.header-icon {
   font-size: 13px;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
-.date-box p {
-  margin: 2px 0;
-}
+/* ---------- Medicine block: row + divided info-grid (reference style) ---------- */
 
-.section-divider {
-  height: 1px;
-  background: var(--clinical-border);
-  margin: 20px 0;
-}
-
-.section-label {
-  color: var(--clinical-navy);
-  font-size: 15px;
-  margin: 0 0 4px;
-  font-weight: 700;
-}
-
-/* ---------- Medicine table ---------- */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
+.med-block {
+  border: 1px solid var(--clinical-border);
+  border-radius: 14px;
+  margin-top: 14px;
   overflow: hidden;
-  border-radius: 10px;
+  background: var(--clinical-surface);
 }
 
-th {
-  background: var(--clinical-bg);
-  color: var(--clinical-text-muted);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  font-weight: 700;
-  padding: 12px 14px;
-  text-align: left;
-  border-bottom: 1px solid var(--clinical-border);
-  white-space: nowrap;
+.med-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
 }
 
-td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--clinical-border);
-  font-size: 14px;
+.med-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: var(--clinical-teal-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.med-info {
+  min-width: 0;
+  flex: 1;
 }
 
 .med-name {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--clinical-navy);
+  font-size: 14.5px;
+  margin: 0 0 2px;
+  overflow-wrap: break-word;
 }
 
-tbody tr {
-  transition: background .2s ease;
-}
-
-tbody tr:hover {
-  background: var(--clinical-bg);
-}
-
-tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* ---------- Appointment info & notes ---------- */
-
-.appointment-info {
-  margin-top: 20px;
-  background: var(--clinical-teal-light);
-  padding: 18px 20px;
-  border-radius: 12px;
-}
-
-.appointment-info h4 {
-  color: var(--clinical-navy);
-  margin: 0 0 10px;
-  font-size: 14px;
-}
-
-.appointment-info p {
-  margin: 6px 0;
-  font-size: 14px;
-  color: var(--clinical-text);
+.med-sub {
+  font-size: 12.5px;
+  color: var(--clinical-text-muted);
+  margin: 0;
 }
 
 .status {
-  background: var(--clinical-green-light);
-  color: var(--clinical-green);
-  padding: 4px 12px;
-  border-radius: 999px;
+  flex-shrink: 0;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11.5px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.info {
-  margin-top: 22px;
+.status--track {
+  background: var(--clinical-green-light);
+  color: var(--clinical-green);
+}
+
+.status--pending {
+  background: var(--clinical-amber-light);
+  color: var(--clinical-amber);
+}
+
+/* Divided info-grid: label above value, columns separated by vertical lines */
+
+.info-grid {
+  display: flex;
+  border-top: 1px solid var(--clinical-border);
   background: var(--clinical-bg);
-  padding: 18px 20px;
+}
+
+.info-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 8px;
+  text-align: center;
+  border-right: 1px solid var(--clinical-border);
+}
+
+.info-col:last-child {
+  border-right: none;
+}
+
+.info-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--clinical-text-muted);
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--clinical-navy);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Instructions / notes ---------- */
+
+.info {
+  margin-top: 16px;
+  background: var(--clinical-bg);
+  padding: 16px 18px;
   border-radius: 12px;
 }
 
 .info h4 {
   color: var(--clinical-navy);
-  margin: 14px 0 4px;
-  font-size: 14px;
+  margin: 12px 0 4px;
+  font-size: 13.5px;
 }
 
 .info h4:first-child {
@@ -840,22 +678,23 @@ tbody tr:last-child td {
 .info p {
   margin: 0;
   color: var(--clinical-text);
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.5;
   overflow-wrap: break-word;
 }
 
-/* ---------- Download button (Premium) ---------- */
+/* ---------- Download button ---------- */
 
 .download-btn {
-  margin-top: 20px;
-  padding: 11px 22px;
+  margin-top: 18px;
+  padding: 13px 22px;
+  width: 100%;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--clinical-teal), #0b7a70);
   color: white;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 14.5px;
   cursor: pointer;
   box-shadow: 0 8px 18px -6px rgba(13, 148, 136, .4);
   transition: transform .18s cubic-bezier(.22,1,.36,1),
@@ -865,12 +704,12 @@ tbody tr:last-child td {
 
 .download-btn:hover {
   filter: brightness(1.05);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: 0 12px 22px -6px rgba(13, 148, 136, .45);
 }
 
 .download-btn:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 /* ==========================
@@ -893,6 +732,10 @@ tbody tr:last-child td {
     padding: 22px;
   }
 
+  .download-btn {
+    width: auto;
+  }
+
 }
 
 /* ==========================
@@ -911,63 +754,97 @@ tbody tr:last-child td {
 }
 
 /* ==========================
-   Mobile
+   Mobile — main polish target
 ========================== */
 @media (max-width: 768px) {
 
   .page {
-    padding: 14px;
+    padding: 12px;
   }
 
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 16px;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
   }
 
   .title {
-    font-size: 20px;
+    font-size: 19px;
+  }
+
+  .eyebrow {
+    font-size: 10.5px;
   }
 
   .prescription-card {
-    padding: 18px;
+    padding: 16px;
     border-radius: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
-  .header {
-    flex-direction: column;
-    gap: 12px;
+  .patient-header {
+    padding-bottom: 12px;
   }
 
-  .date-box {
-    text-align: left;
+  .patient-name {
+    font-size: 14px;
   }
 
-  .header-info h3 {
-    font-size: 15.5px;
+  .doctor-chip {
+    font-size: 11.5px;
+    padding: 3px 9px;
   }
 
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+  .med-block {
+    margin-top: 12px;
+    border-radius: 12px;
   }
 
-  th,
-  td {
-    padding: 10px 12px;
+  .med-row {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  .med-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    font-size: 15px;
+  }
+
+  .med-name {
     font-size: 13px;
   }
 
-  .info,
-  .appointment-info {
-    padding: 14px 16px;
+  .med-sub {
+    font-size: 11.5px;
+  }
+
+  .status {
+    font-size: 10.5px;
+    padding: 5px 10px;
+  }
+
+  .info-col {
+    padding: 8px 4px;
+  }
+
+  .info-label {
+    font-size: 9.5px;
+  }
+
+  .info-value {
+    font-size: 11.5px;
+  }
+
+  .info {
+    padding: 12px 14px;
+    margin-top: 14px;
   }
 
   .download-btn {
     width: 100%;
+    padding: 12px 18px;
   }
 
 }
@@ -978,46 +855,80 @@ tbody tr:last-child td {
 @media (max-width: 480px) {
 
   .page {
-    padding: 10px;
+    padding: 8px;
   }
 
   .title {
-    font-size: 18px;
-  }
-
-  .eyebrow {
-    font-size: 11px;
+    font-size: 17px;
   }
 
   .prescription-card {
-    padding: 14px;
+    padding: 12px;
+    border-radius: 14px;
   }
 
-  .header-info h3 {
-    font-size: 14.5px;
+  .patient-name {
+    font-size: 13px;
   }
 
-  .tag {
+  .doctor-chip {
+    font-size: 10.5px;
+  }
+
+  .med-row {
+    gap: 8px;
+    padding: 9px 10px;
+  }
+
+  .med-icon {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: 13px;
+  }
+
+  .med-name {
+    font-size: 12.5px;
+  }
+
+  .med-sub {
     font-size: 11px;
-    padding: 4px 8px;
   }
 
-  .section-label {
-    font-size: 14px;
+  .status {
+    font-size: 10px;
+    padding: 4px 9px;
   }
 
-  .info h4,
-  .appointment-info h4 {
-    font-size: 13px;
+  .info-grid {
+    flex-wrap: wrap;
   }
 
-  .info p,
-  .appointment-info p {
-    font-size: 13px;
+  .info-col {
+    flex: 1 1 50%;
+    border-right: none;
+    border-bottom: 1px solid var(--clinical-border);
+  }
+
+  .info-col:nth-child(2n) {
+    border-right: 1px solid var(--clinical-border);
+  }
+
+  .info-col:last-child,
+  .info-col:nth-last-child(2):nth-child(odd) {
+    border-bottom: none;
+  }
+
+  .info h4 {
+    font-size: 12px;
+  }
+
+  .info p {
+    font-size: 12.5px;
   }
 
   .download-btn {
-    padding: 10px 16px;
+    padding: 11px 16px;
     font-size: 13px;
   }
 

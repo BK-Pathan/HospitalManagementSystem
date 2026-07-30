@@ -819,6 +819,9 @@ onMounted(()=>{
     padding:20px;
     border:1px solid #e2e8f0;
     transition:.3s;
+    overflow:hidden;      /* ADD */
+    min-width:0;           /* ADD */
+
 }
 
 .doctor-item:hover{
@@ -830,7 +833,10 @@ onMounted(()=>{
     display:flex;
     align-items:center;
     gap:14px;
+     flex-wrap:wrap;         /* ADD - status-dot ko wrap hone dega instead of overflow */
+    min-width:0;             /* ADD */
 }
+
 
 .avatar{
     width:44px;
@@ -848,6 +854,7 @@ onMounted(()=>{
 .doctor-item-top h3{
     color:#0f172a;
     font-size:15px;
+     white-space:nowrap; 
 }
 
 .speciality{
@@ -865,6 +872,7 @@ onMounted(()=>{
     font-size:12px;
     font-weight:700;
     white-space:nowrap;
+     flex-shrink:0;   
 }
 
 .available{ color:#16a34a; }
@@ -1166,7 +1174,7 @@ onMounted(()=>{
 
 
     .badge{
-        width:100%;
+width:50%;
         text-align:center;
     }
 

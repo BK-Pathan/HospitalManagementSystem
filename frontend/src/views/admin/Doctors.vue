@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import api from "../../api/axios";
 
 
@@ -40,6 +40,14 @@ const startTime = ref("");
 const endTime = ref("");
 
 const availability = ref([]);
+
+
+// UI-only: mobile card expand/collapse state (no backend impact)
+const openCards = reactive({});
+
+const toggleCard = (id) => {
+    openCards[id] = !openCards[id];
+};
 
 
 
@@ -539,6 +547,7 @@ getDoctors();
 
         <div 
         class="doctor-card"
+        :class="{ expanded: openCards[doctor._id] }"
         v-for="doctor in doctors"
         :key="doctor._id"
         >
@@ -549,10 +558,18 @@ getDoctors();
                     {{ doctor.name?.charAt(0) }}
                 </div>
 
-                <div>
+                <div class="doctor-heading">
                     <h4>{{doctor.name}}</h4>
                     <p>{{doctor.department}}</p>
                 </div>
+
+                <button
+                class="card-expand-btn"
+                @click="toggleCard(doctor._id)"
+                :aria-expanded="!!openCards[doctor._id]"
+                >
+                    <span class="chevron">›</span>
+                </button>
 
             </div>
 
@@ -564,81 +581,91 @@ getDoctors();
                     <strong>{{doctor.user?.email}}</strong>
                 </div>
 
-
-                <div>
-                    <span>Speciality</span>
-                    <strong>
-                        {{doctor.specialties?.join(", ")}}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>Qualification</span>
-                    <strong>
-                        {{doctor.qualifications}}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>Experience</span>
-                    <strong>
-                        {{doctor.experience}} Years
-                    </strong>
-                </div>
-
             </div>
 
 
-
-            <div class="availability-card">
-
-                <span class="label">
-                    Availability
-                </span>
+            <div class="doctor-collapsible">
 
 
-                <div 
-                class="slot"
-                v-for="(item,index) in doctor.availability"
-                :key="index"
-                >
+                <div class="doctor-info doctor-info--sub">
 
-                    <span>{{item.day}}</span>
+                    <div>
+                        <span>Speciality</span>
+                        <strong>
+                            {{doctor.specialties?.join(", ")}}
+                        </strong>
+                    </div>
 
-                    <small>
-                        {{item.startTime}} - {{item.endTime}}
-                    </small>
+
+                    <div>
+                        <span>Qualification</span>
+                        <strong>
+                            {{doctor.qualifications}}
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        <span>Experience</span>
+                        <strong>
+                            {{doctor.experience}} Years
+                        </strong>
+                    </div>
 
                 </div>
 
 
-                <p v-if="!doctor.availability?.length">
-                    No slots available
-                </p>
+
+                <div class="availability-card">
+
+                    <span class="label">
+                        Availability
+                    </span>
 
 
-            </div>
+                    <div 
+                    class="slot"
+                    v-for="(item,index) in doctor.availability"
+                    :key="index"
+                    >
+
+                        <span>{{item.day}}</span>
+
+                        <small>
+                            {{item.startTime}} - {{item.endTime}}
+                        </small>
+
+                    </div>
+
+
+                    <p v-if="!doctor.availability?.length">
+                        No slots available
+                    </p>
+
+
+                </div>
 
 
 
-            <div class="doctor-actions">
+                <div class="doctor-actions">
 
-                <button 
-                class="edit"
-                @click="editDoctor(doctor)"
-                >
-                    ✏ Edit
-                </button>
+                    <button 
+                    class="edit"
+                    @click="editDoctor(doctor)"
+                    >
+                        ✏ Edit
+                    </button>
 
 
-                <button 
-                class="delete"
-                @click="deleteDoctor(doctor._id)"
-                >
-                    🗑 Delete
-                </button>
+                    <button 
+                    class="delete"
+                    @click="deleteDoctor(doctor._id)"
+                    >
+                        🗑 Delete
+                    </button>
+
+                </div>
+
 
             </div>
 
@@ -1263,12 +1290,28 @@ border-bottom:1px solid var(--border);
 }
 
 
+.doctor-heading{
+
+min-width:0;
+
+}
+
+
+.card-expand-btn{
+
+display:none;
+
+}
+
+
 
 .doctor-avatar{
 
 height:55px;
 
 width:55px;
+
+flex-shrink:0;
 
 border-radius:18px;
 
@@ -1331,6 +1374,13 @@ grid-template-columns:1fr;
 gap:12px;
 
 margin-top:18px;
+
+}
+
+
+.doctor-info--sub{
+
+margin-top:12px;
 
 }
 
@@ -1549,7 +1599,8 @@ grid-template-columns:1fr;
 
     .badge{
 
-        width:100%;
+        
+width:50%;
         text-align:center;
 
     }
@@ -1633,7 +1684,7 @@ grid-template-columns:1fr;
 
 
 
-/* Mobile */
+/* Mobile — collapsed doctor cards, arrow to expand */
 @media(max-width:600px){
 
 
@@ -1714,7 +1765,7 @@ grid-template-columns:1fr;
 
 
 
-    /* Doctor Cards */
+    /* Doctor Cards - collapsed by default */
 
     .doctor-card{
 
@@ -1729,6 +1780,8 @@ grid-template-columns:1fr;
     .doctor-top{
 
         gap:12px;
+
+        justify-content:space-between;
 
     }
 
@@ -1748,6 +1801,9 @@ grid-template-columns:1fr;
     .doctor-top h4{
 
         font-size:16px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
 
     }
 
@@ -1758,6 +1814,102 @@ grid-template-columns:1fr;
         font-size:13px;
 
         word-break:break-word;
+
+    }
+
+
+    /* Only Email row stays visible by default */
+
+    .doctor-info{
+
+        margin-top:12px;
+
+    }
+
+
+    /* Extra details hidden until expanded */
+
+    .doctor-collapsible{
+
+        display:none;
+
+    }
+
+
+    .doctor-card.expanded .doctor-collapsible{
+
+        display:block;
+
+    }
+
+
+    /* Expand arrow button */
+
+    .card-expand-btn{
+
+        display:flex;
+
+        align-items:center;
+
+        justify-content:center;
+
+        width:34px;
+
+        height:34px;
+
+        flex-shrink:0;
+
+        margin-left:auto;
+
+        border:none;
+
+        border-radius:50%;
+
+        background:#eef2f7;
+
+        color:var(--primary);
+
+        padding:0;
+
+        cursor:pointer;
+
+        transition:.25s ease;
+
+    }
+
+
+    .card-expand-btn:active{
+
+        transform:scale(.92);
+
+    }
+
+
+    .chevron{
+
+        font-size:20px;
+
+        font-weight:700;
+
+        line-height:1;
+
+        transition:transform .25s ease;
+
+    }
+
+
+    .doctor-card.expanded .card-expand-btn{
+
+        background:linear-gradient(135deg,var(--primary),var(--secondary));
+
+        color:white;
+
+    }
+
+
+    .doctor-card.expanded .chevron{
+
+        transform:rotate(90deg);
 
     }
 
@@ -1920,7 +2072,7 @@ grid-template-columns:1fr;
 .badge,
 .scroll-form-btn{
 
-    width:100%;
+    width:50%;
 
     text-align:center;
 

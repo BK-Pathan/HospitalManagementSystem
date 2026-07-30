@@ -10,6 +10,49 @@ const doctors=ref([]);
 const router=useRouter();
 
 
+const getRelatedDoctors = async()=>{
+
+if(!doctor.value?.department) return;
+
+
+relatedLoading.value = true;
+
+
+try{
+
+const res = await api.get(
+"/patient/doctors",
+{
+params:{
+department: doctor.value.department
+}
+}
+);
+
+
+const list = Array.isArray(res.data)
+? res.data
+: (res.data.doctors || []);
+
+
+relatedDoctors.value = list.filter(
+(item)=> item._id !== doctor.value._id
+);
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+finally{
+
+relatedLoading.value=false;
+
+}
+
+};
 
 const getDoctors=async()=>{
 

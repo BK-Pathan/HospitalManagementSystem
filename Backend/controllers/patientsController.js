@@ -1259,8 +1259,10 @@ exports.getDoctorProfileForPatient = async(req,res)=>{
 try{
 
 
-const doctor = await Doctor.findById(
-req.params.id
+const doctor = await Doctor.findById(req.params.id)
+.populate(
+    "user",
+    "name email profileImage"
 );
 
 
@@ -1268,12 +1270,31 @@ req.params.id
 if(!doctor){
 
 return res.status(404).json({
-
 message:"Doctor not found"
-
 });
 
 }
+
+
+
+// ===============================
+// Related Doctors Same Department
+// ===============================
+
+const relatedDoctors = await Doctor.find({
+
+department: doctor.department,
+
+_id:{
+$ne:doctor._id
+}
+
+})
+.populate(
+"user",
+"name profileImage"
+)
+.limit(5);
 
 
 
@@ -1288,17 +1309,14 @@ doctor:doctor._id
 path:"patient",
 
 populate:{
-    path:"user",
-    select:"name email"
+path:"user",
+select:"name email"
 }
 
 })
 .sort({
-
 createdAt:-1
-
 });
-
 
 
 
@@ -1308,12 +1326,12 @@ feedbacks.length > 0
 ?
 (
 feedbacks.reduce(
-(sum,item)=>sum+item.rating,
+(sum,item)=>sum + item.rating,
 0
 )
-/ feedbacks.length
+/
+feedbacks.length
 ).toFixed(1)
-
 :
 0;
 
@@ -1324,31 +1342,66 @@ res.json({
 
 success:true,
 
-doctor,
+
+doctor:{
+
+_id:doctor._id,
+
+name:doctor.name,
+
+department:doctor.department,
+
+specialties:doctor.specialties,
+
+qualifications:doctor.qualifications,
+
+experience:doctor.experience,
+
+contactInformation:doctor.contactInformation,
+
+availability:doctor.availability,
+
+profileImage:doctor.user?.profileImage || "",
+
+email:doctor.user?.email || ""
+
+},
+
 
 averageRating,
 
-feedbacks
+feedbacks,
+
+
+relatedDoctors: relatedDoctors.map((doc)=>({
+
+_id:doc._id,
+
+name:doc.name,
+
+department:doc.department,
+
+specialties:doc.specialties,
+
+experience:doc.experience,
+
+profileImage:doc.user?.profileImage || ""
+
+}))
+
 
 });
-
 
 
 }
 catch(error){
 
-
 console.log(error);
 
-
 res.status(500).json({
-
 message:error.message
-
 });
 
-
 }
-
 
 };

@@ -296,7 +296,7 @@ getProfile();
 
         <div>
 
-            <p class="eyebrow">Patient Portal</p>
+            <p class="eyebrow">✦ Patient Portal</p>
 
             <h2>
                 My Profile
@@ -310,7 +310,7 @@ getProfile();
 
 
 
-        <div class="badge">
+        <div class="badge" :class="{ 'badge--done': profilecompleted }">
             <span class="badge-dot" :class="{ 'badge-dot--done': profilecompleted }"></span>
             {{ profilecompleted ? "Profile Complete" : "Profile Incomplete" }}
         </div>
@@ -322,52 +322,60 @@ getProfile();
 
     <div class="avatar-card">
 
-        <div class="patient-avatar">
+        <div class="avatar-banner"></div>
 
-          <img
-            v-if="profileImage"
-            :src="profileImage"
-            alt="Profile"
-          />
+        <div class="avatar-card-body">
 
-          <span v-else>
-            {{ name?.charAt(0)?.toUpperCase() }}
-          </span>
+            <div class="patient-avatar">
 
-        </div>
+              <div class="avatar-ring">
+                <img
+                  v-if="profileImage"
+                  :src="profileImage"
+                  alt="Profile"
+                />
 
-        <div class="avatar-info">
+                <span v-else>
+                  {{ name?.charAt(0)?.toUpperCase() }}
+                </span>
+              </div>
 
-            <h3>{{ name || "Patient" }}</h3>
-            <p>{{ email }}</p>
+            </div>
 
-            <div class="image-controls">
+            <div class="avatar-info">
 
-                <label class="file-label">
-                    Choose Image
-                    <input
-                      type="file"
-                      accept="image/*"
-                      @change="handleImage"
-                    />
-                </label>
+                <h3>{{ name || "Patient" }}</h3>
+                <p class="avatar-email">✉️ {{ email }}</p>
 
-                <div class="image-actions">
+                <div class="image-controls">
 
-                  <button
-                    class="update-btn small-btn"
-                    @click="uploadImage"
-                  >
-                    Upload
-                  </button>
+                    <label class="file-label">
+                        📷 Choose Image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          @change="handleImage"
+                        />
+                    </label>
 
-                  <button
-                    v-if="profileImage"
-                    class="remove-btn small-btn"
-                    @click="removeImage"
-                  >
-                    Remove
-                  </button>
+                    <div class="image-actions">
+
+                      <button
+                        class="update-btn small-btn"
+                        @click="uploadImage"
+                      >
+                        ⬆️ Upload
+                      </button>
+
+                      <button
+                        v-if="profileImage"
+                        class="remove-btn small-btn"
+                        @click="removeImage"
+                      >
+                        🗑️ Remove
+                      </button>
+
+                    </div>
 
                 </div>
 
@@ -381,6 +389,8 @@ getProfile();
 
 
         <div class="section-title">
+
+            <span class="section-icon">🪪</span>
 
             <h3>
                 Personal Information
@@ -536,35 +546,38 @@ getProfile();
 
 
 
-
-
-
-        <label class="complete-box">
-
+        <label class="complete-box" :class="{ 'complete-box--active': profilecompleted }">
 
             <input 
             type="checkbox" 
             v-model="profilecompleted"
             />
 
-            <span>
-                Mark profile as completed
+            <span class="complete-box-text">
+                <strong>Mark profile as completed</strong>
+                <small>Doctors can see your profile is fully filled out</small>
             </span>
-
 
         </label>
 
 
 
+        <div class="divider"></div>
 
 
 <!-- =====================
 SECURITY
 ===================== -->
 
-<h3 class="section-title">
-Security
-</h3>
+<div class="section-title">
+
+    <span class="section-icon">🔒</span>
+
+    <h3>
+        Security
+    </h3>
+
+</div>
 
 
 <div class="form-grid">
@@ -625,11 +638,11 @@ placeholder="Confirm new password"
 
 
 <button
-class="save-btn"
+class="save-btn password-btn"
 @click="changePassword"
 >
 
-Change Password
+🔑 Change Password
 
 </button>
 
@@ -655,7 +668,7 @@ class="edit-btn"
             class="update-btn"
             @click="saveProfile">
 
-                Update Profile
+                ✅ Update Profile
 
             </button>
 
@@ -692,8 +705,10 @@ class="edit-btn"
   --clinical-red-light: #FEE2E2;
 
   min-height: 100%;
-  padding: 20px 24px;
-  background: var(--clinical-bg);
+  padding: 24px 28px;
+  background:
+    radial-gradient(1200px 300px at 100% -10%, rgba(13,148,136,0.06), transparent),
+    var(--clinical-bg);
   font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   color: var(--clinical-text);
 }
@@ -704,26 +719,26 @@ class="edit-btn"
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   gap: 14px;
   flex-wrap: wrap;
 }
 
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: .1em;
   font-size: 12px;
   font-weight: 700;
   color: var(--clinical-teal);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .header h2 {
   color: var(--clinical-navy);
-  font-size: 25px;
-  font-weight: 700;
+  font-size: 27px;
+  font-weight: 800;
   margin: 0;
-  letter-spacing: -.01em;
+  letter-spacing: -.02em;
 }
 
 .header .subtext {
@@ -735,16 +750,23 @@ class="edit-btn"
 .badge {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
+  gap: 9px;
+  padding: 10px 20px;
   border-radius: 999px;
-  color: var(--clinical-text-muted);
-  background: var(--clinical-surface);
-  border: 1px solid var(--clinical-border);
-  font-weight: 600;
+  color: var(--clinical-amber);
+  background: var(--clinical-amber-light);
+  border: 1px solid rgba(217, 119, 6, .18);
+  font-weight: 700;
   font-size: 13px;
   white-space: nowrap;
-  box-shadow: 0 2px 6px -2px rgba(15, 42, 67, 0.06);
+  box-shadow: 0 4px 12px -6px rgba(217, 119, 6, .3);
+}
+
+.badge--done {
+  color: var(--clinical-green);
+  background: var(--clinical-green-light);
+  border-color: rgba(22, 163, 74, .18);
+  box-shadow: 0 4px 12px -6px rgba(22, 163, 74, .3);
 }
 
 .badge-dot {
@@ -752,61 +774,99 @@ class="edit-btn"
   height: 8px;
   border-radius: 50%;
   background: var(--clinical-amber);
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, .15);
+  box-shadow: 0 0 0 4px rgba(217, 119, 6, .18);
+  animation: pulse 2s infinite;
 }
 
 .badge-dot--done {
   background: var(--clinical-green);
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, .18);
+  animation: none;
 }
 
-/* ---------- Avatar card (Premium) ---------- */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .4; }
+}
+
+/* ---------- Avatar card (Premium, with banner) ---------- */
 
 .avatar-card {
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-border);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(15, 42, 67, 0.04),
+    0 10px 24px -12px rgba(15, 42, 67, 0.12);
+}
+
+.avatar-banner {
+  height: 72px;
+  background: linear-gradient(120deg, var(--clinical-navy) 0%, #163f63 45%, var(--clinical-teal) 100%);
+}
+
+.avatar-card-body {
   display: flex;
   align-items: center;
   gap: 24px;
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
-  border: 1px solid var(--clinical-border);
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 18px;
-  box-shadow:
-    0 1px 2px rgba(15, 42, 67, 0.04),
-    0 8px 20px -10px rgba(15, 42, 67, 0.08);
+  padding: 0 24px 22px;
+  margin-top: -40px;
 }
 
 .patient-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-ring {
   width: 96px;
   height: 96px;
-  min-width: 96px;
   border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--clinical-navy), #1a3a5c);
-  color: #fff;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--clinical-teal), var(--clinical-navy));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34px;
-  font-weight: bold;
-  box-shadow: 0 8px 18px -6px rgba(15, 42, 67, .5);
+  box-shadow: 0 10px 22px -8px rgba(15, 42, 67, .45);
 }
 
-.patient-avatar img {
+.avatar-ring img,
+.avatar-ring span {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
+  background: var(--clinical-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-ring img {
   object-fit: cover;
+  background: #fff;
+}
+
+.avatar-ring span {
+  color: var(--clinical-navy);
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.avatar-info {
+  padding-top: 44px;
+  min-width: 0;
 }
 
 .avatar-info h3 {
-  margin: 0 0 2px;
+  margin: 0 0 3px;
   color: var(--clinical-navy);
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
 }
 
-.avatar-info p {
-  margin: 0 0 12px;
+.avatar-email {
+  margin: 0 0 14px;
   color: var(--clinical-text-muted);
   font-size: 13px;
 }
@@ -822,9 +882,9 @@ class="edit-btn"
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 36px;
+  height: 38px;
   padding: 0 16px;
-  border-radius: 8px;
+  border-radius: 9px;
   border: 1px solid var(--clinical-border);
   background: var(--clinical-bg);
   color: var(--clinical-text);
@@ -833,12 +893,13 @@ class="edit-btn"
   line-height: 1;
   box-sizing: border-box;
   cursor: pointer;
-  transition: transform .18s ease, box-shadow .18s ease;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
 .file-label:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px -6px rgba(15, 42, 67, .2);
+  border-color: var(--clinical-teal);
+  box-shadow: 0 6px 14px -6px rgba(15, 42, 67, .25);
 }
 
 .file-label input {
@@ -858,7 +919,7 @@ class="edit-btn"
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  height: 36px;
+  height: 38px;
   padding: 0 16px !important;
   margin: 0;
   font-size: 13px !important;
@@ -870,20 +931,44 @@ class="edit-btn"
 /* ---------- Profile card (Premium) ---------- */
 
 .profile-card {
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
-  padding: 28px;
-  border-radius: 18px;
+  background: var(--clinical-surface);
+  padding: 30px;
+  border-radius: 20px;
   box-shadow:
     0 1px 2px rgba(15, 42, 67, 0.04),
-    0 8px 20px -10px rgba(15, 42, 67, 0.08);
+    0 10px 24px -12px rgba(15, 42, 67, 0.12);
   border: 1px solid var(--clinical-border);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
 }
 
 .section-title h3 {
   color: var(--clinical-navy);
-  margin: 0 0 20px;
+  margin: 0;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.section-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--clinical-teal-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--clinical-border), transparent);
+  margin: 28px 0 24px;
 }
 
 .form-grid {
@@ -892,7 +977,8 @@ class="edit-btn"
   gap: 18px;
 }
 
-.input-group {
+.input-group,
+.field {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -904,18 +990,18 @@ class="edit-btn"
 }
 
 label {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--clinical-text-muted);
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: .02em;
+  letter-spacing: .04em;
 }
 
 input,
 textarea {
   width: 100%;
   padding: 13px 14px;
-  border-radius: 10px;
+  border-radius: 11px;
   border: 1px solid var(--clinical-border);
   background: var(--clinical-bg);
   font-size: 14px;
@@ -934,7 +1020,8 @@ textarea {
 input:focus,
 textarea:focus {
   border-color: var(--clinical-teal);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, .15);
+  background: var(--clinical-surface);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, .12);
 }
 
 input:disabled,
@@ -944,38 +1031,65 @@ textarea:disabled {
   cursor: not-allowed;
 }
 
-/* ---------- Complete checkbox ---------- */
+/* ---------- Complete checkbox (Premium row) ---------- */
 
 .complete-box {
-  margin-top: 20px;
+  margin-top: 22px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--clinical-bg);
+  border: 1px solid var(--clinical-border);
   color: var(--clinical-text);
-  font-weight: 600;
-  font-size: 14px;
   cursor: pointer;
   text-transform: none;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.complete-box--active {
+  background: var(--clinical-teal-light);
+  border-color: rgba(13, 148, 136, .25);
 }
 
 .complete-box input {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   accent-color: var(--clinical-teal);
+  flex-shrink: 0;
+}
+
+.complete-box-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.complete-box-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--clinical-navy);
+}
+
+.complete-box-text small {
+  font-size: 12px;
+  color: var(--clinical-text-muted);
+  font-weight: 500;
 }
 
 /* ---------- Buttons (Premium) ---------- */
 
 .actions {
-  margin-top: 24px;
+  margin-top: 26px;
 }
 
 button {
-  padding: 12px 24px;
+  padding: 13px 26px;
   border: none;
-  border-radius: 10px;
+  border-radius: 11px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   color: white;
   transition: transform .18s cubic-bezier(.22,1,.36,1),
@@ -986,17 +1100,24 @@ button {
 .edit-btn,
 .update-btn {
   background: linear-gradient(135deg, var(--clinical-teal), #0b7a70);
-  box-shadow: 0 6px 14px -4px rgba(13, 148, 136, .4);
+  box-shadow: 0 8px 18px -6px rgba(13, 148, 136, .4);
 }
 
 .remove-btn {
   background: linear-gradient(135deg, var(--clinical-red), #b91c1c);
+  box-shadow: 0 8px 18px -6px rgba(220, 38, 38, .35);
+}
+
+.password-btn {
+  margin-top: 22px;
+  background: linear-gradient(135deg, var(--clinical-navy), #1a3a5c);
+  box-shadow: 0 8px 18px -6px rgba(15, 42, 67, .4);
 }
 
 button:hover {
   transform: translateY(-3px);
-  filter: brightness(1.05);
-  box-shadow: 0 10px 20px -6px rgba(13, 148, 136, .3);
+  filter: brightness(1.06);
+  box-shadow: 0 14px 24px -8px rgba(15, 42, 67, .3);
 }
 
 button:active {
@@ -1009,7 +1130,7 @@ button:active {
 @media (max-width: 1400px) {
 
   .profile-page {
-    padding: 20px 22px;
+    padding: 22px 24px;
   }
 
 }
@@ -1020,7 +1141,7 @@ button:active {
 @media (max-width: 1200px) {
 
   .profile-card {
-    padding: 24px;
+    padding: 26px;
   }
 
 }
@@ -1038,10 +1159,6 @@ button:active {
     font-size: 23px;
   }
 
-  .avatar-card {
-    padding: 20px;
-  }
-
 }
 
 /* ==========================
@@ -1057,30 +1174,45 @@ button:active {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+  }
+
+  .badge {
+    width: 100%;
+    justify-content: center;
   }
 
   .header h2 {
     font-size: 21px;
   }
 
-  .avatar-card {
+  .avatar-banner {
+    height: 56px;
+  }
+
+  .avatar-card-body {
     flex-direction: column;
     text-align: center;
-    padding: 18px;
-    gap: 16px;
-    border-radius: 16px;
+    padding: 0 18px 20px;
+    margin-top: -36px;
+    gap: 10px;
+  }
+
+  .avatar-ring {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-ring span {
+    font-size: 26px;
+  }
+
+  .avatar-info {
+    padding-top: 0;
   }
 
   .image-controls {
     justify-content: center;
-  }
-
-  .patient-avatar {
-    width: 80px;
-    height: 80px;
-    min-width: 80px;
-    font-size: 28px;
   }
 
   .profile-card {
@@ -1090,7 +1222,6 @@ button:active {
 
   .section-title h3 {
     font-size: 16px;
-    margin-bottom: 16px;
   }
 
   .form-grid {
@@ -1112,8 +1243,13 @@ button:active {
     min-height: 90px;
   }
 
-  .actions button {
+  .actions button,
+  .password-btn {
     width: 100%;
+  }
+
+  .divider {
+    margin: 22px 0 20px;
   }
 
 }
@@ -1135,26 +1271,27 @@ button:active {
     font-size: 11px;
   }
 
-  .badge {
-    font-size: 12px;
-    padding: 8px 14px;
-    width: 100%;
-    justify-content: center;
+  .avatar-card-body {
+    padding: 0 14px 16px;
   }
 
-  .avatar-card {
-    padding: 14px;
-  }
-
-  .patient-avatar {
+  .avatar-ring {
     width: 68px;
     height: 68px;
-    min-width: 68px;
-    font-size: 24px;
+  }
+
+  .avatar-ring span {
+    font-size: 22px;
   }
 
   .profile-card {
     padding: 14px;
+  }
+
+  .section-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 
   .image-actions {
@@ -1162,8 +1299,12 @@ button:active {
     justify-content: center;
   }
 
+  .complete-box {
+    padding: 13px 14px;
+  }
+
   button {
-    padding: 11px 18px;
+    padding: 12px 20px;
     font-size: 13px;
   }
 

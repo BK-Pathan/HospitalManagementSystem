@@ -28,6 +28,10 @@ const startTime = ref("");
 const endTime = ref("");
 
 
+// mobile-only UI toggle (no backend / data change)
+const showMobilePhotoActions = ref(false);
+
+
 
 
 // =======================
@@ -505,7 +509,109 @@ getProfile();
 <div class="profile-card">
 
   <!-- =====================
-  IDENTITY / AVATAR
+  MOBILE IDENTITY CARD (reference-style)
+  ===================== -->
+
+  <div class="mobile-hero">
+
+    <div class="mobile-hero-photo">
+
+      <img
+      v-if="profileImage"
+      :src="profileImage"
+      />
+
+      <span v-else>
+        {{
+          name
+          ?.replace(/^Dr\.?\s*/i, "")
+          ?.charAt(0)
+          ?.toUpperCase() || "D"
+        }}
+      </span>
+
+      <button
+      class="mobile-hero-edit"
+      @click="showMobilePhotoActions = !showMobilePhotoActions"
+      >
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+    </div>
+
+    <span class="mobile-hero-badge" v-if="department">
+      {{ department }}
+    </span>
+
+    <h3 class="mobile-hero-name">
+      {{ name || "Your Name" }}
+    </h3>
+
+    <p class="mobile-hero-contact" v-if="contactInformation">
+      {{ contactInformation }}
+    </p>
+
+    <transition name="expand">
+      <div
+      class="mobile-hero-photo-actions"
+      v-if="showMobilePhotoActions"
+      >
+
+        <label class="file-btn">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Choose Image
+          <input
+          type="file"
+          accept="image/*"
+          @change="handleImage"
+          />
+        </label>
+
+        <button
+        class="primary-btn"
+        @click="uploadImage"
+        >
+        Upload
+        </button>
+
+        <button
+        v-if="profileImage"
+        class="remove-btn"
+        @click="removeImage"
+        >
+        Remove
+        </button>
+
+      </div>
+    </transition>
+
+    <div class="mobile-hero-tiles">
+
+      <div class="hero-tile">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="hero-tile-value">{{ experience || "—" }}</span>
+        <span class="hero-tile-label">Experience</span>
+      </div>
+
+      <div class="hero-tile">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h9M4 12h16M4 17h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="hero-tile-value">{{ qualifications || "—" }}</span>
+        <span class="hero-tile-label">Qualification</span>
+      </div>
+
+      <div class="hero-tile">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="hero-tile-value">{{ availability.length }}</span>
+        <span class="hero-tile-label">Slots</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================
+  IDENTITY / AVATAR (Desktop)
   ===================== -->
 
   <div class="identity-section">
@@ -1026,13 +1132,52 @@ Change Password
   object-fit: cover;
 }
 
+/* ---------- Mobile hero (reference-style, hidden on desktop) ---------- */
+
+.mobile-hero {
+  display: none;
+}
+
 /* ---------- Form ---------- */
 
 .section-title {
-  margin: 0 0 20px;
-  color: var(--text);
-  font-size: 17px;
-  font-weight: 700;
+
+   margin-top:20px !important;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 18px;
+
+    margin:0 0 20px;
+
+    color:#2563eb;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(37,99,235,.12),
+        rgba(56,189,248,.18)
+    );
+
+    border:1px solid rgba(37,99,235,.25);
+
+    border-radius:50px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    letter-spacing:.3px;
+
+    box-shadow:
+    0 8px 20px rgba(37,99,235,.12);
+
+    backdrop-filter:blur(10px);
+
 }
 
 .form-grid {
@@ -1100,6 +1245,7 @@ Change Password
 
 .primary-btn,
 .save-btn {
+  margin:15px;
   border: none;
   padding: 14px 20px;
   border-radius: 12px;
@@ -1237,6 +1383,18 @@ button:active {
   transform: translateY(-1px);
 }
 
+/* expand transition (used by mobile photo actions) */
+
+.expand-enter-active,
+.expand-leave-active {
+  transition: .25s ease;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+}
+
 /* ==========================
    Large Laptop
 ========================== */
@@ -1292,7 +1450,7 @@ button:active {
 }
 
 /* ==========================
-   Mobile
+   Mobile (reference-style hero card)
 ========================== */
 @media (max-width: 768px) {
 
@@ -1305,29 +1463,152 @@ button:active {
     border-radius: 16px;
   }
 
+  /* hide desktop identity row, show reference-style hero instead */
+
   .identity-section {
+    display: none;
+  }
+
+  .mobile-hero {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border);
   }
 
-  .doctor-avatar {
-    width: 72px;
-    height: 72px;
-    font-size: 26px;
+  .mobile-hero-photo {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 800;
+    overflow: hidden;
+    box-shadow: 0 10px 22px -8px rgba(20, 184, 166, .5);
   }
 
-  .identity-actions {
+  .mobile-hero-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-hero-edit {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: var(--white);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .mobile-hero-edit svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .mobile-hero-badge {
+    margin-top: 14px;
+    display: inline-flex;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(20, 184, 166, .12);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .mobile-hero-name {
+    margin: 8px 0 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .mobile-hero-contact {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .mobile-hero-photo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
     width: 100%;
   }
 
-  .file-btn,
-  .identity-actions .primary-btn,
-  .identity-actions .remove-btn {
+  .mobile-hero-photo-actions .file-btn,
+  .mobile-hero-photo-actions .primary-btn,
+  .mobile-hero-photo-actions .remove-btn {
     flex: 1;
+    min-width: 100px;
     justify-content: center;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .mobile-hero-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-top: 18px;
+  }
+
+  .hero-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 6px;
+    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+  }
+
+  .hero-tile svg {
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+    margin-bottom: 2px;
+  }
+
+  .hero-tile-value {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .hero-tile-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-weight: 700;
   }
 
   .section-title {
@@ -1387,24 +1668,23 @@ button:active {
     padding: 14px;
   }
 
-  .doctor-avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 22px;
+  .mobile-hero-photo {
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+    border-radius: 24px;
   }
 
-  .identity-info h3 {
-    font-size: 17px;
+  .mobile-hero-name {
+    font-size: 18px;
   }
 
-  .identity-actions {
-    flex-direction: column;
+  .hero-tile {
+    padding: 10px 4px;
   }
 
-  .file-btn,
-  .identity-actions .primary-btn,
-  .identity-actions .remove-btn {
-    width: 100%;
+  .hero-tile-value {
+    font-size: 12px;
   }
 
   .availability-table {

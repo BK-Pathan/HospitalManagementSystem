@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref,onMounted} from "vue";
+import {ref,onMounted,computed} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
 
@@ -16,6 +16,15 @@ const appointmentDateTime = ref("");
 
 
 const booking = ref(false);
+
+
+// ===== UI-only state for the slot picker (no backend / data change) =====
+
+const selectedDateISO = ref("");   // e.g. "2026-08-25"
+const selectedTimeISO = ref("");   // e.g. "12:45"
+const showManualInput = ref(false);
+const dayScrollStart = ref(0);     // for the ‹ › paging of the day strip
+const isFavorite = ref(false);     // purely cosmetic, not persisted
 
 
 
@@ -45,12 +54,224 @@ console.log(error);
 
 
 
+// =======================
+// Time helpers (UI only — parse the same startTime/endTime strings
+// already stored on the doctor's availability, e.g. "8:00 AM")
+// =======================
+
+const parseTimeToMinutes = (t) => {
+
+if(!t) return null;
+
+const match = t.trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+
+if(!match) return null;
+
+let [, h, m, ampm] = match;
+
+h = parseInt(h);
+m = parseInt(m);
+
+if(ampm){
+  ampm = ampm.toUpperCase();
+  if(ampm === "PM" && h !== 12) h += 12;
+  if(ampm === "AM" && h === 12) h = 0;
+}
+
+return h * 60 + m;
+
+};
+
+
+const minutesToDisplay = (mins) => {
+
+let h = Math.floor(mins / 60);
+const m = mins % 60;
+const ampm = h >= 12 ? "PM" : "AM";
+
+h = h % 12 || 12;
+
+return `${h}:${m.toString().padStart(2,"0")} ${ampm}`;
+
+};
+
+
+const minutesToISO = (mins) => {
+
+const h = Math.floor(mins / 60).toString().padStart(2,"0");
+const m = (mins % 60).toString().padStart(2,"0");
+
+return `${h}:${m}`;
+
+};
+
+
+
+// =======================
+// Upcoming days that actually have availability
+// =======================
+
+const todayISO = new Date().toISOString().slice(0,10);
+
+const nowMinutes = new Date().getHours()*60 + new Date().getMinutes();
+
+
+const upcomingDays = computed(()=>{
+
+if(!doctor.value?.availability?.length) return [];
+
+const list = [];
+
+for(let i=0;i<30;i++){
+
+const d = new Date();
+
+d.setDate(d.getDate()+i);
+
+const iso = d.toISOString().slice(0,10);
+
+// never show a date that has already passed
+if(iso < todayISO) continue;
+
+const weekdayShort = d.toLocaleDateString("en-US",{weekday:"short"});
+
+const matches = doctor.value.availability.filter(
+slot => slot.day === weekdayShort
+);
+
+if(matches.length){
+
+list.push({
+
+iso,
+
+dayLabel: weekdayShort,
+
+dateLabel: d.getDate(),
+
+slots: matches
+
+});
+
+}
+
+}
+
+return list;
+
+});
+
+
+const visibleDays = computed(()=>{
+
+return upcomingDays.value.slice(dayScrollStart.value, dayScrollStart.value + 7);
+
+});
+
+
+const canScrollDaysBack = computed(()=> dayScrollStart.value > 0);
+
+const canScrollDaysForward = computed(()=>{
+
+return dayScrollStart.value + 7 < upcomingDays.value.length;
+
+});
+
+
+const scrollDays = (dir)=>{
+
+const next = dayScrollStart.value + (dir*7);
+
+if(next < 0) return;
+
+if(next >= upcomingDays.value.length) return;
+
+dayScrollStart.value = next;
+
+};
+
+
+
+// =======================
+// Time slots for the selected day
+// =======================
+
+const selectedDay = computed(()=>{
+
+return upcomingDays.value.find(d => d.iso === selectedDateISO.value) || null;
+
+});
+
+
+const timeSlots = computed(()=>{
+
+if(!selectedDay.value) return [];
+
+const out = [];
+
+const isToday = selectedDay.value.iso === todayISO;
+
+selectedDay.value.slots.forEach(range=>{
+
+const start = parseTimeToMinutes(range.startTime);
+const end = parseTimeToMinutes(range.endTime);
+
+if(start===null || end===null) return;
+
+for(let t=start; t<end; t+=30){
+
+// if it's today, don't offer times that have already passed
+if(isToday && t <= nowMinutes) continue;
+
+out.push(t);
+
+}
+
+});
+
+return out;
+
+});
+
+
+
+const pickDay = (day)=>{
+
+selectedDateISO.value = day.iso;
+
+selectedTimeISO.value = "";
+
+appointmentDateTime.value = "";
+
+};
+
+
+const pickTime = (mins)=>{
+
+selectedTimeISO.value = minutesToISO(mins);
+
+appointmentDateTime.value = `${selectedDateISO.value}T${selectedTimeISO.value}`;
+
+};
+
+
+
 // Book Appointment
 
 const bookAppointment = async()=>{
 
 
 if(booking.value) return;
+
+
+// final guard: never allow booking a date/time that has already passed
+if(appointmentDateTime.value && new Date(appointmentDateTime.value) < new Date()){
+
+window.notify("Please choose a valid upcoming date and time");
+
+return;
+
+}
 
 
 console.log("BOOK BUTTON CLICKED");
@@ -158,90 +379,135 @@ const initials = (name) => {
 <div v-if="doctor" class="doctor-card">
 
 
-<div class="doctor-card__head">
+<!-- ===== Hero ===== -->
 
-  <span class="avatar">{{ initials(doctor.name) }}</span>
+<div class="hero">
 
-  <div class="doctor-card__head-info">
-    <h3 class="doctor-name">{{doctor.name}}</h3>
-    <span class="dept-pill" v-if="doctor.department">{{doctor.department}}</span>
-  </div>
+  <span class="hero-fav" :class="{active:isFavorite}" @click="isFavorite=!isFavorite">
+    <svg viewBox="0 0 24 24" :fill="isFavorite ? 'currentColor' : 'none'"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 5a5.5 5.5 0 0 1 9.5 7c-2.5 4.5-9.5 9-9.5 9z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+  </span>
 
-</div>
+  <span class="hero-avatar">{{ initials(doctor.name) }}</span>
 
+  <span class="dept-pill" v-if="doctor.department">{{doctor.department}}</span>
 
-<div class="info-grid">
-
-<div class="info-item">
-  <span class="info-label">Speciality</span>
-  <span class="info-value">{{doctor.specialties.join(", ")}}</span>
-</div>
-
-<div class="info-item">
-  <span class="info-label">Qualification</span>
-  <span class="info-value">{{doctor.qualifications}}</span>
-</div>
-
-<div class="info-item">
-  <span class="info-label">Experience</span>
-  <span class="info-value">{{doctor.experience}}</span>
-</div>
+  <h3 class="doctor-name">{{doctor.name}}</h3>
 
 </div>
 
 
+<!-- ===== Stat pills ===== -->
 
+<div class="stat-pills">
+
+  <span class="stat-pill" v-if="doctor.experience">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    {{doctor.experience}}
+  </span>
+
+  <span class="stat-pill" v-if="doctor.qualifications">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h9M4 12h16M4 17h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    {{doctor.qualifications}}
+  </span>
+
+  <span class="stat-pill" v-if="doctor.specialties?.length">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    {{doctor.specialties.join(", ")}}
+  </span>
+
+</div>
+
+
+
+<!-- ===== Date carousel ===== -->
 
 <h3 class="section-title">
-Available Times
+Available Days
 </h3>
 
 
+<div v-if="upcomingDays.length" class="day-picker">
 
-<ul class="availability-list" v-if="doctor.availability?.length">
+  <div class="day-picker__header">
 
+    <span class="day-picker__count">{{ upcomingDays.length }} days</span>
 
-<li
-v-for="item in doctor.availability"
-:key="item.day"
-class="availability-item"
->
+    <div class="day-picker__nav">
 
-<svg class="availability-item__icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <button :disabled="!canScrollDaysBack" @click="scrollDays(-1)">‹</button>
 
-<span class="availability-item__day">{{item.day}}</span>
+      <button :disabled="!canScrollDaysForward" @click="scrollDays(1)">›</button>
 
-{{item.startTime}} - {{item.endTime}}
+    </div>
 
+  </div>
 
+  <div class="day-strip">
 
-</li>
+    <button
+    v-for="day in visibleDays"
+    :key="day.iso"
+    class="day-chip"
+    :class="{active: day.iso===selectedDateISO}"
+    @click="pickDay(day)"
+    >
 
+      <span class="day-chip__label">{{day.dayLabel}}</span>
 
-</ul>
+      <span class="day-chip__date">{{day.dateLabel}}</span>
+
+    </button>
+
+  </div>
+
+</div>
 
 <p class="no-data" v-else>No availability listed for this doctor.</p>
 
 
 
+<!-- ===== Time slots ===== -->
+
+<template v-if="selectedDay">
+
+  <h3 class="section-title">
+  Showing Available Time Only
+  <span class="slot-count">{{timeSlots.length}} slots</span>
+  </h3>
+
+  <div class="slot-grid" v-if="timeSlots.length">
+
+    <button
+    v-for="mins in timeSlots"
+    :key="mins"
+    class="slot-chip"
+    :class="{active: minutesToISO(mins)===selectedTimeISO}"
+    @click="pickTime(mins)"
+    >
+      {{ minutesToDisplay(mins) }}
+    </button>
+
+  </div>
+
+  <p class="no-data" v-else>No time slots available for this day.</p>
+
+</template>
 
 
-<h3 class="section-title">
-Select Appointment Date & Time
-</h3>
 
+<!-- ===== Manual fallback ===== -->
 
+<button class="manual-toggle" @click="showManualInput = !showManualInput">
+  {{ showManualInput ? "Hide manual date/time" : "Pick date/time manually instead" }}
+</button>
 
 <input
-
+v-if="showManualInput"
 class="datetime-input"
-
 type="datetime-local"
-
 v-model="appointmentDateTime"
-
+:min="new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16)"
 />
-
 
 
 
@@ -370,90 +636,108 @@ class="confirm-btn"
   to { transform: rotate(360deg); }
 }
 
-.doctor-card__head {
+/* ---------- Hero ---------- */
+
+.hero {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  text-align: center;
   padding-bottom: 22px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
 }
 
-.avatar {
-  flex-shrink: 0;
-  width: 60px;
-  height: 60px;
+.hero-fav {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: .2s ease;
+}
+
+.hero-fav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hero-fav.active {
+  color: #dc2626;
+  border-color: rgba(220,38,38,.3);
+}
+
+.hero-avatar {
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
-  box-shadow: 0 8px 18px -6px rgba(20, 184, 166, .5);
-}
-
-.doctor-card__head-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.doctor-name {
-  color: var(--text);
-  font-size: 21px;
-  font-weight: 700;
-  margin: 0;
-  overflow-wrap: break-word;
+  box-shadow: 0 10px 22px -8px rgba(20, 184, 166, .5);
 }
 
 .dept-pill {
   display: inline-block;
-  align-self: flex-start;
-  padding: 5px 12px;
+  margin-top: 14px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(37, 99, 235, .12);
-  color: #2563eb;
-  font-weight: 600;
+  background: rgba(20, 184, 166, .12);
+  color: var(--primary);
+  font-weight: 700;
   font-size: 12px;
 }
 
-/* ---------- Info grid ---------- */
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 8px;
+.doctor-name {
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 800;
+  margin: 8px 0 0;
+  overflow-wrap: break-word;
 }
 
-.info-item {
+/* ---------- Stat pills ---------- */
+
+.stat-pills {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   background: #f8fafc;
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  min-width: 0;
-}
-
-.info-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  color: var(--muted);
-}
-
-.info-value {
-  font-size: 14px;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--text);
-  overflow-wrap: break-word;
+}
+
+.stat-pill svg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
 .section-title {
@@ -462,48 +746,147 @@ class="confirm-btn"
   margin-bottom: 14px;
   font-size: 16px;
   font-weight: 700;
-}
-
-/* ---------- Availability list ---------- */
-
-.availability-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.availability-item {
-  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(20, 184, 166, .12);
-  color: var(--text);
-  padding: 10px 15px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 13.5px;
-  border: 1px solid rgba(20, 184, 166, .2);
-  transition: transform .18s ease, box-shadow .18s ease;
+  justify-content: space-between;
 }
 
-.availability-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px -6px rgba(20, 184, 166, .3);
-}
-
-.availability-item__icon {
-  width: 14px;
-  height: 14px;
-  color: var(--primary);
-  flex-shrink: 0;
-}
-
-.availability-item__day {
-  color: var(--primary);
+.slot-count {
+  font-size: 12px;
   font-weight: 700;
+  color: var(--muted);
+}
+
+/* ---------- Day picker ---------- */
+
+.day-picker {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.day-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.day-picker__count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.day-picker__nav {
+  display: flex;
+  gap: 8px;
+}
+
+.day-picker__nav button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .18s ease;
+}
+
+.day-picker__nav button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.day-picker__nav button:not(:disabled):hover {
+  background: var(--gradient-primary, var(--primary));
+  color: #fff;
+}
+
+.day-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.day-chip {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 54px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.day-chip__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.day-chip__date {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.day-chip:hover {
+  border-color: var(--primary);
+}
+
+.day-chip.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: transparent;
+  box-shadow: 0 8px 16px -6px rgba(20, 184, 166, .45);
+}
+
+.day-chip.active .day-chip__label,
+.day-chip.active .day-chip__date {
+  color: #fff;
+}
+
+/* ---------- Time slots ---------- */
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.slot-chip {
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.slot-chip:hover {
+  border-color: var(--primary);
+}
+
+.slot-chip.active {
+  background: rgba(20, 184, 166, .12);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .no-data {
@@ -511,6 +894,20 @@ class="confirm-btn"
   font-style: italic;
   font-size: 14px;
   margin: 0;
+}
+
+/* ---------- Manual fallback ---------- */
+
+.manual-toggle {
+  display: block;
+  margin: 20px auto 0;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 /* ---------- Date input & button ---------- */
@@ -527,6 +924,7 @@ class="confirm-btn"
   font-family: inherit;
   color: var(--text);
   transition: border-color .2s ease, box-shadow .2s ease;
+  margin-top: 12px;
 }
 
 .datetime-input:focus {
@@ -597,17 +995,6 @@ class="confirm-btn"
 }
 
 /* ==========================
-   Laptop
-========================== */
-@media (max-width: 1200px) {
-
-  .confirm-btn {
-    width: auto;
-  }
-
-}
-
-/* ==========================
    Tablet
 ========================== */
 @media (max-width: 992px) {
@@ -642,29 +1029,28 @@ class="confirm-btn"
     border-radius: 16px;
   }
 
-  .doctor-card__head {
-    gap: 12px;
+  .hero {
     padding-bottom: 18px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
-  .avatar {
-    width: 50px;
-    height: 50px;
-    font-size: 17px;
+  .hero-avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 24px;
   }
 
   .doctor-name {
-    font-size: 18px;
+    font-size: 19px;
   }
 
-  .info-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
+  .stat-pills {
+    gap: 8px;
   }
 
-  .info-item {
-    padding: 12px;
+  .stat-pill {
+    font-size: 12px;
+    padding: 8px 13px;
   }
 
   .section-title {
@@ -673,9 +1059,8 @@ class="confirm-btn"
     margin-bottom: 12px;
   }
 
-  .availability-item {
-    padding: 9px 13px;
-    font-size: 13px;
+  .slot-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .datetime-input {
@@ -714,15 +1099,10 @@ class="confirm-btn"
     padding: 14px;
   }
 
-  .doctor-card__head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .avatar {
-    width: 46px;
-    height: 46px;
-    font-size: 15px;
+  .hero-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 21px;
   }
 
   .doctor-name {
@@ -733,13 +1113,19 @@ class="confirm-btn"
     font-size: 11px;
   }
 
-  .availability-list {
+  .day-chip {
+    min-width: 46px;
+    padding: 8px 6px;
+  }
+
+  .slot-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
 
-  .availability-item {
-    padding: 8px 11px;
-    font-size: 12px;
+  .slot-chip {
+    padding: 10px 6px;
+    font-size: 12.5px;
   }
 
   .confirm-btn {

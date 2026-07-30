@@ -22,7 +22,8 @@ const {
     doctorAvailabilityStatus,
     requestReschedule,
     updateUserPassword,
-    updatePatient
+    updatePatient,
+    exportPatients
 } = require("../controllers/adminController");
 
 // Dashboard Statistics
@@ -136,6 +137,13 @@ router.put(
 auth,
 role("admin"),
 updateUserPassword
+);
+
+router.get(
+"/patients/export",
+auth,
+role("admin"),
+exportPatients
 );
 
 router.get(

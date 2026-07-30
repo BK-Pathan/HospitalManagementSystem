@@ -1,8 +1,10 @@
 <script setup>
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import api from "../../api/axios";
 
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // ======================
 // States
@@ -23,6 +25,18 @@ const contactInformation = ref("");
 const medicalHistory = ref("");
 const DescribeYourProblem = ref("");
 const insuranceDetails = ref("");
+const search = ref("");
+// Pagination
+
+const page = ref(1);
+const totalPages = ref(1);
+
+// UI-only: mobile row expand/collapse state (no backend impact)
+const openRows = reactive({});
+
+const toggleRow = (id) => {
+    openRows[id] = !openRows[id];
+};
 
 
 
@@ -34,14 +48,30 @@ const getPatients = async()=>{
 
 try{
 
-const res = await api.get("/admin/patients");
 
-patients.value = res.data;
+const res = await api.get(
+"/admin/patients",
+{
+params:{
+page:page.value,
+search:search.value
+}
+}
+);
+
+
+
+patients.value = res.data.patients;
+
+totalPages.value = res.data.totalPages;
+
 
 
 }catch(error){
 
-console.log(error.response?.data || error.message);
+console.log(
+error.response?.data || error.message
+);
 
 }
 
@@ -262,6 +292,144 @@ patientId.value=null;
 
 };
 
+// ======================
+// Export Patients PDF
+// ======================
+
+const exportPDF = async()=>{
+
+
+try{
+
+
+const res = await api.get(
+"/admin/patients/export"
+);
+
+
+
+const allPatients = res.data;
+
+
+
+const doc = new jsPDF();
+
+
+
+doc.text(
+"Patients Report",
+14,
+15
+);
+
+
+
+const tableData = allPatients.map(patient=>[
+
+
+patient.user?.name || "N/A",
+
+patient.user?.email || "N/A",
+
+patient.age || "N/A",
+
+patient.gender || "N/A",
+
+patient.contactInformation || "N/A",
+
+patient.medicalHistory || "N/A"
+
+
+]);
+
+
+
+
+autoTable(doc,{
+
+head:[
+
+[
+"Name",
+"Email",
+"Age",
+"Gender",
+"Contact",
+"Medical History"
+]
+
+],
+
+
+body:tableData,
+
+
+startY:25
+
+
+});
+
+
+
+doc.save(
+"all-patients-report.pdf"
+);
+
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+
+};
+
+// ======================
+// Search
+// ======================
+
+const searchPatients = ()=>{
+
+page.value = 1;
+
+getPatients();
+
+};
+
+
+// ======================
+// Pagination
+// ======================
+
+const nextPage=()=>{
+
+if(page.value < totalPages.value){
+
+page.value++;
+
+getPatients();
+
+}
+
+};
+
+
+
+const previousPage=()=>{
+
+if(page.value > 1){
+
+page.value--;
+
+getPatients();
+
+}
+
+};
+
 
 const scrollToForm = ()=>{
 
@@ -315,12 +483,13 @@ getPatients();
             Hospital Admin
         </div> -->
 
-              <div class="header-actions">
+
+<div class="header-actions">
+
 
     <div class="badge">
         Hospital Admin
     </div>
-
 
     <button 
     class="scroll-form-btn"
@@ -329,7 +498,27 @@ getPatients();
         Add Patient ↓
     </button>
 
+        <button
+    class="pdf-btn"
+    @click="exportPDF"
+    >
+        📄 PDF
+    </button>
+
+
 </div>
+
+    </div>
+
+        <div class="search-bar">
+
+        <span class="search-icon">🔍</span>
+
+       <input
+v-model="search"
+placeholder="Search patient by name..."
+@input="searchPatients"
+/>
 
     </div>
 
@@ -408,23 +597,46 @@ getPatients();
             <tr
             v-for="patient in patients"
             :key="patient._id"
+            :class="{ expanded: openRows[patient._id] }"
             >
 
 
-                <td>
+                <td data-label="Patient" class="cell-patient">
 
-                    <div class="patient">
+                    <div class="patient-row">
 
-                        <div class="avatar">
+                        <div class="patient">
 
-                            {{patient.user?.name?.charAt(0)}}
+                            <div class="avatar">
+
+                                {{patient.user?.name?.charAt(0)}}
+
+                            </div>
+
+
+                            <div class="patient-heading">
+
+                                <strong>
+                                    {{patient.user?.name}}
+                                </strong>
+
+                                <small class="email-mobile">
+                                    {{patient.user?.email}}
+                                </small>
+
+                            </div>
 
                         </div>
 
 
-                        <strong>
-                            {{patient.user?.name}}
-                        </strong>
+                        <button
+                        class="row-expand-btn"
+                        @click="toggleRow(patient._id)"
+                        :aria-expanded="!!openRows[patient._id]"
+                        >
+                            <span class="chevron">›</span>
+                        </button>
+
 
                     </div>
 
@@ -433,19 +645,19 @@ getPatients();
 
 
 
-                <td>
+                <td data-label="Email" class="cell-hide-mobile">
                     {{patient.user?.email}}
                 </td>
 
 
 
-                <td>
+                <td data-label="Age" class="cell-collapsible">
                     {{patient.age}}
                 </td>
 
 
 
-                <td>
+                <td data-label="Gender" class="cell-collapsible">
 
                     <span class="gender">
                         {{patient.gender}}
@@ -456,17 +668,17 @@ getPatients();
 
 
 
-                <td>
+                <td data-label="Contact" class="cell-collapsible">
                     {{patient.contactInformation}}
                 </td>
 
 
 
-                <td>
+                <td data-label="Medical History" class="cell-collapsible">
                     {{patient.medicalHistory || "N/A"}}
                 </td>
 
-<td>
+<td data-label="Actions" class="cell-collapsible">
 
 <button
 class="edit-btn"
@@ -486,6 +698,31 @@ class="edit-btn"
 
         </table>
 
+        <div class="pagination">
+
+
+<button
+@click="previousPage"
+:disabled="page===1"
+>
+← Previous
+</button>
+
+
+<span>
+Page {{page}} / {{totalPages}}
+</span>
+
+
+<button
+@click="nextPage"
+:disabled="page===totalPages"
+>
+Next →
+</button>
+
+
+</div>
 
         </div>
 
@@ -732,9 +969,16 @@ Cancel
 
     </div>
 
-
+        <p 
+        v-if="!patients.length"
+        class="empty-hint table-empty"
+        >
+            No doctors found.
+        </p>
 
 </div>
+
+
 
 </template>
 
@@ -1142,6 +1386,8 @@ width:42px;
 
 height:42px;
 
+flex-shrink:0;
+
 border-radius:14px;
 
 background:var(--gradient-primary);
@@ -1155,6 +1401,40 @@ align-items:center;
 justify-content:center;
 
 font-weight:800;
+
+}
+
+
+.patient-row{
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+gap:10px;
+
+width:100%;
+
+}
+
+
+.patient-heading{
+
+display:flex;
+
+flex-direction:column;
+
+min-width:0;
+
+}
+
+
+.email-mobile,
+.row-expand-btn{
+
+display:none;
 
 }
 
@@ -1174,6 +1454,53 @@ border-radius:var(--radius-pill);
 font-size:12px;
 
 font-weight:700;
+
+}
+
+
+.edit-btn{
+
+width: 100%;    
+
+border:none;
+
+padding:9px 16px;
+
+border-radius:var(--radius-pill);
+
+background:var(--info-bg);
+
+color:var(--info);
+
+font-weight:700;
+
+font-size:13px;
+
+cursor:pointer;
+
+}
+
+.cancel-btn{
+
+margin-top:25px;
+
+margin-left: 15px;
+
+padding:14px 30px;
+
+border:none;
+
+border-radius:var(--radius-pill);
+
+background:var(--gradient-primary);
+
+color:white;
+
+font-weight:700;
+
+cursor:pointer;
+
+box-shadow:var(--shadow-lg);
 
 }
 
@@ -1212,9 +1539,7 @@ font-weight:700;
     gap: 12px;
   }
 
-  .save-btn{
-    width: 100%;
-  }
+
 
 }
 
@@ -1243,20 +1568,99 @@ font-weight:700;
     padding:12px;
   }
 
+  input,
+  select{
+    font-size:14px;
+    padding:12px;
+  }
+
+
+
+}
+
+
+/* ===========================
+   Mobile Table -> Collapsed Cards (700px)
+=========================== */
+
+@media (max-width:700px){
+
+  thead{
+    display:none;
+  }
+
   .table-wrapper{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
+    overflow-x:hidden;
   }
 
   table{
-    min-width:700px;
+    min-width:0;
   }
 
-  td,
-  th{
-    white-space:nowrap;
+  table,
+  tbody{
+    display:block;
+    width:100%;
+  }
+
+  tbody{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  tbody tr{
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 5px 18px rgba(15,23,42,.06);
+    border-radius:18px;
+    padding:14px;
+  }
+
+  tbody tr:hover{
+    transform:none;
+  }
+
+  td{
+    border:none !important;
+    border-radius:0 !important;
+    padding:0;
+    white-space:normal;
+  }
+
+  .cell-patient{
+    padding:0;
+  }
+
+  /* Email duplicate column hidden, shown inline instead */
+
+  tbody tr .cell-hide-mobile{
+    display:none;
+  }
+
+  /* Extra fields hidden until row expanded */
+
+  tbody tr .cell-collapsible{
+    display:none;
+  }
+
+  tbody tr.expanded .cell-collapsible{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-top:12px;
+    margin-top:12px;
+    border-top:1px dashed var(--border) !important;
     font-size:13px;
-    padding:12px;
+  }
+
+  tbody tr.expanded .cell-collapsible::before{
+    content:attr(data-label);
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:var(--muted);
   }
 
   .patient{
@@ -1264,21 +1668,69 @@ font-weight:700;
   }
 
   .avatar{
-    width:36px;
-    height:36px;
-    border-radius:10px;
-    font-size:14px;
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    font-size:15px;
   }
 
-  input,
-  select{
-    font-size:14px;
-    padding:12px;
+  .patient-heading strong{
+    font-size:14.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:150px;
+    display:block;
   }
 
-  .save-btn{
-    width:100%;
-    padding:14px;
+  .email-mobile{
+    display:block;
+    font-size:11.5px;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:170px;
+  }
+
+  .row-expand-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:32px;
+    height:32px;
+    flex-shrink:0;
+    border:none;
+    border-radius:50%;
+    background:var(--surface-solid,#eef2f7);
+    color:var(--primary);
+    padding:0;
+    cursor:pointer;
+    transition:.25s ease;
+  }
+
+  .row-expand-btn:active{
+    transform:scale(.92);
+  }
+
+  .chevron{
+    font-size:19px;
+    font-weight:700;
+    line-height:1;
+    transition:transform .25s ease;
+  }
+
+  tbody tr.expanded .row-expand-btn{
+    background:var(--gradient-primary);
+    color:white;
+  }
+
+  tbody tr.expanded .chevron{
+    transform:rotate(90deg);
+  }
+
+  .edit-btn{
+    width:30%;
   }
 
 }
@@ -1335,7 +1787,9 @@ font-weight:700;
 
 /* Scroll Form Button */
 
-.scroll-form-btn{
+.scroll-form-btn,
+.pdf-btn
+{
 
     background:linear-gradient(
         135deg,
@@ -1369,93 +1823,440 @@ font-weight:700;
 }
 
 
-/* Tablet */
+
+
+
+/* ===========================
+   Pagination
+=========================== */
+
+.pagination{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:15px;
+
+margin-top:25px;
+
+padding-top:20px;
+
+border-top:1px solid var(--border);
+
+}
+
+
+
+.pagination button{
+
+padding:10px 20px;
+
+border:none;
+
+border-radius:var(--radius-pill);
+
+background:var(--gradient-primary);
+
+color:white;
+
+font-size:13px;
+
+font-weight:700;
+
+cursor:pointer;
+
+box-shadow:var(--shadow);
+
+transition:.3s ease;
+
+}
+
+
+
+.pagination button:hover:not(:disabled){
+
+transform:translateY(-3px);
+
+box-shadow:var(--shadow-lg);
+
+}
+
+
+
+.pagination button:disabled{
+
+opacity:.45;
+
+cursor:not-allowed;
+
+transform:none;
+
+}
+
+
+
+.pagination span{
+
+padding:10px 18px;
+
+background:var(--surface-solid);
+
+border:1px solid var(--border);
+
+border-radius:var(--radius-pill);
+
+font-size:13px;
+
+font-weight:700;
+
+color:var(--text);
+
+}
+
+
+
+
+
+/* ===========================
+   Tablet
+=========================== */
+
+@media(max-width:800px){
+        .pagination{
+
+        gap:10px;
+
+    }
+
+}
+@media(max-width:768px){
+
+
+.pagination{
+
+gap:10px;
+
+}
+
+
+.pagination button{
+
+padding:9px 15px;
+
+font-size:12px;
+
+}
+
+
+.pagination span{
+
+padding:9px 14px;
+
+font-size:12px;
+
+}
+
+
+}
+
+
+@media(max-width:600px){
+        .pagination{
+
+        flex-wrap:wrap;
+
+    }
+
+
+    .pagination button{
+
+        padding:10px 14px;
+
+    }
+}
+/* ===========================
+   Small Mobile
+=========================== */
+
+@media(max-width:480px){
+
+
+
+.pagination{
+
+flex-direction:row;
+
+justify-content:center;
+
+align-items:center;
+
+width:100%;
+
+gap:8px;
+
+}
+
+
+
+.pagination button{
+
+width:auto;
+
+flex:1;
+
+padding:10px 8px;
+
+font-size:12px;
+
+}
+
+
+
+.pagination span{
+
+flex:1;
+
+width:auto;
+
+padding:10px 6px;
+
+font-size:12px;
+
+text-align:center;
+
+white-space:nowrap;
+
+}
+
+
+
+}
+
+/* ===========================
+   Search Bar
+=========================== */
+
+.search-bar{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+background:var(--surface);
+
+border:1px solid var(--border);
+
+border-radius:var(--radius-xl);
+
+padding:12px 18px;
+
+margin-bottom:25px;
+
+box-shadow:var(--shadow);
+
+backdrop-filter:blur(15px);
+
+transition:.3s ease;
+
+}
+
+
+
+.search-bar:focus-within{
+
+border-color:var(--secondary);
+
+box-shadow:
+0 0 0 4px rgba(20,184,166,.15),
+var(--shadow);
+
+}
+
+
+
+.search-icon{
+
+font-size:18px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+color:var(--primary);
+
+}
+
+
+
+.search-bar input{
+
+flex:1;
+
+border:none;
+
+outline:none;
+
+background:transparent;
+
+padding:8px 5px;
+
+font-size:14px;
+
+color:var(--text);
+
+}
+
+
+
+.search-bar input::placeholder{
+
+color:var(--muted);
+
+}
+
+
+
+.search-bar input:focus{
+
+box-shadow:none;
+
+border:none;
+
+}
+
+
+
+
+
+/* ===========================
+   Tablet
+=========================== */
+
+@media(max-width:768px){
+
+
+.search-bar{
+
+padding:11px 15px;
+
+border-radius:16px;
+
+}
+
+
+
+.search-icon{
+
+font-size:16px;
+
+}
+
+
+
+.search-bar input{
+
+font-size:13px;
+
+}
+
+
+}
+
+
+
+
+/* ===========================
+   Small Mobile
+=========================== */
+
+@media(max-width:480px){
+
+
+.search-bar{
+
+gap:8px;
+
+padding:10px 12px;
+
+}
+
+
+
+.search-icon{
+
+font-size:15px;
+
+}
+
+
+.search-bar input{
+
+font-size:12px;
+
+}
+
+
+}
+/* ===========================
+   PDF BUTTON
+=========================== */
+
+
+.pdf-btn{
+
+background:var(--danger);
+
+color:white;
+
+padding:11px 18px;
+
+border:none;
+
+border-radius:30px;
+
+font-size:13px;
+
+font-weight:700;
+
+cursor:pointer;
+
+box-shadow:var(--shadow);
+
+transition:.3s;
+
+white-space:nowrap;
+
+}
+
+
+.pdf-btn:hover{
+
+transform:translateY(-3px);
+
+box-shadow:var(--shadow-lg);
+
+}
+
+
 
 @media(max-width:800px){
 
-.header-actions{
 
-    width:100%;
+.pdf-btn{
 
-    flex-direction:column;
+width:50%;
 
-    align-items:stretch;
-
-}
-
-
-.badge,
-.scroll-form-btn{
-
-    width:100%;
-
-    text-align:center;
-
-}
-
-
-.scroll-form-btn{
-
-    padding:12px;
-
-    font-size:14px;
-
-}
-
-}
-
-
-
-/* Mobile */
-
-@media(max-width:600px){
-
-
-.header-actions{
-
-    gap:10px;
-
-}
-
-
-.scroll-form-btn{
-
-    padding:11px 14px;
-
-    font-size:13px;
-
-    border-radius:12px;
-
-}
-
-
-.badge{
-
-    padding:10px 14px;
-
-    font-size:12px;
+text-align:center;
 
 }
 
 
 }
-
-
-
-/* Small Mobile */
-
-@media(max-width:380px){
-
-
-.scroll-form-btn{
-
-    padding:10px;
-
-    font-size:12px;
-
-}
-
-
-}
-
 </style>

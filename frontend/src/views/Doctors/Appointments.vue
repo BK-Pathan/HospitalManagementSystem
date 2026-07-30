@@ -13,6 +13,23 @@ const selectedAppointment = ref(null);
 const router = useRouter();
 const route = useRoute();
 
+// track which mobile cards are expanded
+const expandedCards = ref(new Set());
+
+const toggleCard = (id)=>{
+
+if(expandedCards.value.has(id)){
+    expandedCards.value.delete(id);
+}else{
+    expandedCards.value.add(id);
+}
+
+expandedCards.value = new Set(expandedCards.value);
+
+};
+
+const isExpanded = (id)=> expandedCards.value.has(id);
+
 
 
 // Get Appointments
@@ -228,6 +245,10 @@ getAppointments();
 <div v-else class="table-card">
 
 
+<!-- ================= DESKTOP TABLE ================= -->
+
+<div class="table-scroll">
+
 <table class="appointments-table">
 
 
@@ -396,6 +417,120 @@ History
 
 </table>
 
+</div>
+
+
+
+<!-- ================= MOBILE CARDS ================= -->
+
+<div class="mobile-list">
+
+    <div
+    v-for="item in appointments"
+    :key="item._id"
+    class="mobile-card"
+    :class="{highlight:item._id === route.params.id}"
+    >
+
+        <div
+        class="mobile-card-main"
+        @click="toggleCard(item._id)"
+        >
+
+            <span class="avatar">
+                {{ initials(item.patient?.user?.name || item.patient?.name) }}
+            </span>
+
+            <div class="mobile-card-info">
+
+                <span class="mobile-card-name">
+                    {{ item.patient?.user?.name || item.patient?.name || "Unknown" }}
+                </span>
+
+                <span class="mobile-card-email">
+                    {{ item.patient?.user?.email || item.patient?.email || "N/A" }}
+                </span>
+
+                <span class="mobile-card-date">
+                    {{ new Date(item.appointmentDateTime).toLocaleString() }}
+                </span>
+
+            </div>
+
+            <div class="mobile-card-side">
+
+                <span :class="`status status--${item.status}`">
+                    {{ item.status }}
+                </span>
+
+                <button
+                class="chevron"
+                :class="{open:isExpanded(item._id)}"
+                >
+                    ›
+                </button>
+
+            </div>
+
+        </div>
+
+        <transition name="expand">
+
+        <div
+        v-if="isExpanded(item._id)"
+        class="mobile-card-details"
+        >
+
+            <button
+            class="icon-btn confirm-btn"
+            @click="updateStatus(item._id,'confirmed')"
+            >
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+            Confirm
+            </button>
+
+            <button
+            class="icon-btn complete-btn"
+            @click="updateStatus(item._id,'completed')"
+            >
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Complete
+            </button>
+
+            <button
+            class="icon-btn cancel-btn"
+            @click="selectedAppointment=item._id"
+            >
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Cancel
+            </button>
+
+            <button
+            class="icon-btn history-btn"
+            @click="viewHistory(item.patient)"
+            >
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 5v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            History
+            </button>
+
+        </div>
+
+        </transition>
+
+    </div>
+
+    <div
+    v-if="appointments.length===0"
+    class="empty-data"
+    >
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <p>No appointments found</p>
+      </div>
+    </div>
+
+</div>
+
 
 </div>
 
@@ -557,7 +692,12 @@ Close
     0 1px 2px rgba(15, 23, 42, 0.04),
     0 8px 20px -8px rgba(15, 23, 42, 0.08);
   border: 1px solid var(--border);
+}
+
+.table-scroll{
+
   overflow-x: auto;
+
 }
 
 .appointments-table {
@@ -861,6 +1001,165 @@ Close
   border-left: 4px solid var(--primary);
 }
 
+/* ================= MOBILE CARD LIST (hidden on desktop) ================= */
+
+.mobile-list{
+
+  display:none;
+
+}
+
+
+.mobile-card{
+
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04), 0 6px 16px -8px rgba(15,23,42,.08);
+  margin-bottom:12px;
+  overflow:hidden;
+  transition:.3s;
+
+}
+
+
+.mobile-card.highlight{
+
+  border-left:4px solid var(--primary);
+  background:#ecfeff;
+
+}
+
+
+.mobile-card-main{
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+  cursor:pointer;
+
+}
+
+
+.mobile-card-info{
+
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+
+}
+
+
+.mobile-card-name{
+
+  font-weight:700;
+  font-size:15px;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+}
+
+
+.mobile-card-email{
+
+  font-size:12px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+}
+
+
+.mobile-card-date{
+
+  font-size:12px;
+  color:var(--muted);
+
+}
+
+
+.mobile-card-side{
+
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+  flex-shrink:0;
+
+}
+
+
+.chevron{
+
+  background:#f3f4f6;
+  color:var(--muted);
+  border:none;
+  width:26px;
+  height:26px;
+  padding:0;
+  border-radius:50%;
+  font-size:16px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.3s;
+
+}
+
+
+.chevron.open{
+
+  transform:rotate(90deg);
+  background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color:white;
+
+}
+
+
+.mobile-card-details{
+
+  padding:14px 16px 16px;
+  border-top:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+
+}
+
+
+.mobile-card-details .icon-btn{
+
+  width:100%;
+  justify-content:center;
+
+}
+
+
+/* expand transition */
+
+.expand-enter-active,
+.expand-leave-active{
+
+  transition:.25s ease;
+
+}
+
+
+.expand-enter-from,
+.expand-leave-to{
+
+  opacity:0;
+
+}
+
+
 /* ==========================
    Large Laptop
 ========================== */
@@ -947,36 +1246,19 @@ Close
     border-radius: 14px;
   }
 
-  .appointments-table {
-    min-width: 680px;
+  /* swap table for cards on mobile */
+
+  .table-scroll{
+
+    display:none;
+
   }
 
-  .appointments-table th,
-  .appointments-table td {
-    padding: 12px 10px;
-    font-size: 13px;
-  }
 
-  .avatar {
-    width: 30px;
-    height: 30px;
-    font-size: 11px;
-  }
+  .mobile-list{
 
-  .status {
-    font-size: 11px;
-    padding: 5px 10px;
-  }
+    display:block;
 
-  .icon-btn {
-    padding: 7px 10px;
-    font-size: 12px;
-    gap: 4px;
-  }
-
-  .icon-btn svg {
-    width: 13px;
-    height: 13px;
   }
 
   .cancel-box {
@@ -993,16 +1275,6 @@ Close
   .cancel-box__header h3 {
     font-size: 16px;
   }
-  .action-buttons{
-  flex-direction:column;
-  width:120px;
-}
-
-
-.icon-btn{
-  width:100%;
-  justify-content:center;
-}
 
 }
 
@@ -1022,19 +1294,6 @@ Close
   .count-pill {
     font-size: 13px;
     padding: 9px 14px;
-  }
-
-  .appointments-table {
-    min-width: 620px;
-  }
-
-  .action-buttons {
-    gap: 6px;
-  }
-
-  .icon-btn {
-    padding: 6px 9px;
-    font-size: 11px;
   }
 
   .cancel-box {

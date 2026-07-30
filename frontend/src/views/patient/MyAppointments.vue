@@ -32,6 +32,25 @@ const selectedDate = ref("");
 
 const selectedTime = ref("");
 
+
+// track which mobile cards are expanded (UI only)
+const expandedCards = ref(new Set());
+
+const toggleCard = (id)=>{
+
+if(expandedCards.value.has(id)){
+    expandedCards.value.delete(id);
+}else{
+    expandedCards.value.add(id);
+}
+
+expandedCards.value = new Set(expandedCards.value);
+
+};
+
+const isExpanded = (id)=> expandedCards.value.has(id);
+
+
 // =======================
 // Reschedule
 // =======================
@@ -450,6 +469,10 @@ onMounted(()=>{
 
     <div class="table-card">
 
+        <!-- ===== DESKTOP TABLE ===== -->
+
+        <div class="table-scroll">
+
         <table class="appointments-table" v-if="appointments.length">
 
             <thead>
@@ -521,6 +544,107 @@ onMounted(()=>{
         </table>
 
         <div class="empty-state" v-else>
+            <div class="empty-icon">📅</div>
+            <p>No appointments yet</p>
+        </div>
+
+        </div>
+
+
+
+        <!-- ===== MOBILE CARDS ===== -->
+
+        <div class="mobile-list" v-if="appointments.length">
+
+            <div
+            v-for="appointment in appointments"
+            :key="appointment._id"
+            class="mobile-card"
+            >
+
+                <div
+                class="mobile-card-main"
+                @click="toggleCard(appointment._id)"
+                >
+
+                    <span class="mobile-avatar">
+                        {{ (appointment.doctor?.user?.name || appointment.doctor?.name || "D").charAt(0).toUpperCase() }}
+                    </span>
+
+                    <div class="mobile-card-info">
+
+                        <span class="mobile-card-name">
+                            {{ appointment.doctor?.user?.name || appointment.doctor?.name || "Doctor" }}
+                        </span>
+
+                        <span class="mobile-card-speciality">
+                            {{ appointment.doctor?.specialties?.join(", ") || "—" }}
+                        </span>
+
+                        <span class="mobile-card-date">
+                            {{ formatDateTime(appointment.appointmentDateTime) }}
+                        </span>
+
+                    </div>
+
+                    <div class="mobile-card-side">
+
+                        <span class="status" :class="`status--${appointment.status}`">
+                            {{ appointment.status }}
+                        </span>
+
+                        <button
+                        class="chevron"
+                        :class="{open:isExpanded(appointment._id)}"
+                        >
+                            ›
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <transition name="expand">
+
+                <div
+                v-if="isExpanded(appointment._id)"
+                class="mobile-card-details"
+                >
+
+                    <button
+                        v-if="appointment.status==='confirmed'"
+                        class="action-btn reschedule-btn"
+                        @click="openReschedule(appointment)"
+                    >
+                        🔄 Reschedule
+                    </button>
+
+                    <button
+                        class="action-btn feedback-btn"
+                        :class="{ disabled: appointment.status !== 'completed' }"
+                        :disabled="appointment.status !== 'completed'"
+                        @click="openFeedback(appointment)"
+                    >
+                        ⭐ Give Feedback
+                    </button>
+
+                    <button
+                        v-if="appointment.status==='completed'"
+                        class="action-btn prescription-btn"
+                       @click="openPrescription(appointment)"
+                    >
+                        📄 Prescription
+                    </button>
+
+                </div>
+
+                </transition>
+
+            </div>
+
+        </div>
+
+        <div class="empty-state" v-else-if="!appointments.length">
             <div class="empty-icon">📅</div>
             <p>No appointments yet</p>
         </div>
@@ -764,6 +888,9 @@ v-model="selectedTime"
     0 1px 2px rgba(15, 42, 67, 0.04),
     0 8px 20px -10px rgba(15, 42, 67, 0.08);
   border: 1px solid var(--clinical-border);
+}
+
+.table-scroll {
   overflow-x: auto;
 }
 
@@ -910,6 +1037,128 @@ v-model="selectedTime"
 .empty-icon {
   font-size: 34px;
   margin-bottom: 10px;
+}
+
+/* ---------- Mobile card list (hidden on desktop) ---------- */
+
+.mobile-list {
+  display: none;
+}
+
+.mobile-card {
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-border);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(15,42,67,.04), 0 6px 16px -8px rgba(15,42,67,.08);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.mobile-card-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.mobile-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--clinical-teal), var(--clinical-navy));
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 4px 10px -3px rgba(13, 148, 136, .4);
+}
+
+.mobile-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-card-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--clinical-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-card-speciality {
+  font-size: 12px;
+  color: var(--clinical-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-card-date {
+  font-size: 12px;
+  color: var(--clinical-text-muted);
+}
+
+.mobile-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chevron {
+  background: var(--clinical-bg);
+  color: var(--clinical-text-muted);
+  border: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .3s;
+}
+
+.chevron.open {
+  transform: rotate(90deg);
+  background: linear-gradient(135deg, var(--clinical-teal), var(--clinical-navy));
+  color: #fff;
+}
+
+.mobile-card-details {
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--clinical-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-card-details .action-btn {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.expand-enter-active,
+.expand-leave-active {
+  transition: .25s ease;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
 }
 
 /* ---------- Modals (Premium) ---------- */
@@ -1112,19 +1361,14 @@ v-model="selectedTime"
     border-radius: 16px;
   }
 
-  .appointments-table {
-    min-width: 620px;
+  /* swap table for cards on mobile */
+
+  .table-scroll {
+    display: none;
   }
 
-  .appointments-table th,
-  .appointments-table td {
-    padding: 12px 14px;
-    font-size: 13px;
-  }
-
-  .action-btn {
-    padding: 7px 11px;
-    font-size: 12px;
+  .mobile-list {
+    display: block;
   }
 
   .feedback-modal {
@@ -1154,16 +1398,6 @@ v-model="selectedTime"
   .count-badge {
     font-size: 12px;
     padding: 4px 10px;
-  }
-
-  .appointments-table {
-    min-width: 560px;
-  }
-
-  .action-btn {
-    display: block;
-    width: 100%;
-    margin: 4px 0;
   }
 
   .feedback-modal {

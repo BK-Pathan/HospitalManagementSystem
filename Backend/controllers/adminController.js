@@ -818,12 +818,18 @@ try{
 
 let search = req.query.search || "";
 
-
-// Regex Injection Protection
-
 search = escapeRegex(search.trim());
 
 
+const page = Number(req.query.page) || 1;
+
+const limit = 3;
+
+const skip = (page - 1) * limit;
+
+
+
+// User search query
 
 let matchQuery = {
 
@@ -847,6 +853,12 @@ $options:"i"
 
 
 
+// Total count
+
+const totalPatients = await Patient.countDocuments();
+
+
+// Patients fetch
 
 const patients = await Patient.find()
 
@@ -858,10 +870,16 @@ match:matchQuery,
 
 select:"name email role"
 
-});
+})
+
+.skip(skip)
+
+.limit(limit);
 
 
 
+
+// Remove patients whose user not matched
 
 const filteredPatients = patients.filter(
 
@@ -871,19 +889,27 @@ const filteredPatients = patients.filter(
 
 
 
-res.json(filteredPatients);
+res.json({
+
+patients:filteredPatients,
+
+currentPage:page,
+
+totalPages:Math.ceil(totalPatients / limit),
+
+totalPatients
+
+});
 
 
 
 }
 catch(error){
 
-
 console.log(
 "Get Patients Error:",
 error
 );
-
 
 
 res.status(500).json({
@@ -895,8 +921,7 @@ message:error.message
 
 }
 
-};;
-
+};
 
 
 // ======================
@@ -1073,19 +1098,84 @@ exports.getAllUsers = async(req,res)=>{
 
 try{
 
-    const users = await User.find()
-    .select("-password");
+
+const page = Number(req.query.page) || 1;
+const limit = Number(req.query.limit) || 5;
+
+const skip = (page - 1) * limit;
 
 
-    res.json(users);
+const search = req.query.search || "";
+
+
+const query = {
+
+};
+
+
+if(search){
+
+query.$or = [
+
+{
+    name:{
+        $regex:search,
+        $options:"i"
+    }
+},
+
+{
+    email:{
+        $regex:search,
+        $options:"i"
+    }
+},
+
+{
+    role:{
+        $regex:search,
+        $options:"i"
+    }
+}
+
+];
+
+}
+
+
+
+const users = await User.find(query)
+.select("-password")
+.skip(skip)
+.limit(limit);
+
+
+
+const totalUsers = await User.countDocuments(query);
+
+
+
+res.json({
+
+users,
+
+currentPage:page,
+
+totalPages:Math.ceil(totalUsers / limit),
+
+totalUsers
+
+});
 
 
 }
 catch(error){
 
-    res.status(500).json({
-        message:error.message
-    });
+res.status(500).json({
+
+message:error.message
+
+});
 
 }
 
@@ -1914,6 +2004,34 @@ message:error.message
 
 });
 
+
+}
+
+};
+
+
+// download patient pdf
+exports.exportPatients = async(req,res)=>{
+
+try{
+
+
+const patients = await Patient.find()
+.populate("user","name email role")
+.sort({
+createdAt:-1
+});
+
+
+res.json(patients);
+
+
+}
+catch(error){
+
+res.status(500).json({
+message:error.message
+});
 
 }
 
