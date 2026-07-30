@@ -138,7 +138,7 @@ exports.login = async (req, res) => {
 try {
 
 
-console.log("LOGIN BODY:", req.body);
+// console.log("LOGIN BODY:", req.body);
 
 
 
@@ -619,7 +619,7 @@ message:"Password changed successfully"
 }
 catch(error){
 
-console.log(
+window.notify(
 "CHANGE PASSWORD ERROR:",
 error
 );

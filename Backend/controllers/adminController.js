@@ -1310,11 +1310,6 @@ message:error.message
 // Create Patient By Admin
 // ======================
 const validator = require("validator");
-// const bcrypt = require("bcrypt");
-
-// ======================
-// Create Patient By Admin
-// ======================
 
 exports.createPatient = async(req,res)=>{
 

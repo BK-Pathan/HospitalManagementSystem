@@ -178,8 +178,8 @@ const selectedTime =
 
 
 
-console.log("REQUEST DAY:",dayName);
-console.log("REQUEST TIME:",selectedTime);
+// console.log("REQUEST DAY:",dayName);
+// console.log("REQUEST TIME:",selectedTime);
 
 
 
@@ -235,7 +235,7 @@ return hour*60 + minute;
 const available = doctorData.availability.some(slot=>{
 
 
-console.log("DB SLOT:",slot);
+// console.log("DB SLOT:",slot);
 
 
 
@@ -851,22 +851,22 @@ exports.getPatientDashboard = async(req,res)=>{
 try{
 
 
-console.log(
-"========== PATIENT DASHBOARD =========="
-);
+// console.log(
+// "========== PATIENT DASHBOARD =========="
+// );
 
 
-console.log(
-"LOGIN USER FROM TOKEN:",
-req.user
-);
+// console.log(
+// "LOGIN USER FROM TOKEN:",
+// req.user
+// );
 
 
 
-console.log(
-"LOGIN USER ID:",
-req.user.id
-);
+// console.log(
+// "LOGIN USER ID:",
+// req.user.id
+// );
 
 
 
@@ -881,10 +881,10 @@ user:req.user.id
 
 
 
-console.log(
-"PATIENT PROFILE FOUND:",
-patient
-);
+// console.log(
+// "PATIENT PROFILE FOUND:",
+// patient
+// );
 
 
 
@@ -901,10 +901,10 @@ message:"Patient profile not found"
 
 
 
-console.log(
-"PATIENT PROFILE ID:",
-patient._id
-);
+// console.log(
+// "PATIENT PROFILE ID:",
+// patient._id
+// );
 
 
 
@@ -922,10 +922,10 @@ patient:patient._id
 });
 
 
-console.log(
-"TOTAL APPOINTMENTS:",
-totalAppointments
-);
+// console.log(
+// "TOTAL APPOINTMENTS:",
+// totalAppointments
+// );
 
 
 
@@ -968,10 +968,10 @@ patient:patient._id
 });
 
 
-console.log(
-"ALL MY APPOINTMENTS:",
-allAppointments
-);
+// console.log(
+// "ALL MY APPOINTMENTS:",
+// allAppointments
+// );
 
 
 
@@ -999,10 +999,10 @@ status:{
 });
 
 
-console.log(
-"UPCOMING APPOINTMENTS:",
-upcomingAppointments
-);
+// console.log(
+// "UPCOMING APPOINTMENTS:",
+// upcomingAppointments
+// );
 
 
 // ===============================
@@ -1041,10 +1041,10 @@ appointmentDateTime:1
 
 
 
-console.log(
-"UPCOMING LIST:",
-upcomingAppointmentList
-);
+// console.log(
+// "UPCOMING LIST:",
+// upcomingAppointmentList
+// );
 
 // ===============================
 // COMPLETED
@@ -1062,10 +1062,10 @@ status:"completed"
 
 
 
-console.log(
-"COMPLETED APPOINTMENTS:",
-completedAppointments
-);
+// console.log(
+// "COMPLETED APPOINTMENTS:",
+// completedAppointments
+// );
 
 
 
@@ -1087,10 +1087,10 @@ patient:patient._id
 
 
 
-console.log(
-"MY PRESCRIPTIONS:",
-prescriptions
-);
+// console.log(
+// "MY PRESCRIPTIONS:",
+// prescriptions
+// );
 
 
 
@@ -1099,10 +1099,10 @@ prescriptions.length;
 
 
 
-console.log(
-"TOTAL PRESCRIPTIONS:",
-totalPrescriptions
-);
+// console.log(
+// "TOTAL PRESCRIPTIONS:",
+// totalPrescriptions
+// );
 
 
 
@@ -1134,10 +1134,10 @@ status:"completed"
 
 
 
-console.log(
-"DOCTORS VISITED:",
-doctorsVisited
-);
+// console.log(
+// "DOCTORS VISITED:",
+// doctorsVisited
+// );
 
 
 
@@ -1208,10 +1208,10 @@ upcomingAppointmentList
 
 
 
-console.log(
-"FINAL DASHBOARD RESPONSE:",
-response
-);
+// console.log(
+// "FINAL DASHBOARD RESPONSE:",
+// response
+// );
 
 
 

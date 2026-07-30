@@ -83,10 +83,10 @@ appointmentId:appointment
 
 
 
-console.log(
-"ADMIN NOTIFICATIONS SENT",
-notifications.length
-);
+// console.log(
+// "ADMIN NOTIFICATIONS SENT",
+// notifications.length
+// );
 
 
 

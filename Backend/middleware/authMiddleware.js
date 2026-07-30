@@ -7,7 +7,7 @@ const authMiddleware = (req,res,next)=>{
     const token = req.cookies.token;
 
 
-    console.log("TOKEN:", token);
+    // console.log("TOKEN:", token);
     if(!token){
         return res.status(401).json({
             message:"Please login first"

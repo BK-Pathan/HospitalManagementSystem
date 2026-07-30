@@ -1010,10 +1010,10 @@ try {
         updatedAt: -1
     });
 
-    console.log(
-        "RESCHEDULE HISTORY:",
-        JSON.stringify(history, null, 2)
-    );
+    // console.log(
+    //     "RESCHEDULE HISTORY:",
+    //     JSON.stringify(history, null, 2)
+    // );
 
     res.json(history);
 

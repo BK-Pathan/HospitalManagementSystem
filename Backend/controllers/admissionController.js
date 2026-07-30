@@ -170,7 +170,7 @@ exports.getDoctorAdmissions = async(req,res)=>{
 try{
 
 
-console.log("USER:",req.user);
+// console.log("USER:",req.user);
 
 
 // Find Doctor Profile
@@ -195,7 +195,7 @@ message:"Doctor profile not found"
 
 
 
-console.log("DOCTOR:",doctor);
+// console.log("DOCTOR:",doctor);
 
 
 
@@ -257,10 +257,10 @@ createdAt:-1
 
 
 
-console.log(
-"POPULATED ADMISSIONS:",
-admissions
-);
+// console.log(
+// "POPULATED ADMISSIONS:",
+// admissions
+// );
 
 
 
@@ -272,7 +272,7 @@ res.json(admissions);
 catch(error){
 
 
-console.log(error);
+// console.log(error);
 
 
 res.status(500).json({

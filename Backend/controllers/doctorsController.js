@@ -741,16 +741,16 @@ doctor:doctor._id
 
 
 
-console.log(
-"Analytics Result:",
-{
-pending,
-confirmed,
-completed,
-cancelled,
-total
-}
-);
+// console.log(
+// "Analytics Result:",
+// {
+// pending,
+// confirmed,
+// completed,
+// cancelled,
+// total
+// }
+// );
 
 
 

@@ -304,9 +304,9 @@ exports.getMyPrescriptions = async(req,res)=>{
 try{
 
 
-console.log(
-"========== GET MY PRESCRIPTIONS =========="
-);
+// console.log(
+// "========== GET MY PRESCRIPTIONS =========="
+// );
 
 
 
@@ -387,9 +387,9 @@ createdAt:-1
 
 
 
-console.log(
-JSON.stringify(prescriptions,null,2)
-);
+// console.log(
+// JSON.stringify(prescriptions,null,2)
+// );
 
 
 

@@ -43,10 +43,10 @@ const res = await api.get(
 
 
 
-console.log(
-"PATIENT HISTORY:",
-res.data
-);
+// console.log(
+// "PATIENT HISTORY:",
+// res.data
+// );
 
 
 

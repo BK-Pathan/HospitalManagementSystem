@@ -61,10 +61,10 @@ const validAppointments = appointments.filter(
 
 
 
-console.log(
-"Doctor Appointments:",
-validAppointments
-);
+// console.log(
+// "Doctor Appointments:",
+// validAppointments
+// );
 
 
 

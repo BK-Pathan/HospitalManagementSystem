@@ -86,12 +86,12 @@ exports.getDoctorFeedback = async(req,res)=>{
 try{
 
 
-console.log("========== DOCTOR FEEDBACK ==========");
+// console.log("========== DOCTOR FEEDBACK ==========");
 
-console.log(
-"Logged User:",
-req.user
-);
+// console.log(
+// "Logged User:",
+// req.user
+// );
 
 
 
@@ -103,10 +103,10 @@ user:req.user.id
 
 
 
-console.log(
-"Doctor:",
-doctor
-);
+// console.log(
+// "Doctor:",
+// doctor
+// );
 
 
 
@@ -164,10 +164,10 @@ createdAt:-1
 
 
 
-console.log(
-"Feedbacks:",
-feedbacks
-);
+// console.log(
+// "Feedbacks:",
+// feedbacks
+// );
 
 
 

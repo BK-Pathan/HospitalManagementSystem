@@ -2,7 +2,7 @@
 
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
-console.log("🔥 DOCTOR DASHBOARD FILE LOADED");
+console.log("🔥 DOCTOR Reschdule FILE LOADED");
 
 
 const requests = ref([]);

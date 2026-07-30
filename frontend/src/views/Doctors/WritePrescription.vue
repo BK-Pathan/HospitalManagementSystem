@@ -4,7 +4,7 @@ import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
 
-console.log("🔥 DOCTOR DASHBOARD FILE LOADED");
+console.log("🔥  Write Prescription FILE LOADED");
 
 const route = useRoute();
 const router = useRouter();
