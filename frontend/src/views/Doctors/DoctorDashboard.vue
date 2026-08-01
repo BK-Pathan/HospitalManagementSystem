@@ -452,7 +452,15 @@ onMounted(() => {
           <tr v-for="item in todaysAppointments" :key="item._id">
             <td>
               <div class="patient-cell">
-                <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar-img"
+/>
+
+<span v-else class="avatar">
+{{ initials(item.patient?.user?.name) }}
+</span>
                 {{ item.patient?.user?.name || "N/A" }}
               </div>
             </td>
@@ -544,8 +552,22 @@ onMounted(() => {
           <tr v-for="item in upcomingAppointments" :key="item._id">
             <td>
               <div class="patient-cell">
-                <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
-                {{ item.patient?.user?.name || "N/A" }}
+              <div class="patient-cell">
+
+  <img
+    v-if="item.patient?.user?.profileImage"
+    :src="item.patient.user.profileImage"
+    class="avatar-img"
+  />
+
+  <span v-else class="avatar">
+    {{ initials(item.patient?.user?.name) }}
+  </span>
+
+  {{ item.patient?.user?.name || "N/A" }}
+
+</div>
+                <!-- {{ item.patient?.user?.name || "N/A" }} -->
               </div>
             </td>
             <td>{{ item.patient?.DescribeYourProblem || "N/A" }}</td>
@@ -1110,6 +1132,12 @@ onMounted(() => {
     height:220px;
   }
 
+}.avatar-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 </style>

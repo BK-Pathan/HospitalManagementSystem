@@ -142,8 +142,20 @@ v-for="item in feedbacks"
 
 
 <div class="feedback-card__head">
+<div class="avatar">
 
-<span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+:alt="item.patient?.user?.name"
+class="avatar-img"
+/>
+
+<span v-else>
+{{ initials(item.patient?.user?.name) }}
+</span>
+
+</div>
 
 <div class="feedback-card__head-info">
 
@@ -409,6 +421,15 @@ No feedback available yet.
   font-size: 14px;
   font-weight: 700;
   box-shadow: 0 6px 14px -4px rgba(20, 184, 166, .5);
+}
+
+.avatar-img{
+
+width:100%;
+height:100%;
+border-radius:50%;
+object-fit:cover;
+
 }
 
 .feedback-card h3 {

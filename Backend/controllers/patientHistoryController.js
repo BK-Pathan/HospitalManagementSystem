@@ -93,31 +93,19 @@ doctor:doctor._id
 })
 
 .populate({
-
-path:"patient",
-
-populate:{
-
-path:"user",
-
-select:"name email"
-
-}
-
+  path:"patient",
+  populate:{
+    path:"user",
+    select:"name email profileImage"
+  }
 })
 
 .populate({
-
-path:"doctor",
-
-populate:{
-
-path:"user",
-
-select:"name email"
-
-}
-
+  path:"doctor",
+  populate:{
+    path:"user",
+    select:"name email profileImage"
+  }
 })
 
 .sort({
@@ -149,17 +137,11 @@ status:"completed"
 })
 
 .populate({
-
-path:"doctor",
-
-populate:{
-
-path:"user",
-
-select:"name email"
-
-}
-
+  path:"doctor",
+  populate:{
+    path:"user",
+    select:"name email profileImage"
+  }
 })
 
 .sort({

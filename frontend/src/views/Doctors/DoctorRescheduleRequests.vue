@@ -338,11 +338,26 @@ class="card"
 
 <div class="card__head">
 
-<span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar avatar-img"
+/>
+
+<span v-else class="avatar">
+{{ initials(item.patient?.user?.name) }}
+</span>
 
 <div class="card__head-info">
-  <h3>{{item.patient?.user?.name || "Unknown"}}</h3>
-  <span class="status status--pending">Pending</span>
+
+<h3>
+{{ item.patient?.user?.name || "Unknown" }}
+</h3>
+
+<span class="status status--pending">
+Pending
+</span>
+
 </div>
 
 </div>
@@ -464,9 +479,32 @@ class="card"
 
 <div class="card__head">
 
-<span class="avatar avatar--muted">{{ initials(item.patient?.user?.name) }}</span>
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar avatar-img"
+/>
 
-<h3>{{item.patient?.user?.name || "Unknown"}}</h3>
+<span v-else class="avatar avatar--muted">
+{{ initials(item.patient?.user?.name) }}
+</span>
+
+
+<div>
+
+<h3>
+{{ item.patient?.user?.name || "Unknown" }}
+</h3>
+
+<span
+v-if="item.doctor?.user?.name"
+class="doctor-text"
+>
+{{ item.doctor.user.name }}
+</span>
+
+</div>
+
 
 </div>
 
@@ -1005,5 +1043,10 @@ button:disabled {
   }
 
 }
-
+.avatar-img{
+width:44px;
+height:44px;
+border-radius:50%;
+object-fit:cover;
+}
 </style>

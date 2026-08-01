@@ -316,10 +316,21 @@ highlight:item._id === route.params.id
 
 
 <td class="patient-name">
-  <div class="patient-cell">
-    <span class="avatar">{{ initials(item.patient?.user?.name || item.patient?.name) }}</span>
-    {{item.patient?.user?.name || item.patient?.name || "Unknown"}}
-  </div>
+<div class="patient-cell">
+
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar-img"
+/>
+
+<span v-else class="avatar">
+{{ initials(item.patient?.user?.name || item.patient?.name) }}
+</span>
+
+{{item.patient?.user?.name || item.patient?.name || "Unknown"}}
+
+</div>
 </td>
 
 
@@ -438,9 +449,15 @@ History
         @click="toggleCard(item._id)"
         >
 
-            <span class="avatar">
-                {{ initials(item.patient?.user?.name || item.patient?.name) }}
-            </span>
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar-img"
+/>
+
+<span v-else class="avatar">
+{{ initials(item.patient?.user?.name || item.patient?.name) }}
+</span>
 
             <div class="mobile-card-info">
 
@@ -764,7 +781,15 @@ Close
   font-weight: 700;
   box-shadow: 0 4px 10px -3px rgba(20, 184, 166, .5);
 }
+.avatar-img{
 
+width:36px;
+height:36px;
+border-radius:50%;
+object-fit:cover;
+flex-shrink:0;
+
+}
 .patient-name {
   font-weight: 700;
   color: var(--text);

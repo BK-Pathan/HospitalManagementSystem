@@ -353,7 +353,18 @@ v-for="item in myAppointments"
 
 <td>
   <div class="patient-cell">
-    <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+<img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar"
+/>
+
+<span 
+v-else
+class="avatar"
+>
+{{ initials(item.patient?.user?.name) }}
+</span>
     {{item.patient?.user?.name || "N/A"}}
   </div>
 </td>
@@ -446,7 +457,18 @@ Write Prescription
     @click="toggleRow(item._id)"
     >
 
-      <span class="avatar">{{ initials(item.patient?.user?.name) }}</span>
+   <img
+v-if="item.patient?.user?.profileImage"
+:src="item.patient.user.profileImage"
+class="avatar"
+/>
+
+<span 
+v-else
+class="avatar"
+>
+{{ initials(item.patient?.user?.name) }}
+</span>
 
       <div class="mobile-card-title">
         <h4>{{ item.patient?.user?.name || "N/A" }}</h4>
@@ -569,7 +591,19 @@ v-for="item in otherAppointments"
 
 <td>
   <div class="patient-cell">
-    <span class="avatar avatar--muted">{{ initials(item.doctor?.name) }}</span>
+ 
+ <img
+v-if="item.doctor?.user?.profileImage"
+:src="item.doctor.user.profileImage"
+class="avatar"
+/>
+
+<span 
+v-else
+class="avatar"
+>
+{{ initials(item.doctor?.user?.name) }}
+</span>
     {{item.doctor?.name || "N/A"}}
   </div>
 </td>

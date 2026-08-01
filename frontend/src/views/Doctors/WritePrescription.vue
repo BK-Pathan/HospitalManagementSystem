@@ -356,7 +356,18 @@ const initials = (name) => {
 
 <div v-if="patient" class="patient-card">
 
-  <span class="avatar">{{ initials(patient.patient?.user?.name) }}</span>
+<img
+v-if="patient.patient?.user?.profileImage"
+:src="patient.patient.user.profileImage"
+class="avatar"
+/>
+
+<span
+v-else
+class="avatar"
+>
+  {{ initials(patient.patient?.user?.name) }}
+</span>
 
   <div class="patient-card__info">
     <h3>{{ patient.patient?.user?.name || "N/A" }}</h3>
