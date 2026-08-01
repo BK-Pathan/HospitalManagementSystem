@@ -126,16 +126,13 @@ MAIN
 
     min-height:100vh;
 
-    /* height:100vh; */
-
     display:flex;
 
     flex-direction:column;
 
-    overflow:hidden;
+    /* overflow:hidden;  REMOVE THIS */
 
 }
-
 
 
 
@@ -143,16 +140,12 @@ MAIN
 CONTENT
 ===================== */
 
-
 .content{
-
-    padding:30px;
 
     flex:1;
 
-    /* overflow-y:auto; */
-
-    /* background:transparent; */
+    padding:108px 30px 30px;
+    /* 78px navbar + 30px page spacing */
 
 }
 
@@ -165,22 +158,18 @@ TABLET
 
 @media(max-width:1000px){
 
-
 .main{
 
     margin-left:220px;
-
     width:calc(100% - 220px);
 
 }
 
-
 .content{
 
-    padding:20px;
+    padding:98px 20px 20px;
 
 }
-
 
 }
 
@@ -193,23 +182,19 @@ MOBILE
 
 @media(max-width:700px){
 
-
 .main{
 
     margin-left:0;
-
     width:100%;
 
 }
 
-
-
 .content{
 
-    padding:15px;
+    padding:73px 15px 15px;
+    /* 58px navbar + 15px spacing */
 
 }
-
 
 }
 

@@ -131,4 +131,9 @@ const goBack = () => {
     font-size: 12.5px;
   }
 }
+@media (min-width: 768px) {
+  .back-btn {
+    display: none;
+  }
+}
 </style>

@@ -46,7 +46,8 @@ const year = new Date().getFullYear();
     width:100%;
 
     margin-top:10px;
-   height:60px;
+    height:60px;
+
     padding:18px 25px;
 
     display:flex;
@@ -57,13 +58,20 @@ const year = new Date().getFullYear();
 
     gap:15px;
 
-    background:var(--surface);
+
+    background: linear-gradient(
+        135deg,
+      rgba(118, 172, 233, 0.35),
+        rgba(220,247,250,.85),
+        rgba(15, 117, 164, 0.75)
+    );
+
 
     backdrop-filter:blur(12px);
 
-    border-top:1px solid var(--border);
+    border-top:1px solid rgba(180,233,239,.6);
 
-    color:var(--muted);
+    color:#475569;
 
     font-size:13px;
 

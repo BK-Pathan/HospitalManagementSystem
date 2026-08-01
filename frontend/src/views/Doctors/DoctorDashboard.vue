@@ -989,7 +989,9 @@ class="avatar-img"
 ========================== */
 
 @media (max-width:768px){
-
+.table-card{
+  background: white;
+}
   .dashboard-page{
     padding:0;
   }

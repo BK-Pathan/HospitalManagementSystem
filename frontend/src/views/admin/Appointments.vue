@@ -1809,9 +1809,9 @@ select{
 
 .pagination button{
 
-    min-width:36px;
+    min-width:28px;
 
-    height:36px;
+    height:28px;
 
     padding:0 10px;
 

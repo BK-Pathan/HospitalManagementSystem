@@ -396,46 +396,82 @@ Welcome back
 
 .navbar{
 
-    height:78px;
-    min-height:78px;
-    flex-shrink:0;
+    position: fixed;
+    top: 0;
+    left: 270px;
+    width: calc(100% - 270px);
 
-    display:flex;
+    height: 78px;
+    min-height: 78px;
 
-    justify-content:space-between;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    align-items:center;
+    padding: 0 32px;
 
-    padding:0 32px;
+    z-index: 999;
 
-    position:sticky;
-    top:0;
-    z-index:50;
+    /* Premium Glass */
+ background: linear-gradient(
+    135deg,
+    rgba(255,255,255,.92),
+    rgba(220,247,250,.85),
+   rgba(147,197,253,.35),
+);
 
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
 
-    background:
-    rgba(255,255,255,.72);
-
-
-    backdrop-filter:
-    blur(22px) saturate(160%);
-
-
-    -webkit-backdrop-filter:
-    blur(22px) saturate(160%);
-
-
-    border-bottom:
-    1px solid rgba(226,232,240,.7);
-
+    border-bottom: 1px solid rgba(255,255,255,.35);
+    border-left: 1px solid rgba(255,255,255,.15);
 
     box-shadow:
-    0 12px 30px rgba(15,23,42,.06);
+        0 10px 35px rgba(15,23,42,.08),
+        inset 0 1px 0 rgba(255,255,255,.65),
+        inset 0 -1px 0 rgba(255,255,255,.15);
 
-    box-sizing:border-box;
+    box-sizing: border-box;
 
+    transition: all .3s ease;
 }
+.navbar::before{
 
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:linear-gradient(
+        90deg,
+        rgba(255,255,255,0),
+        rgba(255,255,255,.22),
+        rgba(255,255,255,0)
+    );
+
+    pointer-events:none;
+}
+.navbar::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    right:0;
+    bottom:-1px;
+
+    height:1px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(59,130,246,.45),
+        transparent
+    );
+
+    pointer-events:none;
+}
 
 
 /* =========================
@@ -1334,22 +1370,13 @@ font-size:13.5px;
 
 
 .navbar{
-
-    height:58px;
-    min-height:58px;
-
-    padding:0 12px;
-
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:10px;
-
+    left: 0;
+    width: 100%;
+    height: 58px;
+    min-height: 58px;
 }
+
+
 
 
 
