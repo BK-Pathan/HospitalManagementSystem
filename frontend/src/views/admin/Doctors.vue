@@ -9,7 +9,7 @@ import api from "../../api/axios";
 // ======================
 
 const doctors = ref([]);
-
+const profileImage = ref("");
 const name = ref("");
 const department = ref("");
 const specialties = ref("");
@@ -91,7 +91,7 @@ search:search.value
 }
 
 });
-
+console.log(res.data.doctors);
 
 doctors.value = res.data.doctors;
 
@@ -331,6 +331,7 @@ name.value = doctor.name || "";
 
 department.value = doctor.department || "";
 
+profileImage.value = doctor.profileImage || "";
 
 specialties.value =
 doctor.specialties?.join(", ") || "";
@@ -554,9 +555,19 @@ getDoctors();
 
             <div class="doctor-top">
 
-                <div class="doctor-avatar">
-                    {{ doctor.name?.charAt(0) }}
-                </div>
+<div class="doctor-avatar">
+
+    <img
+    v-if="doctor.profileImage"
+    :src="doctor.profileImage"
+    :alt="doctor.name"
+    />
+
+    <span v-else>
+        {{ doctor.name?.charAt(0) }}
+    </span>
+
+</div>
 
                 <div class="doctor-heading">
                     <h4>{{doctor.name}}</h4>
@@ -2140,6 +2151,18 @@ width:50%;
 
 }
 
+
+}
+
+.doctor-avatar img{
+
+width:100%;
+
+height:100%;
+
+border-radius:18px;
+
+object-fit:cover;
 
 }
 </style>

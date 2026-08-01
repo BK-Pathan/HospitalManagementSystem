@@ -348,36 +348,54 @@ message:error.message
 
 };
 
-exports.getAvailableDoctors = async(req,res)=>{
+// Patient side pr all available doc page
 
-try{
+exports.getAvailableDoctors = async (req, res) => {
 
+  try {
 
-const doctors = await Doctor.find()
-.select(
-"name department specialties qualifications experience contactInformation availability"
-);
+    const doctors = await Doctor.find()
+      .select(
+        "user name department specialties qualifications experience contactInformation availability"
+      )
+      .populate(
+        "user",
+        "profileImage"
+      );
 
+    const formattedDoctors = doctors.map((doctor) => ({
 
-res.json(doctors);
+      _id: doctor._id,
 
+      name: doctor.name,
 
+      department: doctor.department,
 
-}catch(error){
+      specialties: doctor.specialties,
 
+      qualifications: doctor.qualifications,
 
-res.status(500).json({
+      experience: doctor.experience,
 
-message:error.message
+      contactInformation: doctor.contactInformation,
 
-});
+      availability: doctor.availability,
 
+      profileImage: doctor.user?.profileImage || ""
 
-}
+    }));
 
+    res.json(formattedDoctors);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
 
 };
-
 // Get Single Doctor
 
 exports.getDoctorById = async(req,res)=>{

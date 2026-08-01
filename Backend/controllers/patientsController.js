@@ -572,25 +572,19 @@ message:"Profile not found"
 
 
 const appointments = await Appointment.find({
-
-patient:patient._id
-
+    patient:patient._id
 })
-
+.populate({
+    path:"doctor",
+    select:"name department specialties availability user",
+    populate:{
+        path:"user",
+        select:"profileImage name"
+    }
+})
 .populate(
-
-"doctor",
-
-"name department specialties availability"
-
-)
-
-.populate(
-
-"patient",
-
-"name email"
-
+    "patient",
+    "name email"
 );
 
 
@@ -621,6 +615,7 @@ message:error.message
 
 
 };
+
 
 exports.dashboardStatsOLD = async(req,res)=>{
 
@@ -1029,7 +1024,12 @@ status:{
 
 path:"doctor",
 
-select:"name department specialties"
+select:"name department specialties user",
+
+populate:{
+    path:"user",
+    select:"name profileImage"
+}
 
 })
 .sort({
@@ -1038,7 +1038,6 @@ appointmentDateTime:1
 
 })
 .limit(5);
-
 
 
 // console.log(

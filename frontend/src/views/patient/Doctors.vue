@@ -65,6 +65,8 @@ const res=await api.get(
 "/doctor/available"
 );
 
+console.log(res.data);
+
 
 doctors.value=res.data;
 
@@ -173,7 +175,20 @@ const accentFor = (name) => {
 
             <div class="card-top">
 
-                <span class="avatar">{{ initials(doctor.name) }}</span>
+                <div class="avatar">
+
+  <img
+    v-if="doctor.profileImage"
+    :src="doctor.profileImage"
+    :alt="doctor.name"
+    class="avatar-img"
+  />
+
+  <span v-else>
+    {{ initials(doctor.name) }}
+  </span>
+
+</div>
 
                 <div class="doctor-identity">
                     <h3 class="doctor-name">Dr. {{doctor.name}}</h3>
@@ -412,6 +427,7 @@ const accentFor = (name) => {
   width: 52px;
   height: 52px;
   border-radius: 14px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -421,6 +437,13 @@ const accentFor = (name) => {
   font-weight: 700;
   letter-spacing: .02em;
   box-shadow: 0 6px 14px -4px color-mix(in srgb, var(--card-accent) 60%, transparent);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .doctor-identity {

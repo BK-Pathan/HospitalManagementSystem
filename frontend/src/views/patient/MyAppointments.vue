@@ -567,9 +567,27 @@ onMounted(()=>{
                 @click="toggleCard(appointment._id)"
                 >
 
-                    <span class="mobile-avatar">
-                        {{ (appointment.doctor?.user?.name || appointment.doctor?.name || "D").charAt(0).toUpperCase() }}
-                    </span>
+<div class="mobile-avatar">
+
+<img
+v-if="appointment.doctor?.user?.profileImage"
+:src="appointment.doctor.user.profileImage"
+:alt="appointment.doctor.name"
+class="mobile-avatar-img"
+/>
+
+    <span v-else>
+        {{
+          (appointment.doctor?.name || "D")
+          .split(" ")
+          .map(word => word[0])
+          .slice(0,2)
+          .join("")
+          .toUpperCase()
+        }}
+    </span>
+
+</div>
 
                     <div class="mobile-card-info">
 
@@ -1410,5 +1428,12 @@ v-model="selectedTime"
   }
 
 }
+.mobile-avatar-img{
 
+width:100%;
+height:100%;
+border-radius:50%;
+object-fit:cover;
+
+}
 </style>

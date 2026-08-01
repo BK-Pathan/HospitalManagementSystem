@@ -148,6 +148,26 @@ const userRole = computed(() => {
 });
 
 // =========================
+// OPEN PROFILE
+// =========================
+
+const openProfile = () => {
+
+  if(role.value === "admin"){
+    router.push("/admin/profile");
+  }
+
+  else if(role.value === "doctor"){
+    router.push("/doctor/profile");
+  }
+
+  else if(role.value === "patient"){
+    router.push("/patient/profile");
+  }
+
+};
+
+// =========================
 // SOCKET
 // =========================
 
@@ -317,7 +337,10 @@ View All Notifications
 
 <!-- User -->
 
-<div class="user-section">
+<div 
+class="user-section"
+@click="openProfile"
+>
 
 <div class="user-icon">
 
@@ -1644,6 +1667,24 @@ font-size:13.5px;
 }
 
 
+
+}
+
+.user-section{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+flex-shrink:0;
+
+padding-left:14px;
+
+border-left:1px solid rgba(226,232,240,.9);
+
+cursor:pointer;
 
 }
 </style>

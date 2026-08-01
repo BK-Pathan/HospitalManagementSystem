@@ -243,9 +243,24 @@ getStats();
 
       >
 
-        <div class="appointment-avatar">
-          {{ (appointment.doctor?.name || "D").charAt(0) }}
-        </div>
+<div class="appointment-avatar">
+
+<img
+v-if="appointment.doctor?.user?.profileImage"
+:src="appointment.doctor.user.profileImage"
+:alt="appointment.doctor.user.name"
+class="doctor-avatar-img"
+/>
+
+<span v-else>
+{{
+(appointment.doctor?.name || "D")
+.charAt(0)
+.toUpperCase()
+}}
+</span>
+
+</div>
 
         <div class="appointment-info">
 
@@ -956,6 +971,15 @@ font-size:11px;
 
 }
 
+
+}
+
+.doctor-avatar-img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:50%;
 
 }
 </style>
