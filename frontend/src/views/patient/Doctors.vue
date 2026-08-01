@@ -3,6 +3,7 @@
 import {ref,onMounted} from "vue";
 import {useRouter} from "vue-router";
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue"
 
 console.log("🔥 Doctors FILE LOADED");
 
@@ -135,7 +136,7 @@ const accentFor = (name) => {
 
 <div class="page">
 
-
+ <BackButton/>
     <div class="header">
 
         <div>

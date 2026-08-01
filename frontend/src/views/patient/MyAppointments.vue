@@ -11,6 +11,7 @@ import api from "../../api/axios";
 import {
     useRouter
 } from "vue-router";
+import BackButton from "../../components/BackButton.vue"
 
 console.log("🔥 My Appointment FILE LOADED");
 
@@ -453,7 +454,7 @@ onMounted(()=>{
 <template>
 
 <div class="appointments-page">
-
+ <BackButton/>
     <div class="page-header">
 
         <div>

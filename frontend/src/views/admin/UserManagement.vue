@@ -2,7 +2,7 @@
 
 import {ref,onMounted,reactive,watch} from "vue";
 import api from "../../api/axios";
-
+import BackButton from "../../components/BackButton.vue"
 
 const users = ref([]);
 
@@ -189,7 +189,7 @@ getUsers();
 
 <div class="page">
 
-
+ <BackButton/>
     <!-- Header -->
 
     <div class="header">

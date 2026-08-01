@@ -2,7 +2,7 @@
 
 import {ref,onMounted} from "vue";
 import api from "../../api/axios";
-
+import BackButton from "../../components/BackButton.vue";
 
 const profile = ref({
 
@@ -305,6 +305,8 @@ getProfile();
 
 
   <template>
+
+     <BackButton/>
 
 <div class="profile-page">
 

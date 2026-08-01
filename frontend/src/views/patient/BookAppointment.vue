@@ -3,7 +3,7 @@
 import {ref,onMounted,computed} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
-
+import BackButton from "../../components/BackButton.vue"
 
 console.log("🔥 book Appointment FILE LOADED");
 
@@ -366,12 +366,10 @@ const initials = (name) => {
 
 <div class="appointment-page">
 
+  <BackButton/>
 
 <div class="page-header">
-  <button class="back-btn" @click="router.back()">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Back
-  </button>
+
   <p class="eyebrow">New Appointment</p>
   <h2 class="page-title">Book Appointment</h2>
 </div>
@@ -563,7 +561,7 @@ class="confirm-btn"
   margin-bottom: 22px;
 }
 
-.back-btn {
+/* .back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -587,7 +585,7 @@ class="confirm-btn"
 .back-btn:hover {
   transform: translateX(-3px);
   box-shadow: 0 4px 10px -3px rgba(15, 23, 42, 0.12);
-}
+} */
 
 .eyebrow {
   font-size: 13px;
@@ -1091,12 +1089,12 @@ class="confirm-btn"
     font-size: 11px;
   }
 
-  .back-btn {
+  /* .back-btn {
     padding: 8px 14px;
     font-size: 12px;
     width: 100%;
     justify-content: center;
-  }
+  } */
 
   .doctor-card {
     padding: 14px;

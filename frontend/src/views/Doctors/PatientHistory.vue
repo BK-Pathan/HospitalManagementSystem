@@ -3,6 +3,7 @@
 import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue";
 
 console.log("🔥 Patient History FILE LOADED");
 
@@ -242,10 +243,8 @@ return name
 
 
 <div class="page-header">
-  <button class="back-btn" @click="router.back()">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Back
-  </button>
+
+  <BackButton />
   <div>
     <p class="eyebrow">Patient Record</p>
     <h2 class="page-title">Patient History</h2>

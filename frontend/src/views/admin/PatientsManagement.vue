@@ -6,6 +6,7 @@ import api from "../../api/axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import BackButton from "../../components/BackButton.vue"
 // ======================
 // States
 // ======================
@@ -457,6 +458,7 @@ getPatients();
 
 <div class="page">
 
+     <BackButton/>
 
     <!-- Header -->
 

@@ -3,6 +3,7 @@
 import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue"
 
 console.log("🔥 View Prescription FILE LOADED");
 
@@ -96,15 +97,13 @@ getPrescriptions();
 
 <template>
 
+<BackButton/>
 
 <div class="page">
 
 
+
 <div class="page-header">
-  <button class="back-btn" @click="router.back()">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Back
-  </button>
   <p class="eyebrow">Medical Records</p>
   <h2 class="page-title">Patient Prescriptions</h2>
 </div>
@@ -281,14 +280,15 @@ v-for="medicine in prescription.medicines"
 <style scoped>
 
 .page {
-  padding: 30px;
+  /* padding: 30px; */
 }
 
 .page-header {
+  /* margin-top: 25px; */
   margin-bottom: 25px;
 }
 
-.back-btn {
+/* .back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -303,9 +303,9 @@ v-for="medicine in prescription.medicines"
   box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.08);
   margin-bottom: 14px;
   transition: transform .18s ease, box-shadow .18s ease;
-}
+} */
 
-.back-btn svg {
+/* .back-btn svg {
   width: 15px;
   height: 15px;
 }
@@ -313,7 +313,7 @@ v-for="medicine in prescription.medicines"
 .back-btn:hover {
   transform: translateX(-3px);
   box-shadow: 0 4px 10px -3px rgba(15, 23, 42, 0.12);
-}
+} */
 
 .eyebrow {
   font-size: 13px;
@@ -577,9 +577,9 @@ h4 {
 ========================== */
 @media (max-width: 1400px) {
 
-  .page {
+  /* .page {
     padding: 26px;
-  }
+  } */
 
 }
 
@@ -599,9 +599,9 @@ h4 {
 ========================== */
 @media (max-width: 992px) {
 
-  .page {
+  /* .page {
     padding: 22px;
-  }
+  } */
 
   .page-title {
     font-size: 25px;
@@ -618,10 +618,10 @@ h4 {
    Mobile
 ========================== */
 @media (max-width: 768px) {
-
+/* 
   .page {
     padding: 16px;
-  }
+  } */
 
   .page-title {
     font-size: 22px;
@@ -686,9 +686,9 @@ h4 {
 ========================== */
 @media (max-width: 480px) {
 
-  .page {
+  /* .page {
     padding: 12px;
-  }
+  } */
 
   .page-title {
     font-size: 20px;
@@ -698,12 +698,12 @@ h4 {
     font-size: 11px;
   }
 
-  .back-btn {
+  /* .back-btn {
     padding: 8px 14px;
     font-size: 12px;
     width: 100%;
     justify-content: center;
-  }
+  } */
 
   .card {
     padding: 14px;

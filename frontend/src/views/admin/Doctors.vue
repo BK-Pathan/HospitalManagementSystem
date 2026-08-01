@@ -2,7 +2,7 @@
 
 import { ref, onMounted, reactive } from "vue";
 import api from "../../api/axios";
-
+import BackButton from "../../components/BackButton.vue"
 
 // ======================
 // States
@@ -490,7 +490,7 @@ getDoctors();
 <template>
 
 <div class="page">
-
+ <BackButton/>
 
     <div class="header">
 

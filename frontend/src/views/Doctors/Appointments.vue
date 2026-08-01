@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "../../api/axios";
-
+import BackButton from "../../components/BackButton.vue"
 
 const appointments = ref([]);
 const loading = ref(false);
@@ -224,6 +224,8 @@ getAppointments();
 
 <div class="appointments-page">
 
+  <BackButton/>
+  
 
 <div class="page-header">
   <div>

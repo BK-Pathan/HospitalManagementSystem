@@ -2,6 +2,8 @@
 
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue"
+
 console.log("🔥 DOCTOR Reschdule FILE LOADED");
 
 
@@ -293,6 +295,7 @@ const initials = (name) => {
 
 <div class="container">
 
+<BackButton/>
 
 <div class="page-header">
   <p class="eyebrow">Scheduling</p>

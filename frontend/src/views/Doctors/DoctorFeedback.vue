@@ -1,7 +1,7 @@
 <script setup>
 
 import {ref,onMounted,computed} from "vue";
-
+import BackButton from "../../components/BackButton.vue"
 import api from "../../api/axios";
 
 
@@ -94,6 +94,7 @@ const initials = (name) => {
 
 <div class="page">
 
+  <BackButton/>
 
 <div class="page-header">
   <p class="eyebrow">Reviews</p>

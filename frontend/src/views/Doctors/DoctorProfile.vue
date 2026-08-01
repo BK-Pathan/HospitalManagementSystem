@@ -2,6 +2,8 @@
 
 import { ref, onMounted } from "vue";
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue"
+
 
 console.log("🔥 DOCTOR Profile FILE LOADED");
 
@@ -500,6 +502,7 @@ getProfile();
 <template>
 
 <div class="profile-page">
+<BackButton/>
 
 <div class="page-header">
   <p class="eyebrow">✦ Account</p>

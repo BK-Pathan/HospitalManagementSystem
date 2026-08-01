@@ -3,6 +3,8 @@
 import {ref,onMounted} from "vue";
 import {useRoute,useRouter} from "vue-router";
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue"
+
 
 console.log("🔥  Write Prescription FILE LOADED");
 
@@ -346,6 +348,7 @@ const initials = (name) => {
 
 <div class="page">
 
+<BackButton/>
 
 <div class="page-header">
   <p class="eyebrow">Consultation</p>
@@ -569,12 +572,13 @@ Save Prescription
 
 
 <style scoped>
-
-.page {
-  padding: 30px;
+.page{
+  box-sizing: border-box;
+  margin:0;
+  padding :0;
 }
-
 .page-header {
+  /* margin-top: 25px;   */
   margin-bottom: 25px;
 }
 
@@ -888,9 +892,9 @@ button:active {
 ========================== */
 @media (max-width: 1400px) {
 
-  .page {
+  /* .page {
     padding: 26px;
-  }
+  } */
 
 }
 
@@ -911,9 +915,9 @@ button:active {
 ========================== */
 @media (max-width: 992px) {
 
-  .page {
+  /* .page {
     padding: 22px;
-  }
+  } */
 
   .page-title {
     font-size: 25px;
@@ -940,9 +944,9 @@ button:active {
 ========================== */
 @media (max-width: 768px) {
 
-  .page {
+  /* .page {
     padding: 16px;
-  }
+  } */
 
   .page-title {
     font-size: 22px;
@@ -1020,10 +1024,10 @@ button:active {
    Small Mobile
 ========================== */
 @media (max-width: 480px) {
-
+/* 
   .page {
     padding: 12px;
-  }
+  } */
 
   .page-title {
     font-size: 20px;

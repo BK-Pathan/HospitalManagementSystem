@@ -7,6 +7,7 @@ onMounted
 } from "vue";
 
 import api from "../../api/axios";
+import BackButton from "../../components/BackButton.vue"
 
 console.log("🔥 Prescription History FILE LOADED");
 
@@ -233,7 +234,7 @@ getMyPrescriptions();
 <template>
 
 <div class="page">
-
+ <BackButton/>
 
   <div class="page-header">
 
