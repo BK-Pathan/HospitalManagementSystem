@@ -752,7 +752,7 @@ const doctors = await Doctor.find(filter)
 
 .populate(
 "user",
-"email"
+"email profileImage"
 )
 
 .sort({
@@ -858,6 +858,7 @@ $options:"i"
 const totalPatients = await Patient.countDocuments();
 
 
+
 // Patients fetch
 
 const patients = await Patient.find()
@@ -868,13 +869,14 @@ path:"user",
 
 match:matchQuery,
 
-select:"name email role"
+select:"name email role profileImage"
 
 })
 
 .skip(skip)
 
 .limit(limit);
+
 
 
 
@@ -931,11 +933,9 @@ message:error.message
 exports.getAllAppointments = async (req, res) => {
   try {
 
-
     const status = req.query.status;
 
 
-    // Pagination
     const page = parseInt(req.query.page) || 1;
 
     const limit = parseInt(req.query.limit) || 10;
@@ -943,14 +943,11 @@ exports.getAllAppointments = async (req, res) => {
     const skip = (page - 1) * limit;
 
 
-
     let filter = {};
 
 
     if (status) {
-
       filter.status = status;
-
     }
 
 
@@ -961,10 +958,14 @@ exports.getAllAppointments = async (req, res) => {
 
     const appointments = await Appointment.find(filter)
 
-      .populate(
-        "doctor",
-        "name department specialties"
-      )
+      .populate({
+        path: "doctor",
+        select: "name department specialties user",
+        populate: {
+          path: "user",
+          select: "profileImage"
+        }
+      })
 
       .populate({
         path: "patient",
@@ -1002,13 +1003,11 @@ exports.getAllAppointments = async (req, res) => {
 
   } catch (error) {
 
-
     res.status(500).json({
 
       message: error.message
 
     });
-
 
   }
 };
@@ -1603,8 +1602,8 @@ const today = new Date()
 
 
 const doctors = await Doctor.find()
-.select("name specialties department availability");
-
+.populate("user","profileImage")
+.select("name specialties department availability user");
 console.log(
 "Doctors from DB:",
 JSON.stringify(doctors,null,2)
@@ -1653,22 +1652,19 @@ $sum:1
 
 return {
 
-name:doctor.name,
-
-
-// Department Added
+name: doctor.name,
+profileImage: doctor.user?.profileImage || null,
 department: doctor.department || null,
 
+specialties: doctor.specialties || [],
 
-specialties:doctor.specialties || [],
 
-
-status:availableToday
+status: availableToday
 ? "Available Today"
 : "Not Available",
 
 
-available:availableToday,
+available: availableToday,
 
 
 averageRating:
@@ -1681,7 +1677,6 @@ totalReviews:
 ratings.length
 ? ratings[0].totalReviews
 :0
-
 
 };
 

@@ -532,10 +532,19 @@ onMounted(()=>{
 
                 <div class="doctor-item-top">
 
-                    <div class="avatar">
-                        {{ doctor.name?.charAt(0) }}
-                    </div>
+<div class="avatar">
 
+    <img 
+    v-if="doctor.profileImage" 
+    :src="doctor.profileImage"
+    class="doctor-status-img"
+    >
+
+    <span v-else>
+        {{doctor.name?.charAt(0)}}
+    </span>
+
+</div>
                     <div>
                         <h3>{{doctor.name}}</h3>
                         <p class="speciality">{{doctor.department}}</p>
@@ -843,6 +852,7 @@ onMounted(()=>{
     height:44px;
     flex-shrink:0;
     border-radius:14px;
+    overflow:hidden;
     background:linear-gradient(135deg,#2563eb,#06b6d4);
     color:white;
     font-weight:700;
@@ -850,7 +860,6 @@ onMounted(()=>{
     align-items:center;
     justify-content:center;
 }
-
 .doctor-item-top h3{
     color:#0f172a;
     font-size:15px;
@@ -1348,6 +1357,14 @@ width:50%;
     .card h1{
         font-size:22px;
     }
+
+}
+.doctor-status-img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:14px;
 
 }
 </style>

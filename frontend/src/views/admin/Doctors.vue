@@ -557,15 +557,15 @@ getDoctors();
 
 <div class="doctor-avatar">
 
-    <img
-    v-if="doctor.profileImage"
-    :src="doctor.profileImage"
-    :alt="doctor.name"
-    />
+<img
+v-if="doctor.user?.profileImage"
+:src="doctor.user.profileImage"
+:alt="doctor.name"
+/>
 
-    <span v-else>
-        {{ doctor.name?.charAt(0) }}
-    </span>
+<span v-else>
+{{doctor.name?.charAt(0)}}
+</span>
 
 </div>
 

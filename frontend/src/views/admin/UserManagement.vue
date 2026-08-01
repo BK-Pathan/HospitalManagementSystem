@@ -334,11 +334,19 @@ placeholder="Search users..."
                         <div class="user">
 
 
-                            <div class="avatar" :class="user.role">
+<div class="avatar" :class="user.role">
 
-                                {{user.name?.charAt(0)}}
+<img
+v-if="user.profileImage"
+:src="user.profileImage"
+alt="Profile"
+/>
 
-                            </div>
+<span v-else>
+{{user.name?.charAt(0)}}
+</span>
+
+</div>
 
 
 
@@ -1773,6 +1781,14 @@ max-width:100%;
 
 }
 
+
+}
+.avatar img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:13px;
 
 }
 </style>

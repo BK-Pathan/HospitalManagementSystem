@@ -374,7 +374,15 @@ v-for="(appointment,index) in appointments"
 
 <div class="avatar">
 
+<img
+v-if="appointment.doctor?.user?.profileImage"
+:src="appointment.doctor.user.profileImage"
+alt="Doctor"
+/>
+
+<span v-else>
 👨‍⚕️
+</span>
 
 </div>
 
@@ -613,9 +621,19 @@ No Appointments Found
         @click="toggleCard(appointment._id)"
         >
 
-            <div class="avatar">
-                👨‍⚕️
-            </div>
+<div class="avatar">
+
+<img
+v-if="appointment.doctor?.user?.profileImage"
+:src="appointment.doctor.user.profileImage"
+alt="Doctor"
+/>
+
+<span v-else>
+👨‍⚕️
+</span>
+
+</div>
 
             <div class="mobile-card-info">
 
@@ -1098,7 +1116,16 @@ tbody td:last-child{
 
 }
 
+.avatar img{
 
+width:100%;
+height:100%;
+
+object-fit:cover;
+
+border-radius:14px;
+
+}
 
 .avatar{
 

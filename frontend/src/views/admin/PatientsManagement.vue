@@ -607,11 +607,19 @@ placeholder="Search patient by name..."
 
                         <div class="patient">
 
-                            <div class="avatar">
+<div class="avatar">
 
-                                {{patient.user?.name?.charAt(0)}}
+<img
+v-if="patient.user?.profileImage"
+:src="patient.user.profileImage"
+alt="Patient"
+/>
 
-                            </div>
+<span v-else>
+{{patient.user?.name?.charAt(0)}}
+</span>
+
+</div>
 
 
                             <div class="patient-heading">
@@ -2257,6 +2265,15 @@ text-align:center;
 
 }
 
+
+}
+
+.avatar img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:14px;
 
 }
 </style>

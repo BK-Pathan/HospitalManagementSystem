@@ -1,3 +1,8 @@
+// ye page use ni ha 
+// duplicate ha
+
+
+
 <script setup>
 
 import {ref,onMounted} from "vue";
