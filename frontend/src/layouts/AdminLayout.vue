@@ -6,6 +6,7 @@ import { useRoute } from "vue-router";
 import Sidebar from "../components/Sidebar.vue";
 import Navbar from "../components/Navbar.vue";
 import CommonFooter from "../components/Footer.vue";
+import WaterBackground from "../components/WaterMesh.vue";
 
 
 const route = useRoute();
@@ -35,9 +36,15 @@ watch(
 <div class="layout">
 
 
+    <!-- Water Background -->
+
+    <WaterBackground />
+
+
     <!-- Sidebar -->
 
     <Sidebar />
+
 
 
     <!-- Main Area -->
@@ -50,20 +57,25 @@ watch(
         <Navbar />
 
 
+
         <!-- Page Content -->
 
-<main class="content" ref="content">
+        <main class="content" ref="content">
 
-    <router-view />
-    <CommonFooter/>
+            <router-view />
 
-</main>
+          
 
+        </main>
+
+    <CommonFooter />
 
     </div>
 
 
 </div>
+
+
 
 </template>
 
@@ -80,26 +92,41 @@ watch(
 
     display:flex;
 
-    background:#f8fafc;
-
     overflow-x:hidden;
 
+    position:relative;
+
 }
+
+
+
+/* Keep layout above background */
+
+.main,
+.sidebar{
+
+    position:relative;
+
+    z-index:1;
+
+}
+
 
 
 /* =====================
 MAIN
 ===================== */
 
-.main{
 
+.main{
+/* margin-top: 105px; */
     margin-left:270px;
 
     width:calc(100% - 270px);
 
     min-height:100vh;
 
-    height:100vh;
+    /* height:100vh; */
 
     display:flex;
 
@@ -108,6 +135,7 @@ MAIN
     overflow:hidden;
 
 }
+
 
 
 
@@ -122,9 +150,9 @@ CONTENT
 
     flex:1;
 
-    overflow-y:auto;
+    /* overflow-y:auto; */
 
-    background:#f8fafc;
+    /* background:transparent; */
 
 }
 
@@ -184,7 +212,6 @@ MOBILE
 
 
 }
-
 
 
 </style>

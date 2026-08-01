@@ -708,9 +708,9 @@ class="edit-btn"
 
   min-height: 100%;
   padding: 24px 28px;
-  background:
+  /* background:
     radial-gradient(1200px 300px at 100% -10%, rgba(13,148,136,0.06), transparent),
-    var(--clinical-bg);
+    var(--clinical-bg); */
   font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   color: var(--clinical-text);
 }
@@ -794,7 +794,7 @@ class="edit-btn"
 /* ---------- Avatar card (Premium, with banner) ---------- */
 
 .avatar-card {
-  background: var(--clinical-surface);
+  /* background: var(--clinical-surface); */
   border: 1px solid var(--clinical-border);
   border-radius: 20px;
   margin-bottom: 20px;
@@ -806,7 +806,7 @@ class="edit-btn"
 
 .avatar-banner {
   height: 72px;
-  background: linear-gradient(120deg, var(--clinical-navy) 0%, #163f63 45%, var(--clinical-teal) 100%);
+  /* background: linear-gradient(120deg, var(--clinical-navy) 0%, #163f63 45%, var(--clinical-teal) 100%); */
 }
 
 .avatar-card-body {
@@ -933,7 +933,7 @@ class="edit-btn"
 /* ---------- Profile card (Premium) ---------- */
 
 .profile-card {
-  background: var(--clinical-surface);
+  /* background: var(--clinical-surface); */
   padding: 30px;
   border-radius: 20px;
   box-shadow:
@@ -1005,7 +1005,7 @@ textarea {
   padding: 13px 14px;
   border-radius: 11px;
   border: 1px solid var(--clinical-border);
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   font-size: 14px;
   font-family: inherit;
   color: var(--clinical-text);
@@ -1167,7 +1167,11 @@ button:active {
    Mobile
 ========================== */
 @media (max-width: 768px) {
-
+.avatar-banner,
+.avatar-card,
+.profile-card{
+  background: white;
+}
   .profile-page {
     padding: 14px;
   }

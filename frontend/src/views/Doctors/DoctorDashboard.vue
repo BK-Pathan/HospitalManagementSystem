@@ -655,7 +655,7 @@ class="avatar-img"
   display: flex;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 24px 22px;
   border-radius: 20px;
   border: 1px solid var(--border);
@@ -773,7 +773,7 @@ class="avatar-img"
 /* ---------- Table card ---------- */
 
 .table-card {
-  background: var(--white);
+  /* background: var(--white); */
   padding: 10px 24px 24px;
   border-radius: 18px;
   box-shadow: var(--shadow);
@@ -810,7 +810,7 @@ class="avatar-img"
 }
 
 .appointments-table tbody tr:hover {
-  background: #f8fafc;
+  background: #6498cdb7;
 }
 
 .patient-cell {
@@ -882,7 +882,7 @@ class="avatar-img"
 }
 
 .chart-card {
-  background: var(--white);
+  /* background: var(--white); */
   padding: 24px;
   border-radius: 18px;
   box-shadow: var(--shadow);

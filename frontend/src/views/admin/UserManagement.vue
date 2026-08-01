@@ -645,7 +645,7 @@ white-space:nowrap;
 .card{
 
 
-background:var(--surface);
+/* background:var(--surface); */
 
 backdrop-filter:blur(15px);
 
@@ -807,7 +807,7 @@ text-align:center;
 
 tbody tr{
 
-background:white;
+/* background:white; */
 
 box-shadow:0 1px 3px rgba(15,23,42,.05);
 
@@ -1091,7 +1091,7 @@ border-radius:10px;
 
 border:1.5px solid var(--border);
 
-background:white;
+background:transparent;
 
 outline:none;
 

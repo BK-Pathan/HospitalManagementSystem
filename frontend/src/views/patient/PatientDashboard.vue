@@ -403,7 +403,7 @@ class="doctor-avatar-img"
   display: flex;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 22px;
   border-radius: 18px;
   border: 1px solid var(--border);
@@ -489,7 +489,7 @@ class="doctor-avatar-img"
 /* ---------- Upcoming panel (Premium) ---------- */
 
 .upcoming-panel {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 24px;
   border-radius: 20px;
   border: 1px solid var(--border);
@@ -536,7 +536,7 @@ class="doctor-avatar-img"
   gap: 16px;
   padding: 16px 18px;
   border-radius: 14px;
-  background: #f8fafc;
+  /* background: #f8fafc; */
   border: 1px solid var(--border);
   border-left: 4px solid var(--primary);
   transition: background .2s ease, transform .2s ease;
@@ -726,6 +726,11 @@ class="doctor-avatar-img"
 ========================== */
 @media(max-width:768px){
 
+  .upcoming-panel,
+  .appointment-card,
+  .cards{
+    background-color: #fff;
+  }
 
 .dashboard{
 

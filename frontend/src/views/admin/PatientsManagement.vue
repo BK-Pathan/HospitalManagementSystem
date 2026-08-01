@@ -1083,7 +1083,7 @@ box-shadow:var(--shadow-lg);
 
 .card{
 
-background:var(--surface);
+/* background:var(--surface); */
 
 backdrop-filter:blur(15px);
 
@@ -1322,7 +1322,7 @@ border-radius:0 12px 12px 0;
 
 tbody tr{
 
-background:white;
+/* background:white; */
 
 box-shadow:var(--shadow);
 
@@ -1547,6 +1547,9 @@ box-shadow:var(--shadow-lg);
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+  .card{
+    background-color: white;
   }
 
 

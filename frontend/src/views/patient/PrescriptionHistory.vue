@@ -402,7 +402,7 @@ getMyPrescriptions();
   --clinical-indigo-light: #E0E7FF;
 
   padding: 20px 24px;
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   color: var(--clinical-text);
 }
@@ -473,7 +473,7 @@ getMyPrescriptions();
 /* ---------- Empty state ---------- */
 
 .empty {
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  /* background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%); */
   padding: 50px 30px;
   border-radius: 18px;
   text-align: center;
@@ -492,7 +492,7 @@ getMyPrescriptions();
 /* ---------- Prescription card ---------- */
 
 .prescription-card {
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  /* background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%); */
   padding: 26px;
   border-radius: 18px;
   margin-bottom: 20px;
@@ -560,7 +560,7 @@ getMyPrescriptions();
   border-radius: 14px;
   margin-top: 14px;
   overflow: hidden;
-  background: var(--clinical-surface);
+  /* background: var(--clinical-surface); */
 }
 
 .med-row {
@@ -575,7 +575,7 @@ getMyPrescriptions();
   height: 40px;
   min-width: 40px;
   border-radius: 50%;
-  background: var(--clinical-teal-light);
+  /* background: var(--clinical-teal-light); */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -625,7 +625,7 @@ getMyPrescriptions();
 .info-grid {
   display: flex;
   border-top: 1px solid var(--clinical-border);
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
 }
 
 .info-col {
@@ -662,7 +662,7 @@ getMyPrescriptions();
 
 .info {
   margin-top: 16px;
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   padding: 16px 18px;
   border-radius: 12px;
 }
@@ -759,7 +759,11 @@ getMyPrescriptions();
    Mobile — main polish target
 ========================== */
 @media (max-width: 768px) {
-
+.info,
+.med-block,
+.prescription-card{
+  background-color: white;
+}
   .page {
     padding: 12px;
   }

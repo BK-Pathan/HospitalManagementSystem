@@ -637,7 +637,7 @@ class="history-box"
 /* ---------- Card (Premium) ---------- */
 
 .card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 25px;
   border-radius: 18px;
   margin-bottom: 20px;
@@ -752,7 +752,7 @@ class="history-box"
 }
 
 .history-box {
-  background: #f8fafc;
+  /* background: #f8fafc; */
   padding: 16px;
   border-radius: 14px;
   margin-top: 15px;

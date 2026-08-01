@@ -854,7 +854,7 @@ v-model="selectedTime"
 
   min-height: 100%;
   padding: 20px 24px;
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   color: var(--clinical-text);
 }
@@ -900,7 +900,7 @@ v-model="selectedTime"
 /* ---------- Table card (Premium) ---------- */
 
 .table-card {
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  /* background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%); */
   padding: 8px;
   border-radius: 18px;
   box-shadow:

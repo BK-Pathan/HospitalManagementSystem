@@ -674,7 +674,7 @@ gap:25px;
 .profile-card{
 
 
-background:var(--surface);
+/* background:var(--surface); */
 
 backdrop-filter:blur(20px);
 
@@ -886,7 +886,7 @@ font-weight:700;
 .form-card{
 
 
-background:var(--white);
+/* background:var(--white); */
 
 border-radius:var(--radius-xl);
 

@@ -312,7 +312,7 @@ const accentFor = (name) => {
 
   min-height: 100%;
   padding: 20px 24px;
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   color: var(--clinical-text);
 }
@@ -378,7 +378,7 @@ const accentFor = (name) => {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  /* background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%); */
   border: 1px solid var(--clinical-border);
   border-radius: 18px;
   padding: 22px;
@@ -692,7 +692,9 @@ const accentFor = (name) => {
    Mobile
 ========================== */
 @media (max-width: 768px) {
-
+.doctor-card{
+  background-color:white;
+}
   .page {
     padding: 14px;
   }

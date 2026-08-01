@@ -364,8 +364,6 @@ onMounted(()=>{
 
     <!-- ================= TODAY'S APPOINTMENTS ================= -->
 
-  <!-- ================= TODAY'S APPOINTMENTS ================= -->
-
 <div class="panel panel-full">
 
     <div class="panel-head">
@@ -585,7 +583,7 @@ onMounted(()=>{
 .dashboard{
     min-height:100%;
     padding:28px;
-    background:#f1f5f9;
+    /* background:#f1f5f9; */
 }
 
 /* ================= HEADER ================= */
@@ -640,7 +638,7 @@ onMounted(()=>{
 .card{
     position:relative;
     overflow:hidden;
-    background:rgba(255,255,255,.85);
+    /* background:rgba(255,255,255,.85); */
     backdrop-filter:blur(15px);
     border:1px solid rgba(255,255,255,.6);
     border-radius:20px;
@@ -698,7 +696,7 @@ onMounted(()=>{
 /* ================= PANELS ================= */
 
 .panel{
-    background:rgba(255,255,255,.9);
+    /* background:rgba(255,255,255,.9); */
     backdrop-filter:blur(18px);
     border-radius:22px;
     padding:26px;
@@ -784,7 +782,7 @@ onMounted(()=>{
 .panel th:last-child{ border-radius:0 12px 12px 0; }
 
 .panel td{
-    background:#f8fafc;
+    /* background:#f8fafc; */
     padding:14px 15px;
     color:#334155;
     font-size:14px;
@@ -823,7 +821,7 @@ onMounted(()=>{
 }
 
 .doctor-item{
-    background:#f8fafc;
+    /* background:#f8fafc; */
     border-radius:18px;
     padding:20px;
     border:1px solid #e2e8f0;
@@ -976,7 +974,9 @@ onMounted(()=>{
         overflow:hidden;
     }
 
-
+.panel-full{
+    background-color: white;
+}
     .panel table,
     .panel tbody,
     .panel tr,
@@ -1000,7 +1000,7 @@ onMounted(()=>{
     .panel tbody tr{
 
         display:block;
-        background:#f8fafc;
+        /* background:#f8fafc; */
         border-radius:16px;
         padding:12px;
         margin-bottom:14px;
@@ -1094,7 +1094,7 @@ onMounted(()=>{
 
         flex-direction:column;
 
-        background:white;
+        /* background:white; */
 
         border:1px solid #e2e8f0;
 
@@ -1120,7 +1120,7 @@ onMounted(()=>{
 
         align-items:center;
 
-        background:#f8fafc;
+        /* background:#f8fafc; */
 
         border-radius:12px;
 
@@ -1263,7 +1263,7 @@ width:50%;
 
 
     .panel tbody tr{
-        background:#f8fafc;
+        /* background:#f8fafc; */
         border-radius:14px;
         padding:12px;
         margin-bottom:12px;

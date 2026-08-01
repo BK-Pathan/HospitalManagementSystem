@@ -596,7 +596,7 @@ Dr. {{doc.name}}
   --clinical-indigo-light: #E0E7FF;
 
   padding: 20px 24px;
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   font-family: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   color: var(--clinical-text);
 }
@@ -629,7 +629,7 @@ Dr. {{doc.name}}
 /* ---------- Profile card (Premium) ---------- */
 
 .profile-card {
-  background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%);
+  /* background: linear-gradient(180deg, var(--clinical-surface) 0%, #fbfdfe 100%); */
   border-radius: 20px;
   padding: 28px;
   border: 1px solid var(--clinical-border);
@@ -754,11 +754,11 @@ Dr. {{doc.name}}
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: var(--clinical-bg);
-  border: 1px solid var(--clinical-border);
+  /* background: var(--clinical-bg); */
+  border: 2px solid var(--clinical-border);
   border-radius: 12px;
   padding: 16px;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease, box-shadow .3s ease;
 }
 
 .info-card:hover {
@@ -883,7 +883,7 @@ Dr. {{doc.name}}
 .review-card {
   display: flex;
   gap: 14px;
-  background: var(--clinical-bg);
+  /* background: var(--clinical-bg); */
   border: 1px solid var(--clinical-border);
   padding: 18px;
   border-radius: 12px;
@@ -1002,7 +1002,11 @@ Dr. {{doc.name}}
    Mobile (reference-style hero)
 ========================== */
 @media (max-width: 768px) {
-
+.profile-card,
+.info-card,
+.review-card{
+  background-color: white;
+}
   .profile-page {
     padding: 14px;
   }
@@ -1289,7 +1293,7 @@ gap:16px;
 
 .related-card{
 
-background:white;
+/* background:white; */
 
 border:1px solid var(--clinical-border);
 

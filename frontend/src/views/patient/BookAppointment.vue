@@ -42,6 +42,7 @@ try{
 const res = await api.get(
 `/patient/doctors/${route.params.doctorId}`
 );
+console.log(res.data);
 
 doctor.value=res.data;
 
@@ -388,7 +389,17 @@ const initials = (name) => {
     <svg viewBox="0 0 24 24" :fill="isFavorite ? 'currentColor' : 'none'"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 5a5.5 5.5 0 0 1 9.5 7c-2.5 4.5-9.5 9-9.5 9z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
   </span>
 
-  <span class="hero-avatar">{{ initials(doctor.name) }}</span>
+<div class="hero-avatar">
+  <img
+    v-if="doctor.user?.profileImage"
+    :src="doctor.user.profileImage"
+    :alt="doctor.name"
+  />
+
+  <span v-else>
+    {{ initials(doctor.name) }}
+  </span>
+</div>
 
   <span class="dept-pill" v-if="doctor.department">{{doctor.department}}</span>
 
@@ -606,7 +617,7 @@ class="confirm-btn"
 /* ---------- Doctor card (Premium) ---------- */
 
 .doctor-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 28px;
   border-radius: 20px;
   box-shadow:
@@ -658,7 +669,7 @@ class="confirm-btn"
   height: 36px;
   border-radius: 50%;
   border: 1px solid var(--border);
-  background: var(--white);
+  /* background: var(--white); */
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -682,6 +693,7 @@ class="confirm-btn"
   width: 84px;
   height: 84px;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -692,6 +704,12 @@ class="confirm-btn"
   box-shadow: 0 10px 22px -8px rgba(20, 184, 166, .5);
 }
 
+
+.hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .dept-pill {
   display: inline-block;
   margin-top: 14px;
@@ -761,7 +779,7 @@ class="confirm-btn"
 /* ---------- Day picker ---------- */
 
 .day-picker {
-  background: #f8fafc;
+  /* background: #f8fafc; */
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 14px;
@@ -1015,7 +1033,10 @@ class="confirm-btn"
    Mobile
 ========================== */
 @media (max-width: 768px) {
-
+.day-picker,
+.doctor-card{
+  background: #fff;
+}
   .page-header {
     gap: 10px;
     margin-bottom: 18px;

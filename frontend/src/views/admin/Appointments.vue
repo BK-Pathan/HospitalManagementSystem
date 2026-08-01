@@ -204,7 +204,7 @@ console.log(error);
 <div class="page">
 
  <BackButton/>
- 
+
 <div class="header">
 
     <div>
@@ -930,7 +930,7 @@ select:focus{
 
     overflow:hidden;
 
-    background:var(--surface);
+    /* background:var(--surface); */
 
     backdrop-filter:blur(14px);
 
@@ -941,6 +941,7 @@ select:focus{
     padding:25px;
 
     box-shadow:var(--shadow);
+
 
 }
 
@@ -1045,7 +1046,7 @@ thead th:last-child{
 
 tbody tr{
 
-    background:var(--white);
+    /* background:var(--white); */
 
     box-shadow:var(--shadow);
 

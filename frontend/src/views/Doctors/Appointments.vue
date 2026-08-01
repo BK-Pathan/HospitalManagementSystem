@@ -705,7 +705,7 @@ Close
 /* ---------- Table card (Premium) ---------- */
 
 .table-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 10px 24px 24px;
   border-radius: 20px;
   box-shadow:
@@ -728,7 +728,7 @@ Close
 .appointments-table th {
   padding: 16px 12px;
   text-align: left;
-  color: var(--muted);
+  color: white;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -736,6 +736,7 @@ Close
   background: transparent;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+      background:var(--gradient-primary);
 }
 
 .appointments-table td {
@@ -744,6 +745,7 @@ Close
   border-bottom: 1px solid var(--border);
   font-size: 14px;
   vertical-align: middle;
+
 }
 
 .appointments-table tbody tr {
@@ -755,7 +757,7 @@ Close
 }
 
 .appointments-table tr:hover {
-  background: #f8fafc;
+  background: #a5c1dc;
 }
 
 .muted-cell {

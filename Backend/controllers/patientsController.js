@@ -58,6 +58,9 @@ try{
 
 const doctor = await Doctor.findById(
 req.params.id
+).populate(
+"user",
+"name email profileImage"
 );
 
 
@@ -105,18 +108,44 @@ message:error.message
 
 exports.bookAppointment = async(req,res)=>{
 
+console.log("🔥 BOOK APPOINTMENT API HIT");
+
 try{
+
+
+console.log("REQUEST BODY:", req.body);
+console.log("REQUEST USER:", req.user);
 
 
 const {doctor, appointmentDateTime} = req.body;
 
 
+if(!doctor || !appointmentDateTime){
 
-// Patient check
+return res.status(400).json({
+message:"Doctor and appointment time are required"
+});
+
+}
+
+
+// ===============================
+// Patient Check
+// ===============================
+
+console.log("Checking patient...");
+
 
 const patient = await Patient.findOne({
     user:req.user.id
-}).populate("user");
+})
+.populate({
+    path:"user",
+    select:"name email profileImage"
+});
+
+
+console.log("PATIENT:", patient);
 
 
 if(!patient){
@@ -128,10 +157,17 @@ message:"Please complete profile first"
 }
 
 
+// ===============================
+// Doctor Check
+// ===============================
 
-// Doctor check
+console.log("Checking doctor...");
+
 
 const doctorData = await Doctor.findById(doctor);
+
+
+console.log("DOCTOR:", doctorData);
 
 
 if(!doctorData){
@@ -144,12 +180,34 @@ message:"Doctor not found"
 
 
 
+// ===============================
+// Date Convert
+// ===============================
+
 
 const selectedDate = new Date(appointmentDateTime);
 
 
+console.log(
+"SELECTED DATE:",
+selectedDate
+);
 
+
+if(isNaN(selectedDate)){
+
+return res.status(400).json({
+message:"Invalid appointment date"
+});
+
+}
+
+
+
+// ===============================
 // Get Day
+// ===============================
+
 
 const dayName = selectedDate.toLocaleDateString(
 "en-US",
@@ -159,8 +217,17 @@ weekday:"short"
 );
 
 
+console.log(
+"DAY:",
+dayName
+);
 
-// Convert selected time
+
+
+// ===============================
+// Get Time
+// ===============================
+
 
 let hours = selectedDate.getHours();
 
@@ -178,22 +245,23 @@ const selectedTime =
 
 
 
-// console.log("REQUEST DAY:",dayName);
-// console.log("REQUEST TIME:",selectedTime);
+console.log(
+"TIME:",
+selectedTime
+);
 
 
 
 
+// ===============================
+// Convert Time
+// ===============================
 
-// Convert time to minutes
 
 const convertTimeToMinutes=(time)=>{
 
 
 let [hourMinute,period] = time.trim().split(" ");
-
-
-period = period.toUpperCase();
 
 
 let [hour,minute] = hourMinute.split(":");
@@ -206,10 +274,9 @@ minute=parseInt(minute);
 
 if(period==="PM" && hour!==12){
 
-hour += 12;
+hour+=12;
 
 }
-
 
 
 if(period==="AM" && hour===12){
@@ -217,7 +284,6 @@ if(period==="AM" && hour===12){
 hour=0;
 
 }
-
 
 
 return hour*60 + minute;
@@ -228,84 +294,33 @@ return hour*60 + minute;
 
 
 
+// ===============================
+// Availability Check
+// ===============================
 
-// Check Availability
+
+console.log(
+"DOCTOR AVAILABILITY:",
+doctorData.availability
+);
+
 
 
 const available = doctorData.availability.some(slot=>{
 
 
-// console.log("DB SLOT:",slot);
+const slotDay =
+slot.day.trim().toLowerCase();
 
 
-
-const slotDay = slot.day
-.trim()
-.toLowerCase();
-
-
-
-const requestDay = dayName
-.trim()
-.toLowerCase();
-
-
-
-
-let dayMatch = false;
-
-
-
-// Handle Mon-Fri
-
-if(slotDay.includes("-")){
-
-
-const [startDay,endDay] = slotDay.split("-");
-
-
-
-const days = [
-"sun",
-"mon",
-"tue",
-"wed",
-"thu",
-"fri",
-"sat"
-];
-
-
-
-const startIndex = days.indexOf(startDay);
-
-const endIndex = days.indexOf(endDay);
-
-const requestIndex = days.indexOf(requestDay);
-
-
-
-dayMatch =
-requestIndex >= startIndex &&
-requestIndex <= endIndex;
-
-
-
-}else{
-
-
-dayMatch = slotDay === requestDay;
-
-
-}
-
-
+const requestDay =
+dayName.trim().toLowerCase();
 
 
 
 return (
 
-dayMatch
+slotDay === requestDay
 
 &&
 
@@ -313,20 +328,24 @@ convertTimeToMinutes(selectedTime)
 >=
 convertTimeToMinutes(slot.startTime)
 
+
 &&
 
 convertTimeToMinutes(selectedTime)
 <=
 convertTimeToMinutes(slot.endTime)
 
-
 );
-
 
 
 });
 
 
+
+console.log(
+"AVAILABLE:",
+available
+);
 
 
 
@@ -347,42 +366,26 @@ message:
 
 
 
-// Check already booked slot
+// ===============================
+// Already Booked Check
+// ===============================
 
 
-const startTime = new Date(selectedDate);
-
-
-startTime.setMinutes(
-startTime.getMinutes()-30
-);
-
-
-
-const endTime = new Date(selectedDate);
-
-
-endTime.setMinutes(
-endTime.getMinutes()+30
-);
-
-
-
-
-const existingAppointment = await Appointment.findOne({
+const existingAppointment =
+await Appointment.findOne({
 
 doctor:doctor,
 
-appointmentDateTime:{
-
-$gte:startTime,
-
-$lte:endTime
-
-}
+appointmentDateTime:selectedDate
 
 });
 
+
+
+console.log(
+"EXISTING:",
+existingAppointment
+);
 
 
 
@@ -401,8 +404,12 @@ message:"This slot is already booked"
 
 
 
-
+// ===============================
 // Create Appointment
+// ===============================
+
+
+console.log("Creating appointment...");
 
 
 const appointment = await Appointment.create({
@@ -418,9 +425,19 @@ status:"pending"
 });
 
 
+
+console.log(
+"APPOINTMENT CREATED:",
+appointment
+);
+
+
+
+
 // ===============================
-// CREATE ADMIN NOTIFICATION
+// Notifications
 // ===============================
+
 
 await createAdminNotification({
 
@@ -435,9 +452,6 @@ appointment:appointment._id
 
 });
 
-// ===============================
-// CREATE DOCTOR NOTIFICATION
-// ===============================
 
 
 if(doctorData.user){
@@ -468,45 +482,6 @@ redirectUrl:
 
 
 
-// ===============================
-// REAL TIME NOTIFICATION
-// ===============================
-
-
-// ===============================
-// REAL TIME NOTIFICATION
-// ===============================
-
-
-if(global.io && doctorData.user){
-
-
-global.io
-.to(doctorData.user.toString())
-.emit(
-"notification",
-{
-
-title:"New Appointment Request",
-
-message:
-`${patient.user.name} requested an appointment`,
-
-type:"appointment",
-
-appointmentId:
-appointment._id,
-
-redirectUrl:
-`/doctor/appointments`
-}
-
-);
-
-
-}
-
-
 
 res.status(201).json({
 
@@ -518,10 +493,14 @@ appointment
 
 
 
-}catch(error){
+}
+catch(error){
 
 
-console.log(error);
+console.log(
+"BOOK APPOINTMENT ERROR:",
+error
+);
 
 
 res.status(500).json({
@@ -535,7 +514,6 @@ message:error.message
 
 
 };
-
 
 
 

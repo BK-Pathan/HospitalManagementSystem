@@ -1069,7 +1069,7 @@ Change Password
 /* ---------- Profile card (Premium) ---------- */
 
 .profile-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 35px;
   border-radius: 22px;
   box-shadow:
@@ -1085,7 +1085,7 @@ Change Password
   overflow: hidden;
   border: 1px solid var(--border);
   margin-bottom: 30px;
-  background: #f8fafc;
+  /* background: #f8fafc; */
 }
 
 .identity-banner {

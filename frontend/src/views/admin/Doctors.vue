@@ -49,7 +49,11 @@ const toggleCard = (id) => {
     openCards[id] = !openCards[id];
 };
 
+const openAvailability = reactive({});
 
+const toggleAvailability = (id)=>{
+    openAvailability[id] = !openAvailability[id];
+};
 
 
 // ======================
@@ -627,35 +631,55 @@ v-if="doctor.user?.profileImage"
 
 
 
-                <div class="availability-card">
+<div class="availability-wrapper">
 
-                    <span class="label">
-                        Availability
-                    </span>
+    <button
+    class="availability-toggle"
+    @click="toggleAvailability(doctor._id)"
+    >
 
+        <span>
+            🕒 Availability
+        </span>
 
-                    <div 
-                    class="slot"
-                    v-for="(item,index) in doctor.availability"
-                    :key="index"
-                    >
+        <span 
+        class="availability-arrow"
+        :class="{open: openAvailability[doctor._id]}"
+        >
+            ›
+        </span>
 
-                        <span>{{item.day}}</span>
-
-                        <small>
-                            {{item.startTime}} - {{item.endTime}}
-                        </small>
-
-                    </div>
-
-
-                    <p v-if="!doctor.availability?.length">
-                        No slots available
-                    </p>
+    </button>
 
 
-                </div>
+    <div
+    class="availability-card"
+    v-if="openAvailability[doctor._id]"
+    >
 
+        <div 
+        class="slot"
+        v-for="(item,index) in doctor.availability"
+        :key="index"
+        >
+
+            <span>{{item.day}}</span>
+
+            <small>
+                {{item.startTime}} - {{item.endTime}}
+            </small>
+
+        </div>
+
+
+        <p v-if="!doctor.availability?.length">
+            No slots available
+        </p>
+
+    </div>
+
+
+</div>
 
 
                 <div class="doctor-actions">
@@ -946,7 +970,7 @@ type="password"
 
 
 .card{
-    background:var(--white);
+    /* background:var(--white); */
     border-radius:20px;
     padding:30px;
     box-shadow:var(--shadow);
@@ -1255,11 +1279,11 @@ gap:22px;
 
 .doctor-card{
 
-background:linear-gradient(
+/* background:linear-gradient(
 145deg,
 #ffffff,
 #f8fafc
-);
+); */
 
 border:1px solid var(--border);
 
@@ -1591,7 +1615,20 @@ grid-template-columns:1fr;
 /* Tablet */
 @media(max-width:800px){
 
-
+.doctor-card{
+    background:linear-gradient(
+145deg,
+#ffffff,
+#f8fafc
+);
+}
+.card{
+      background:linear-gradient(
+145deg,
+#ffffff,
+#f8fafc
+);  
+}
     .header{
 
         flex-direction:column;
@@ -2163,6 +2200,94 @@ height:100%;
 border-radius:18px;
 
 object-fit:cover;
+
+}
+.availability-wrapper{
+    margin-top:20px;
+}
+
+
+.availability-toggle{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#f1f5f9;
+
+    color:var(--text);
+
+    padding:14px 16px;
+
+    border-radius:14px;
+
+    font-size:14px;
+
+    font-weight:700;
+
+}
+
+
+.availability-arrow{
+
+    width:28px;
+    height:28px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:white;
+
+    color:var(--primary);
+
+    font-size:20px;
+
+    transition:.25s;
+
+}
+
+
+.availability-arrow.open{
+
+    transform:rotate(90deg);
+
+}
+
+
+.availability-card{
+
+    margin-top:10px;
+
+    background:#f8fafc;
+
+    padding:14px;
+
+    border-radius:15px;
+
+    animation:slideDown .25s ease;
+
+}
+
+
+@keyframes slideDown{
+
+from{
+    opacity:0;
+    transform:translateY(-8px);
+}
+
+to{
+    opacity:1;
+    transform:translateY(0);
+}
 
 }
 </style>

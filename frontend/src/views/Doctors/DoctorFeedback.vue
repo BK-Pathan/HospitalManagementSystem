@@ -291,7 +291,7 @@ No feedback available yet.
   display: flex;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 22px;
   border-radius: 18px;
   border: 1px solid var(--border);
@@ -317,7 +317,7 @@ No feedback available yet.
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(234,179,8,.20), rgba(234,179,8,.06));
+  /* background: linear-gradient(135deg, rgba(234,179,8,.20), rgba(234,179,8,.06)); */
   color: #ca8a04;
   box-shadow: inset 0 1px 1px rgba(255,255,255,.5);
 }
@@ -367,7 +367,7 @@ No feedback available yet.
 
 .feedback-card {
   position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%); */
   padding: 24px;
   border-radius: 18px;
   box-shadow:
@@ -472,7 +472,7 @@ object-fit:cover;
   font-size: 14px;
   line-height: 1.6;
   font-style: italic;
-  background: #f8fafc;
+  /* background: #f8fafc; */
   border-radius: 12px;
   padding: 14px;
   margin: 0 0 14px;
@@ -576,7 +576,11 @@ object-fit:cover;
    Mobile
 ========================== */
 @media (max-width: 768px) {
-
+.summary-card,
+.feedback-card 
+ {
+  background-color: white;
+}
   .page {
     padding: 16px;
   }
