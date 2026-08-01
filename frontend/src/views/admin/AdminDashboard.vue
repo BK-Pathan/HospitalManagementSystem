@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import api from "../../api/axios";
 
 import { Bar, Doughnut, Line } from "vue-chartjs";
@@ -51,6 +51,23 @@ const stats = ref({
 // har chart ka apna alag loaded flag - taake ek dusre ko block na kare
 const dataLoaded = ref(false);
 const doctorLoaded = ref(false);
+
+const selectedMonth = ref(new Date().getMonth() + 1);
+const selectedYear = ref(new Date().getFullYear());
+// const patientChartLoaded = ref(false);
+
+const monthNames = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+];
+
+const availableYears = (() => {
+    const current = new Date().getFullYear();
+    return [current - 1, current, current + 1];
+})();
+
+const patientChartLoaded = ref(false);
+const isFilterOpen = ref(false);
 
 // ===== Appointment Status -> Doughnut =====
 const chartData = reactive({
@@ -226,26 +243,6 @@ const getStats = async()=>{
             }
         ];
 
-        // =====================
-        // Daily New Patients
-        // =====================
-
-        const dailyPatients = res.data.dailyPatients || [];
-
-        patientChartData.labels = dailyPatients.map(item=>{
-            return `${item._id.day}/${item._id.month}/${item._id.year}`;
-        });
-
-        patientChartData.datasets = [
-            {
-                label:"New Patients Per Day",
-                data: dailyPatients.map(item => item.total),
-                backgroundColor:"#0891b2",
-                borderRadius:8,
-                maxBarThickness:34
-            }
-        ];
-
         dataLoaded.value = true;
 
     }
@@ -303,9 +300,56 @@ const getStats = async()=>{
 
 };
 
+// =====================
+// Daily New Patients (month-wise, separate endpoint)
+// =====================
+
+const getDailyPatients = async () => {
+
+    patientChartLoaded.value = false;
+
+    try {
+
+        const res = await api.get("/admin/daily-appointments", {
+            params: {
+                month: selectedMonth.value,
+                year: selectedYear.value
+            }
+        });
+
+        const dailyAppointments = res.data.dailyAppointments || [];
+
+        patientChartData.labels = dailyAppointments.map(item => {
+            const [, m, d] = item.date.split("-");
+            return `${d}/${m}`;
+        });
+
+        patientChartData.datasets = [
+            {
+                label:"Appointments Per Day",
+                data: dailyAppointments.map(item => item.appointments),
+                backgroundColor:"#0891b2",
+                borderRadius:8,
+                maxBarThickness:34
+            }
+        ];
+
+        patientChartLoaded.value = true;
+
+    } catch (error) {
+        console.log("Daily appointments error:", error);
+    }
+
+};
 
 onMounted(()=>{
     getStats();
+    getDailyPatients();
+});
+
+// Month ya Year change hote hi automatically refetch
+watch([selectedMonth, selectedYear], ()=>{
+    getDailyPatients();
 });
 
 </script>
@@ -478,20 +522,70 @@ onMounted(()=>{
         </div>
 
         <!-- Daily Patients Chart -->
-        <div class="panel">
-            <div class="panel-head">
-                <h2>Daily New Patients</h2>
-                <span class="chart-tag">Growth</span>
+
+<!-- Daily Patients Chart -->
+<div class="panel">
+    <div class="panel-head">
+        <h2>Daily New Patients</h2>
+
+        <div class="filter-wrap">
+
+            <button
+                class="filter-btn"
+                @click="isFilterOpen = !isFilterOpen"
+                :class="{ active: isFilterOpen }"
+            >
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="9" cy="6" r="2.3" fill="currentColor"/>
+
+                    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="15" cy="12" r="2.3" fill="currentColor"/>
+
+                    <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="9" cy="18" r="2.3" fill="currentColor"/>
+                </svg>
+            </button>
+
+            <div v-if="isFilterOpen" class="filter-dropdown">
+
+                <label>Month</label>
+                <select v-model.number="selectedMonth">
+                    <option
+                        v-for="(name, idx) in monthNames"
+                        :key="idx"
+                        :value="idx + 1"
+                    >
+                        {{ name }}
+                    </option>
+                </select>
+
+                <label>Year</label>
+                <select v-model.number="selectedYear">
+                    <option
+                        v-for="y in availableYears"
+                        :key="y"
+                        :value="y"
+                    >
+                        {{ y }}
+                    </option>
+                </select>
+
             </div>
-            <div class="chart-wrapper">
-                <Bar
-                    v-if="dataLoaded"
-                    :key="'patient-'+dataLoaded"
-                    :data="patientChartData"
-                    :options="chartOptionsBar"
-                />
-            </div>
+
         </div>
+
+    </div>
+    <div class="chart-wrapper">
+        <Bar
+            v-if="patientChartLoaded"
+            :key="'patient-'+selectedMonth+'-'+selectedYear"
+            :data="patientChartData"
+            :options="chartOptionsBar"
+        />
+        <p v-else class="empty-state">Loading...</p>
+    </div>
+</div>
 
         <!-- Doctor Performance Chart -->
         <div class="panel">
@@ -1366,5 +1460,80 @@ height:100%;
 object-fit:cover;
 border-radius:14px;
 
+}
+.filter-wrap{
+    position:relative;
+}
+
+.filter-btn{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    border:1px solid #e2e8f0;
+    background:#f8fafc;
+    color:#334155;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.filter-btn svg{
+    width:20px;
+    height:20px;
+}
+
+.filter-btn:hover{
+    background:#eff6ff;
+    border-color:#bfdbfe;
+    color:#2563eb;
+}
+
+.filter-btn.active{
+    background:#2563eb;
+    border-color:#2563eb;
+    color:#ffffff;
+}
+
+.filter-dropdown{
+    position:absolute;
+    top:46px;
+    right:0;
+    z-index:20;
+    background:#ffffff;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 15px 40px rgba(15,23,42,.12);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width:160px;
+}
+
+.filter-dropdown label{
+    font-size:11px;
+    font-weight:700;
+    color:#64748b;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    margin-top:6px;
+}
+
+.filter-dropdown label:first-child{
+    margin-top:0;
+}
+
+.filter-dropdown select{
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid #e2e8f0;
+    font-size:13px;
+    font-weight:600;
+    color:#334155;
+    background:#f8fafc;
+    cursor:pointer;
+    outline:none;
 }
 </style>

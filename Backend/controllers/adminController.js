@@ -11,6 +11,7 @@ return text.replace(
 );
 
 };
+
 exports.dashboardStats = async(req,res)=>{
 
 try{
@@ -224,6 +225,67 @@ message:error.message
 
 
 
+// daily appointments by month
+
+exports.dailyAppointmentsByMonth = async (req, res) => {
+
+    try {
+
+        let { month, year } = req.query;
+
+        const now = new Date();
+        month = parseInt(month) || (now.getMonth() + 1);
+        year = parseInt(year) || now.getFullYear();
+
+        if (month < 1 || month > 12) {
+            return res.status(400).json({ message: "Invalid month" });
+        }
+
+        // Month boundaries — inclusive start, exclusive end
+        const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0);
+        const endDate = new Date(year, month, 1, 0, 0, 0, 0); // 1st of NEXT month
+
+        const results = await Appointment.aggregate([
+            {
+                $match: {
+                    appointmentDateTime: { $gte: startDate, $lt: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dayOfMonth: "$appointmentDateTime" },
+                    total: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // Quick lookup map: { day: total }
+        const countMap = {};
+        results.forEach(r => { countMap[r._id] = r.total; });
+
+        // Fill EVERY day of the month, even with 0 appointments
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const dailyAppointments = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            dailyAppointments.push({
+                date: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+                appointments: countMap[day] || 0
+            });
+        }
+
+        res.status(200).json({
+            month,
+            year,
+            dailyAppointments
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+
+};
 
 // ======================
 // Create Doctor
