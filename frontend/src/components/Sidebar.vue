@@ -769,7 +769,7 @@ class="sidebar"
 .router-link-active{
 
 
-    background:linear-gradient(135deg,#ffffff,#eef4ff);
+    background:linear-gradient(135deg,#7facd6,#eef0ff);
 
 
     color:var(--accent-b);

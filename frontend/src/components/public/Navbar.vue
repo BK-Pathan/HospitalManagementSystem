@@ -102,6 +102,7 @@ const router = useRouter()
 
 const menuOpen = ref(false)
 const scrolled = ref(false)
+const activeHash = ref('') // tracks which section is currently in view while scrolling
 
 const navLinks = [
   { label: 'Home', href: '/', type: 'route' },
@@ -113,17 +114,19 @@ const navLinks = [
   { label: 'Contact', href: '/#contact', type: 'hash', hash: '#contact' },
 ]
 
+let observer = null
+
 function closeMenu() {
   menuOpen.value = false
 }
 
 // Highlights "Home" for the bare route, or the matching hash link
-// when the current URL hash matches.
+// based on which section is currently scrolled into view.
 function isActive(link) {
   if (link.type === 'route') {
-    return route.path === '/' && !route.hash
+    return route.path === '/' && !activeHash.value
   }
-  return route.path === '/' && route.hash === link.hash
+  return route.path === '/' && activeHash.value === link.hash
 }
 
 // Smooth-scrolls to in-page sections instead of a hard reload,
@@ -132,6 +135,7 @@ function handleLinkClick(link) {
   closeMenu()
 
   if (link.type === 'route') {
+    activeHash.value = ''
     return
   }
 
@@ -167,8 +171,44 @@ function goLogin(){
 
 }
 
-onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+// Watches each in-page section and updates activeHash to whichever
+// one is currently centered in the viewport, so the navbar link
+// highlights automatically while the user scrolls (not just on click).
+function setupScrollSpy() {
+  const sectionHashes = navLinks.filter(l => l.type === 'hash').map(l => l.hash)
+  const sections = sectionHashes
+    .map(hash => ({ hash, el: document.querySelector(hash) }))
+    .filter(s => s.el)
+
+  if (!sections.length) return
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const match = sections.find(s => s.el === entry.target)
+          if (match) activeHash.value = match.hash
+        }
+      })
+
+      // Near the very top of the page, treat "Home" as active.
+      if (window.scrollY < 100) activeHash.value = ''
+    },
+    { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
+  )
+
+  sections.forEach(s => observer.observe(s.el))
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  requestAnimationFrame(setupScrollSpy)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (observer) observer.disconnect()
+})
 </script>
 
 <style scoped>
@@ -306,7 +346,7 @@ box-shadow:
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 0.4rem;
   flex: 1;
   justify-content: center;
 }
@@ -317,38 +357,26 @@ box-shadow:
   font-weight: 500;
   color: #33555a;
   text-decoration: none;
-  padding: 0.35rem 0;
-  transition: color 0.2s ease;
-}
-
-.navbar__link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 2px;
-  background: #17909c;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.2s ease;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  transition: color 0.2s ease, background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
 .navbar__link:hover {
   color: #0f7680;
-}
-
-.navbar__link:hover::after {
-  transform: scaleX(1);
+  background: rgba(23, 144, 156, 0.08);
 }
 
 .navbar__link--active {
-  color: #0f7680;
+  color: #fff;
   font-weight: 600;
+  background: linear-gradient(135deg, #17909c, #2563eb);
+  box-shadow: 0 8px 20px rgba(23, 144, 156, 0.35);
 }
 
-.navbar__link--active::after {
-  transform: scaleX(1);
+.navbar__link--active:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #17909c, #2563eb);
 }
 
 /* Actions */
@@ -510,17 +538,22 @@ border:
   }
 
   .navbar__mobile-link {
-    padding: 0.75rem 0;
+    padding: 0.75rem 0.9rem;
     font-size: 1rem;
     font-weight: 500;
     color: #33555a;
     text-decoration: none;
     border-bottom: 1px solid rgba(15, 118, 128, 0.08);
+    border-radius: 999px;
+    transition: color 0.2s ease, background 0.25s ease;
   }
 
   .navbar__mobile-link.navbar__link--active {
-    color: #0f7680;
+    color: #fff;
     font-weight: 600;
+    background: linear-gradient(135deg, #17909c, #2563eb);
+    border-bottom-color: transparent;
+    box-shadow: 0 8px 20px rgba(23, 144, 156, 0.3);
   }
 
   .navbar__mobile-actions {
