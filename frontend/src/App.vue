@@ -33,7 +33,6 @@ const notify = (
 
   },3000);
 
-
 };
 
 
@@ -46,7 +45,6 @@ window.notify = notify;
 // ==========================
 
 const toast = ref(null);
-
 
 
 // ==========================
@@ -75,17 +73,14 @@ audio.currentTime = 0;
 
 audioUnlocked.value = true;
 
-
-console.log(
-"Audio unlocked"
-);
-
+console.log("Audio unlocked");
 
 })
 .catch(()=>{});
 
-
 };
+
+
 
 // ==========================
 // SOCKET NOTIFICATION
@@ -101,8 +96,6 @@ data
 
 
 
-// show notification toast
-
 toast.value = data;
 
 
@@ -116,7 +109,6 @@ toast.value = null;
 
 
 
-// play sound
 
 audio.play()
 
@@ -140,11 +132,8 @@ error
 
 
 
-// browser notification
 
-if(
-Notification.permission === "granted"
-){
+if(Notification.permission === "granted"){
 
 new Notification(
 
@@ -162,9 +151,7 @@ console.log(
 data.title
 );
 
-
 }
-
 
 
 };
@@ -172,12 +159,11 @@ data.title
 
 
 
-
 // ==========================
-// MOUNT
+// SOCKET JOIN FUNCTION
 // ==========================
 
-onMounted(()=>{
+const joinNotificationRoom = ()=>{
 
 
 const user = JSON.parse(
@@ -212,8 +198,40 @@ userId
 }
 
 
-
 }
+
+
+};
+
+
+
+
+// ==========================
+// MOUNT
+// ==========================
+
+onMounted(()=>{
+
+
+// socket connect + reconnect par room join
+
+socket.on(
+"connect",
+()=>{
+
+console.log(
+"Socket Connected:",
+socket.id
+);
+
+
+joinNotificationRoom();
+
+
+});
+
+
+
 
 
 document.addEventListener(
@@ -224,6 +242,10 @@ unlockAudio,
 }
 );
 
+
+
+
+
 socket.on(
 "notification",
 handleNotification
@@ -232,7 +254,6 @@ handleNotification
 
 
 });
-
 
 
 
@@ -247,6 +268,12 @@ onUnmounted(()=>{
 socket.off(
 "notification",
 handleNotification
+);
+
+
+socket.off(
+"connect",
+joinNotificationRoom
 );
 
 
