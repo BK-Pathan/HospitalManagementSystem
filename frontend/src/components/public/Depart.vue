@@ -40,9 +40,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// Same six departments as before — only the `img` field changed from an
-// icon URL to a relevant photograph. Swap any `img` for your own asset
-// without touching the rest of the markup.
 const departments = [
   {
     label: 'Kidney',

@@ -4,8 +4,7 @@
 <div class="public-layout">
 
 
-    <WaterMesh/>
-
+<waterMesh/>
 
     <div class="page-content">
 
@@ -22,8 +21,7 @@
 
 <script setup>
 
-import WaterMesh from "../components/WaterMesh.vue"
-
+import waterMesh from "../../src/components/WaterMesh.vue"
 </script>
 
 

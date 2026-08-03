@@ -453,13 +453,12 @@ appointment:appointment._id
 });
 
 
-
 if(doctorData.user){
 
 
-await Notification.create({
+const notification = await Notification.create({
 
-user:doctorData.user,
+user:doctorData.user._id,
 
 sender:req.user.id,
 
@@ -476,6 +475,47 @@ redirectUrl:
 `/doctor/appointments/${appointment._id}`
 
 });
+
+
+
+// ===============================
+// REAL TIME SOCKET NOTIFICATION
+// ===============================
+
+if(global.io){
+
+
+global.io
+.to(
+doctorData.user._id.toString()
+)
+.emit(
+"notification",
+{
+
+title:"New Appointment Request",
+
+message:
+`${patient.user.name} requested an appointment`,
+
+type:"appointment",
+
+redirectUrl:
+`/doctor/appointments/${appointment._id}`
+
+}
+
+);
+
+
+console.log(
+"Doctor notification emitted:",
+doctorData.user._id.toString()
+);
+
+
+}
+
 
 
 }

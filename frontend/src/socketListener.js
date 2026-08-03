@@ -7,55 +7,24 @@ socket.on(
 "notification",
 (data)=>{
 
+	console.log("SocketListener: notification received", data);
 
-// console.log(
-// "Global Notification:",
-// data
-// );
+	// 🔊 Notification Sound
+	const audio = new Audio("/sound.mp3");
 
+	audio.play()
+	.then(()=>{
+		console.log("SocketListener: notification sound played");
+	})
+	.catch(error=>{
+		console.log("SocketListener: sound play blocked:", error);
+	});
 
-
-// 🔊 Notification Sound
-
-const audio = new Audio(
-"/sound.mp3"
-);
-
-
-audio.play()
-.catch(error=>{
-
-// console.log(
-// "Sound blocked:",
-// error
-// );
-
-});
-
-
-
-
-// 🌐 Browser Notification
-
-if(
-Notification.permission === "granted"
-){
-
-
-new Notification(
-data.title,
-{
-
-body:data.message,
-
-icon:"/logo.png"
-
-}
-
-);
-
-
-}
+	// 🌐 Browser Notification
+	if(Notification.permission === "granted"){
+		new Notification(data.title, { body: data.message, icon: "/logo.png" });
+		console.log("SocketListener: browser notification shown", data.title);
+	}
 
 
 

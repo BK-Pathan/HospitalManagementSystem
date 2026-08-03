@@ -428,93 +428,61 @@ message:error.message
 
 exports.getPatientPrescriptions = async(req,res)=>{
 
-
 try{
 
-
 const doctor = await Doctor.findOne({
-
-user:req.user.id
-
+ user:req.user.id
 });
 
-
-if(!doctor){
-
-return res.status(404).json({
-
-message:"Doctor not found"
-
-});
-
-}
-
+console.log("USER ID:", req.user.id);
+console.log("DOCTOR:", doctor);
+console.log("PATIENT ID:", req.params.patientId);
 
 
 const prescriptions = await Prescription.find({
-
-patient:req.params.patientId,
-
-doctor:doctor._id
-
+    patient:req.params.patientId
 })
-
-
 .populate({
-
-path:"patient",
-
-populate:{
-
-path:"user",
-
-select:"name email"
-
-}
-
+    path:"patient",
+    populate:{
+        path:"user",
+        select:"name email"
+    }
 })
-
-
 .populate({
-
-path:"doctor",
-
-populate:{
-
-path:"user",
-
-select:"name email"
-
-}
-
+    path:"doctor",
+    populate:{
+        path:"user",
+        select:"name email"
+    }
 })
-
-
 .sort({
-
-createdAt:-1
-
+    createdAt:-1
 });
 
+const all = await Prescription.find({});
+
+console.log(
+"ALL PRESCRIPTIONS:",
+JSON.stringify(all,null,2)
+);
+
+console.log("PRESCRIPTIONS:", prescriptions);
 
 
 res.json(prescriptions);
 
 
-
 }
 catch(error){
 
+console.log(error);
 
 res.status(500).json({
-
 message:error.message
-
 });
 
-
 }
-
 
 };
 
@@ -596,3 +564,5 @@ message:error.message
 
 
 };
+
+

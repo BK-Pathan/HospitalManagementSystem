@@ -26,11 +26,19 @@ const profileImage = ref("");
 const selectedImage = ref(null);
 
 // Select Image
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+
 const handleImage = (event) => {
 
   const file = event.target.files[0];
 
   if (!file) return;
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    selectedImage.value = null;
+    window.notify("Image too large. Please upload a file smaller than 2MB.", "error");
+    return;
+  }
 
   selectedImage.value = file;
 
@@ -40,7 +48,7 @@ const handleImage = (event) => {
 const uploadImage = async () => {
 
   if (!selectedImage.value) {
-    window.notify("Select image first");
+    window.notify("Select image first", "warning");
     return;
   }
 
@@ -60,12 +68,18 @@ const uploadImage = async () => {
       }
     );
 
-   window.notify ("Profile image updated");
+   window.notify("Profile image updated", "success");
 
     getProfile();
 
   } catch (error) {
 
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Image upload failed";
+
+    window.notify(message, "error");
     console.log(error.response?.data || error.message);
 
   }

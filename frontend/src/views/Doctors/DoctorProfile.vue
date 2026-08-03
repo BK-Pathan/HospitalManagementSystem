@@ -26,6 +26,8 @@ const confirmPassword = ref("");
 
 const availability = ref([]);
 
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+
 const day = ref("");
 const startTime = ref("");
 const endTime = ref("");
@@ -71,6 +73,17 @@ const file = event.target.files[0];
 
 
 if(!file) return;
+
+
+if(file.size > MAX_IMAGE_SIZE){
+
+  selectedImage.value = null;
+
+  window.notify("Image too large. Please upload a file smaller than 2MB.", "error");
+
+  return;
+
+}
 
 
 selectedImage.value=file;
@@ -133,7 +146,8 @@ headers:{
 
 
 window.notify(
-"Profile image updated"
+"Profile image updated",
+"success"
 );
 
 
@@ -145,6 +159,8 @@ getProfile();
 }
 catch(error){
 
+const message = error.response?.data?.message || error.message || "Image upload failed";
+window.notify(message, "error");
 console.log(
 error.response?.data || error.message
 );
@@ -189,6 +205,8 @@ profileImage.value="";
 }
 catch(error){
 
+const message = error.response?.data?.message || error.message || "Image upload failed";
+window.notify(message, "error");
 console.log(
 error.response?.data || error.message
 );

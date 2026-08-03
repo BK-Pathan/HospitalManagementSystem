@@ -13,6 +13,8 @@ const email = ref("");
 const password = ref("");
 const role = ref("patient");
 
+const loading = ref(false);
+
 
 // Error Message
 const errorMessage = ref("");
@@ -25,10 +27,60 @@ const signup = async()=>{
     errorMessage.value = "";
 
 
+    // Frontend validation
+
+    if(!name.value.trim()){
+
+        window.notify(
+            "Full name is required",
+            "warning"
+        );
+
+        return;
+    }
+
+
+
+    if(!email.value){
+
+        window.notify(
+            "Email is required",
+            "warning"
+        );
+
+        return;
+    }
+
+
+
+    const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
+
+
+
+    if(!passwordRegex.test(password.value)){
+
+
+        window.notify(
+            "Password must contain uppercase, lowercase and number with 8 characters",
+            "warning"
+        );
+
+        return;
+    }
+
+
+
+
     try{
 
 
-        const res = await api.post("/auth/register",{
+        loading.value = true;
+
+
+
+        await api.post("/auth/register",{
+
 
             name:name.value,
 
@@ -38,26 +90,29 @@ const signup = async()=>{
 
             role:role.value
 
+
         });
 
 
 
-        // console.log(res.data);
 
 
-      window.notify(
+        window.notify(
             "Signup successful",
             "success"
         );
 
 
+
         router.push("/login");
+
 
 
     }
 
 
     catch(error){
+
 
 
         console.log(
@@ -71,35 +126,36 @@ const signup = async()=>{
 
 
 
-            // Rate limit error
-
             if(error.response.status === 429){
 
 
-                             window.notify(
+                window.notify(
                     error.response.data.message,
                     "warning"
                 );
 
 
-
             }
+
 
             else{
 
 
-            
                 window.notify(
+
                     error.response.data.message ||
                     "Signup failed",
-                    "error")
+
+                    "error"
+
+                );
 
 
             }
 
 
-
         }
+
 
         else{
 
@@ -113,6 +169,16 @@ const signup = async()=>{
 
 
     }
+
+
+    finally{
+
+
+        loading.value=false;
+
+
+    }
+
 
 
 }
@@ -170,11 +236,11 @@ const signup = async()=>{
 
         <div class="input-group">
           <label>Email</label>
-          <input
-            v-model="email"
-            placeholder="abc@gmail.com"  
-
-          />
+       <input
+type="email"
+v-model="email"
+placeholder="abc@gmail.com"
+/>
         </div>
 
         <div class="input-group">
@@ -189,11 +255,13 @@ const signup = async()=>{
         <div class="input-group">
           <label>Register As</label>
 
-          <select v-model="role">
-            <option value="patient">Patient</option>
-            <option value="doctor">Doctor</option>
-            <!-- <option value="admin">Admin</option> -->
-          </select>
+<select v-model="role">
+
+<option value="patient">
+Patient
+</option>
+
+</select>
         </div>
 
         <p
@@ -203,9 +271,15 @@ class="error-message"
 {{ errorMessage }}
 </p>
 
-        <button class="signup-btn" @click="signup">
-          Create Account
-        </button>
+<button 
+class="signup-btn"
+@click="signup"
+:disabled="loading"
+>
+
+{{ loading ? "Creating Account..." : "Create Account" }}
+
+</button>
 
         <p class="login-text">
           Already have an account?
@@ -1093,5 +1167,13 @@ select{
     font-size:14px;
 
 }
+.signup-btn:disabled{
 
+    opacity:.6;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
 </style>

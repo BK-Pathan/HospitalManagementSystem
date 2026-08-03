@@ -1,123 +1,104 @@
 const Doctor = require("../models/doctor");
 const Appointment = require("../models/appointment");
 
-
 // Create Profile
-exports.createProfile = async(req,res)=>{
+exports.createProfile = async (req, res) => {
+  try {
 
-try{
+    console.log("========== CREATE PROFILE ==========");
+    console.log("User ID:", req.user.id);
+    console.log("Request Body:", req.body);
+    console.log("Department:", req.body.department);
+    console.log("====================================");
 
+    const doctor = await Doctor.findOneAndUpdate(
+      {
+        user: req.user.id
+      },
+      {
+        user: req.user.id,
+        name: req.body.name,
+        department: req.body.department,
+        specialties: req.body.specialties,
+        qualifications: req.body.qualifications,
+        experience: req.body.experience,
+        contactInformation: req.body.contactInformation,
+        availability: req.body.availability
+      },
+      {
+        new: true,
+        upsert: true
+      }
+    );
 
-const doctor = await Doctor.findOneAndUpdate(
+    console.log("========== SAVED DOCTOR ==========");
+    console.log(doctor);
+    console.log("Saved Department:", doctor.department);
+    console.log("==================================");
 
-{
-    user:req.user.id
-},
+    res.json({
+      message: "Doctor profile saved",
+      doctor
+    });
 
-{
+  } catch (error) {
+    console.log(error);
 
-    user:req.user.id,
-    name:req.body.name,
-    department:req.body.department,
-    specialties:req.body.specialties,
-    qualifications:req.body.qualifications,
-    experience:req.body.experience,
-    contactInformation:req.body.contactInformation,
-    availability:req.body.availability
-
-},
-
-{
-    new:true,
-    upsert:true
-}
-
-
-);
-
-
-res.json({
-message:"Doctor profile saved",
-doctor
-});
-
-
-}catch(error){
-
-res.status(500).json({
-message:error.message
-});
-
-}
-
+    res.status(500).json({
+      message: error.message
+    });
+  }
 };
-
 
 
 
 // Get Profile
-exports.getProfile = async(req,res)=>{
+exports.getProfile = async (req, res) => {
+  try {
 
-try{
+    console.log("========== GET PROFILE ==========");
+    console.log("User ID:", req.user.id);
 
+    const doctor = await Doctor.findOne({
+      user: req.user.id
+    }).populate(
+      "user",
+      "name profileImage email"
+    );
 
-const doctor = await Doctor.findOne({
-user:req.user.id
-})
-.populate(
-"user",
-"name profileImage email"
-);
+    console.log("Doctor Found:");
+    console.log(doctor);
 
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor profile not found"
+      });
+    }
 
+    console.log("Department From DB:", doctor.department);
+    console.log("=================================");
 
-if(!doctor){
+    res.json({
+      _id: doctor._id,
+      name: doctor.name,
+      department: doctor.department,
+      specialties: doctor.specialties,
+      qualifications: doctor.qualifications,
+      experience: doctor.experience,
+      contactInformation: doctor.contactInformation,
+      availability: doctor.availability,
+      profileImage: doctor.user?.profileImage || "",
+      email: doctor.user?.email || ""
+    });
 
-return res.status(404).json({
-message:"Doctor profile not found"
-});
+  } catch (error) {
+    console.log(error);
 
-}
-
-
-
-res.json({
-
-_id:doctor._id,
-
-name:doctor.name,
-
-department:doctor.department,
-
-specialties:doctor.specialties,
-
-qualifications:doctor.qualifications,
-
-experience:doctor.experience,
-
-contactInformation:doctor.contactInformation,
-
-availability:doctor.availability,
-
-
-profileImage: doctor.user?.profileImage || "",
-
-email: doctor.user?.email || ""
-
-});
-
-
-}
-catch(error){
-
-res.status(500).json({
-message:error.message
-});
-
-}
-
+    res.status(500).json({
+      message: error.message
+    });
+  }
 };
-
 
 // Get My Appointments
 exports.getMyAppointments = async(req,res)=>{

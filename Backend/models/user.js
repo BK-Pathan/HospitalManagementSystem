@@ -18,7 +18,7 @@ const userSchema = new Schema({
 
     role:{
         type:String,
-        enum:["doctor","patient"],
+        enum:["doctor","patient" ,"admin"],
         default:"patient"
     },
 profileImage:{

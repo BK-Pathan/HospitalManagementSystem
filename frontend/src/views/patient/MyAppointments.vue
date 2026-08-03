@@ -663,10 +663,10 @@ class="mobile-avatar-img"
 
         </div>
 
-        <div class="empty-state" v-else-if="!appointments.length">
+        <!-- <div class="empty-state" v-else-if="!appointments.length">
             <div class="empty-icon">📅</div>
             <p>No appointments yet</p>
-        </div>
+        </div> -->
 
     </div>
 

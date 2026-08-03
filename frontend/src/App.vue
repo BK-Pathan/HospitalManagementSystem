@@ -1,65 +1,115 @@
 <script setup>
 
-import {ref,onMounted,onUnmounted} from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import socket from "./socket";
+
 import NotificationToast from "./components/NotificationToast.vue";
 import Toast from "./components/Toast.vue";
 
+
+// ==========================
+// GLOBAL TOAST
+// ==========================
 
 const showToast = ref(false);
 const toastMessage = ref("");
 const toastType = ref("success");
 
 
-const notify=(message,type="success")=>{
+const notify = (
+  message,
+  type = "success"
+)=>{
 
-toastMessage.value = message;
-toastType.value = type;
+  toastMessage.value = message;
+  toastType.value = type;
 
-showToast.value=true;
-
-
-setTimeout(()=>{
-
-showToast.value=false;
-
-},3000);
+  showToast.value = true;
 
 
-}
+  setTimeout(()=>{
+
+    showToast.value = false;
+
+  },3000);
+
+
+};
 
 
 window.notify = notify;
 
+
+
+// ==========================
+// NOTIFICATION TOAST
+// ==========================
+
 const toast = ref(null);
 
 
-// sound
+
+// ==========================
+// SOUND
+// ==========================
+
 const audio = new Audio();
 
-audio.src="/sound.mp3";
-audio.preload="auto";
+audio.src = "/sound.mp3";
+audio.preload = "auto";
 
 
+const audioUnlocked = ref(false);
+
+
+const unlockAudio = ()=>{
+
+if(audioUnlocked.value) return;
+
+
+audio.play()
+.then(()=>{
+
+audio.pause();
+audio.currentTime = 0;
+
+audioUnlocked.value = true;
+
+
+console.log(
+"Audio unlocked"
+);
+
+
+})
+.catch(()=>{});
+
+
+};
+
+// ==========================
+// SOCKET NOTIFICATION
+// ==========================
 
 const handleNotification = (data)=>{
 
 
-// console.log(
-// "GLOBAL NOTIFICATION:",
-// data
-// );
+console.log(
+"App: notification received",
+data
+);
 
 
-// show toast
 
-toast.value=data;
+// show notification toast
+
+toast.value = data;
 
 
 
 setTimeout(()=>{
 
-toast.value=null;
+toast.value = null;
 
 },4000);
 
@@ -69,17 +119,19 @@ toast.value=null;
 // play sound
 
 audio.play()
+
 .then(()=>{
 
-// console.log(
-// "Notification sound played"
-// );
+console.log(
+"App: notification sound played"
+);
 
 })
+
 .catch(error=>{
 
 console.log(
-"Sound blocked:",
+"App: sound blocked:",
 error
 );
 
@@ -88,24 +140,26 @@ error
 
 
 
-
 // browser notification
 
 if(
-Notification.permission==="granted"
+Notification.permission === "granted"
 ){
-
 
 new Notification(
 
 data.title,
 
 {
-
 body:data.message
-
 }
 
+);
+
+
+console.log(
+"App: browser notification shown",
+data.title
 );
 
 
@@ -119,12 +173,14 @@ body:data.message
 
 
 
+// ==========================
+// MOUNT
+// ==========================
 
 onMounted(()=>{
 
 
-const user =
-JSON.parse(
+const user = JSON.parse(
 localStorage.getItem("user")
 );
 
@@ -133,31 +189,40 @@ localStorage.getItem("user")
 if(user){
 
 
-// console.log(
-// "CURRENT USER:",
-// user
-// );
+const userId =
+user?.id || user?._id;
 
+
+
+if(userId){
 
 
 socket.emit(
 "joinRoom",
-user._id
+userId
 );
 
 
-
-// console.log(
-// "JOIN REQUEST SENT:",
-// user._id
-// );
+console.log(
+"Joined notification room:",
+userId
+);
 
 
 }
 
 
 
+}
 
+
+document.addEventListener(
+"click",
+unlockAudio,
+{
+ once:true
+}
+);
 
 socket.on(
 "notification",
@@ -172,6 +237,9 @@ handleNotification
 
 
 
+// ==========================
+// UNMOUNT
+// ==========================
 
 onUnmounted(()=>{
 
@@ -185,7 +253,6 @@ handleNotification
 });
 
 
-
 </script>
 
 
@@ -193,28 +260,29 @@ handleNotification
 <template>
 
 
-<router-view/>
+<router-view />
 
 
 
 <Toast
+
 :show="showToast"
+
 :message="toastMessage"
+
 :type="toastType"
+
 />
+
 
 
 <NotificationToast
 
-:notification="toast"
+v-if="toast"
+
+:data="toast"
 
 />
 
-<div v-if="toast">
-TEST POPUP:
-{{toast.title}}
-</div>
-
 
 </template>
-

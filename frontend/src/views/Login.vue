@@ -83,7 +83,7 @@ const login = async()=>{
 
         socket.emit(
             "joinRoom",
-            user.id
+            user.id || user._id
         );
 
 

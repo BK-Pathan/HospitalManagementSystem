@@ -17,6 +17,8 @@ profileImage:""
 
 const selectedImage = ref(null);
 
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+
 const loading = ref(false);
 
 
@@ -78,6 +80,16 @@ const file = event.target.files[0];
 
 if(!file) return;
 
+
+if(file.size > MAX_IMAGE_SIZE){
+
+  selectedImage.value = null;
+
+  window.notify("Image too large. Please upload a file smaller than 2MB.", "error");
+
+  return;
+
+}
 
 
 selectedImage.value=file;
