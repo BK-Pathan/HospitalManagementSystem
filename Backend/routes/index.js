@@ -7,5 +7,7 @@ router.get('/', (req, res) => {
   res.send('Welcome to the index page');
 });
 
+
+
 // Export the router
 module.exports = router;

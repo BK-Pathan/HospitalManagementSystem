@@ -354,7 +354,11 @@ app.use(
 // DATABASE
 // ==============================
 
-connectDB();
+connectDB().then((connected) => {
+    if (!connected) {
+        console.warn("Server is running without a MongoDB connection.");
+    }
+
 
 
 
@@ -363,15 +367,22 @@ connectDB();
 // SERVER START
 // ==============================
 
-const port = process.env.PORT || 3000;
+const startServer = (port) => {
+    server.once("error", (err) => {
+        if (err.code === "EADDRINUSE") {
+            const nextPort = port + 1;
+            console.warn(`Port ${port} is busy. Trying ${nextPort} instead.`);
+            startServer(nextPort);
+        } else {
+            console.error("Server error:", err);
+            process.exit(1);
+        }
+    });
 
+    server.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+    });
+};
 
-server.listen(port,()=>{
-
-
-    console.log(
-        `Server running on port ${port}`
-    );
-
-
+startServer(Number(process.env.PORT) || 3000);
 });
